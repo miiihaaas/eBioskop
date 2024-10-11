@@ -1,0 +1,150 @@
+/* Navbar stilovi */
+.navbar {
+    padding: 0.5rem 1rem;
+    transition: all 0.3s ease-in-out;
+}
+
+.navbar-brand {
+    font-weight: 600;
+    color: #007bff;
+}
+
+.navbar-brand img {
+    margin-right: 0.5rem;
+}
+
+.nav-link {
+    color: #495057;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    transition: color 0.3s ease-in-out;
+}
+
+.nav-link:hover, .nav-link:focus {
+    color: #007bff;
+}
+
+.navbar-nav .dropdown-menu {
+    border: none;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.dropdown-item {
+    padding: 0.5rem 1.5rem;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.dropdown-item:hover, .dropdown-item:focus {
+    background-color: #f8f9fa;
+}
+
+/* Poboljšani stilovi za dugmad */
+.btn {
+    border-radius: 0.25rem;
+    padding: 0.375rem 0.75rem;
+    transition: all 0.3s ease-in-out;
+}
+
+.btn-outline-primary {
+    color: #007bff;
+    border-color: #007bff;
+}
+
+.btn-outline-primary:hover {
+    color: #fff;
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+/* Opšti stilovi */
+body {
+    font-family: 'Montserrat', sans-serif;
+    color: #333;
+    background-color: #f8f9fa;
+}
+
+.container-fluid {
+    padding-left: 2rem;
+    padding-right: 2rem;
+}
+
+/* Poboljšani stilovi za main content */
+main.container {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
+
+/* Stilovi za flash poruke */
+.alert {
+    border-radius: 0.25rem;
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+/* Postojeća pravila koja ostaju nepromenjena */
+.card {
+    border: none;
+    transition: all 0.3s;
+}
+.card:hover {
+    transform: translateY(-5px);
+}
+.btn-primary {
+    border-radius: 0;
+    padding: 10px 20px;
+    transition: all 0.3s;
+}
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+.login-logo {
+    max-width: 150px;
+    height: auto;
+}
+
+/* Modifikovana i nova pravila za form-control */
+.form-control {
+    border: none;
+    border-radius: 0;
+    padding: 10px 12px;
+    background-color: #f8f9fa;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    outline: 2px solid #007bff; /* Boja outline-a, možete prilagoditi prema vašoj paleti boja */
+    outline-offset: -2px;
+    box-shadow: none;
+    background-color: #fff;
+}
+
+/* Dodatno pravilo za hover efekat */
+.form-control:hover {
+    background-color: #e9ecef;
+}
+
+/* Uklanjamo nepotrebna pravila */
+.input-group-text {
+    background-color: #f8f9fa;
+}
+
+/* Opciono: Ako želite da select elementi imaju isti izgled */
+.form-select {
+    border: none;
+    border-radius: 0;
+    padding: 10px 12px;
+    background-color: #f8f9fa;
+    transition: all 0.3s ease;
+}
+
+.form-select:focus {
+    outline: 2px solid #007bff;
+    outline-offset: -2px;
+    box-shadow: none;
+    background-color: #fff;
+}
+
+.form-select:hover {
+    background-color: #e9ecef;
+}

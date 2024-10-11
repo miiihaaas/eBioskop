@@ -1,0 +1,196 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0">{% if route_name == 'cinemas.create_cinema_hall' %}Kreiranje nove sale{% else %}Uređivanje sale{% endif %}</h2>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6 mb-3">
+                                {{ form.hall_name.label(class="form-label") }}
+                                {{ form.hall_name(class="form-control", placeholder="Naziv sale") }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form.hall_capacity.label(class="form-label") }}
+                                {{ form.hall_capacity(class="form-control", placeholder="Kapacitet sale") }}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.workdays.label(class="form-label") }}
+                            <div class="btn-group" role="group">
+                            {% for day in form.workdays %}
+                                <input type="checkbox" class="btn-check" id="{{ day.id }}" name="{{ day.name }}" value="{{ day.data }}"
+                                        {% if form.workdays.data and day.data in form.workdays.data %}checked{% endif %}>
+                                <label class="btn btn-outline-primary" for="{{ day.id }}">{{ day.label.text }}</label>
+                            {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6 mb-3">
+                                {{ form.employee_count.label(class="form-label") }}
+                                {{ form.employee_count(class="form-control", placeholder="Broj zaposlenih") }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form.year_built.label(class="form-label") }}
+                                {{ form.year_built(class="form-control", placeholder="Godina izgradnje") }}
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6 mb-3">
+                                {{ form.dimensions.label(class="form-label") }}
+                                {{ form.dimensions(class="form-control", placeholder="Dimenzije (a x b x c)") }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form.distance_to_screen.label(class="form-label") }}
+                                {{ form.distance_to_screen(class="form-control", placeholder="Udaljenost od ekrana") }}
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6 mb-3">
+                                <div class="form-check">
+                                    {{ form.has_power_supply(class="form-check-input") }}
+                                    {{ form.has_power_supply.label(class="form-check-label") }}
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form.seat_description.label(class="form-label") }}
+                                {{ form.seat_description(class="form-control", placeholder="Opis sedišta") }}
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-3 mb-2">
+                                <div class="form-check">
+                                    {{ form.has_air_conditioning(class="form-check-input") }}
+                                    {{ form.has_air_conditioning.label(class="form-check-label") }}
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-2">
+                                <div class="form-check">
+                                    {{ form.has_heating(class="form-check-input") }}
+                                    {{ form.has_heating.label(class="form-check-label") }}
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-2">
+                                <div class="form-check">
+                                    {{ form.has_acoustic_treatment(class="form-check-input") }}
+                                    {{ form.has_acoustic_treatment.label(class="form-check-label") }}
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-2">
+                                <div class="form-check">
+                                    {{ form.has_acoustic_screen_treatment(class="form-check-input") }}
+                                    {{ form.has_acoustic_screen_treatment.label(class="form-check-label") }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6 mb-2">
+                                <div class="form-check">
+                                    {{ form.has_interior_project_docs(class="form-check-input") }}
+                                    {{ form.has_interior_project_docs.label(class="form-check-label") }}
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <div class="form-check">
+                                    {{ form.has_tech_project_docs(class="form-check-input") }}
+                                    {{ form.has_tech_project_docs.label(class="form-check-label") }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6 mb-3">
+                                {{ form.screen_size.label(class="form-label") }}
+                                {{ form.screen_size(class="form-control", placeholder="Veličina ekrana") }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form.sound_system.label(class="form-label") }}
+                                {{ form.sound_system(class="form-select") }}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check">
+                                {{ form.is_digitalized(class="form-check-input") }}
+                                {{ form.is_digitalized.label(class="form-check-label") }}
+                            </div>
+                        </div>
+
+                        <div id="digitalized-fields" style="display: none;">
+                            <!-- Digitalized fields content -->
+                            <!-- ... (keep the existing content for digitalized fields) ... -->
+                        </div>
+
+                        <div id="non-digitalized-fields">
+                            <!-- Non-digitalized fields content -->
+                            <!-- ... (keep the existing content for non-digitalized fields) ... -->
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">{{ form.submit.label }}</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const isDigitalized = document.getElementById('is_digitalized');
+        const digitalizedFields = document.getElementById('digitalized-fields');
+        const has3DEquipment = document.getElementById('has_3d_equipment');
+        const fields3DEquipment = document.getElementById('3d-equipment-fields');
+        const hasVideoProjector = document.getElementById('has_video_projector');
+        const videoProjectorFields = document.getElementById('video-projector-fields');
+        const has35mmProjector = document.getElementById('has_35mm_projector');
+        const projector35mmFields = document.getElementById('35mm-projector-fields');
+    
+        isDigitalized.addEventListener('change', function() {
+            digitalizedFields.style.display = this.checked ? 'block' : 'none';
+            // Uklanjamo sakrivanje non-digitalized polja
+        });
+    
+        has3DEquipment.addEventListener('change', function() {
+            fields3DEquipment.style.display = this.checked ? 'block' : 'none';
+        });
+    
+        hasVideoProjector.addEventListener('change', function() {
+            videoProjectorFields.style.display = this.checked ? 'block' : 'none';
+        });
+    
+        has35mmProjector.addEventListener('change', function() {
+            projector35mmFields.style.display = this.checked ? 'block' : 'none';
+        });
+    
+        const acquisitionMethods = document.querySelectorAll('input[name^="acquisition_method"]');
+        acquisitionMethods.forEach(function(method) {
+            method.addEventListener('change', function() {
+                const percentageInput = this.parentNode.querySelector('input[type="number"]');
+                percentageInput.style.display = this.checked ? 'block' : 'none';
+            });
+        });
+    
+        // Trigger change event on page load to set initial state
+        isDigitalized.dispatchEvent(new Event('change'));
+        has3DEquipment.dispatchEvent(new Event('change'));
+        hasVideoProjector.dispatchEvent(new Event('change'));
+        has35mmProjector.dispatchEvent(new Event('change'));
+        acquisitionMethods.forEach(method => method.dispatchEvent(new Event('change')));
+    });
+    </script>
+
+{% endblock %}

@@ -1,0 +1,227 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+    <h2>Lista filmova</h2>
+    
+    <!-- Dugme za pokretanje modala za novi film -->
+    <button type="button" class="btn btn-primary my-3" data-bs-toggle="modal" data-bs-target="#registerMovieModal">
+        Dodaj novi film
+    </button>
+
+    <!-- Tabela sa filmovima -->
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Originalni naziv</th>
+                <th>Lokalni naziv</th>
+                <th>Režiser</th>
+                <th>Glumci</th>
+                <th>Trajanje (min)</th>
+                <th>Akcije</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for movie in movies_list %}
+            <tr>
+                <td>{{ movie.original_title }}</td>
+                <td>{{ movie.local_title }}</td>
+                <td>{{ movie.director }}</td>
+                <td>{{ movie.actors }}</td>
+                <td>{{ movie.duration }}</td>
+                <td>
+                    <!-- Dugme za pokretanje modala za uređivanje filma -->
+                    <button type="button" class="btn btn-secondary" 
+                            data-bs-toggle="modal" 
+                            data-bs-target="#editMovieModal{{ movie.id }}"
+                            data-movie-id="{{ movie.id }}"
+                            data-original-title="{{ movie.original_title }}"
+                            data-local-title="{{ movie.local_title }}"
+                            data-director="{{ movie.director }}"
+                            data-actors="{{ movie.actors }}"
+                            data-duration="{{ movie.duration }}">
+                        Uredi
+                    </button>
+                </td>
+            </tr>
+
+            <!-- Modal za uređivanje filma -->
+            <div class="modal fade" id="editMovieModal{{ movie.id }}" tabindex="-1" aria-labelledby="editMovieModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="editMovieModalLabel">Uredi film</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form method="POST" action="{{ url_for('movies.movies_list') }}">
+                                {{ edit_form.csrf_token }}
+                                
+                                <input type="hidden" name="movie_id" value="{{ movie.id }}">
+                                
+                                <div class="form-group">
+                                    <label for="original_title">Originalni naziv</label>
+                                    <input type="text" class="form-control" id="original_title" name="original_title" value="{{ movie.original_title }}">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="local_title">Lokalni naziv</label>
+                                    <input type="text" class="form-control" id="local_title" name="local_title" value="{{ movie.local_title }}">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="director">Režiser</label>
+                                    <input type="text" class="form-control" id="director" name="director" value="{{ movie.director }}">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="actors">Glumci</label>
+                                    <textarea class="form-control" id="actors" name="actors">{{ movie.actors }}</textarea>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="duration">Trajanje (min)</label>
+                                    <input type="number" class="form-control" id="duration" name="duration" value="{{ movie.duration }}">
+                                </div>
+
+                                <!-- Ostali inputi prema modelu -->
+                                
+                                <button type="submit" class="btn btn-primary mt-3" name="edit">Sačuvaj izmene</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal za registraciju novog filma -->
+<div class="modal fade" id="registerMovieModal" tabindex="-1" aria-labelledby="registerMovieModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="registerMovieModalLabel">Dodaj novi film</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="{{ url_for('movies.movies_list') }}">
+                    {{ register_form.csrf_token }}
+
+                    <!-- Originalni naziv filma -->
+                    <div class="form-group">
+                        <label for="original_title">Originalni naziv filma</label>
+                        {{ register_form.original_title(class_="form-control") }}
+                    </div>
+
+                    <!-- Lokalni naziv filma -->
+                    <div class="form-group">
+                        <label for="local_title">Lokalni naziv filma</label>
+                        {{ register_form.local_title(class_="form-control") }}
+                    </div>
+
+                    <!-- Režiser -->
+                    <div class="form-group">
+                        <label for="director">Režiser</label>
+                        {{ register_form.director(class_="form-control") }}
+                    </div>
+
+                    <!-- Glumci -->
+                    <div class="form-group">
+                        <label for="actors">Glumci</label>
+                        {{ register_form.actors(class_="form-control") }}
+                    </div>
+
+                    <!-- Zemlja produkcije -->
+                    <div class="form-group">
+                        <label for="production_country">Zemlja produkcije</label>
+                        {{ register_form.production_country(class_="form-control") }}
+                    </div>
+
+                    <!-- Kompanija -->
+                    <div class="form-group">
+                        <label for="production_company">Kompanija</label>
+                        {{ register_form.production_company(class_="form-control") }}
+                    </div>
+
+                    <!-- Godina produkcije -->
+                    <div class="form-group">
+                        <label for="production_year">Godina produkcije</label>
+                        {{ register_form.production_year(class_="form-control") }}
+                    </div>
+
+                    <!-- Trajanje (u minutima) -->
+                    <div class="form-group">
+                        <label for="duration">Trajanje (u minutima)</label>
+                        {{ register_form.duration(class_="form-control") }}
+                    </div>
+
+                    <!-- Verzije filma -->
+                    <div class="form-group">
+                        <label for="versions">Verzije filma</label>
+                        {{ register_form.versions(class_="form-check-input") }}
+                    </div>
+
+                    <!-- Projekcioni format -->
+                    <div class="form-group">
+                        <label for="projection_formats">Projekcioni format</label>
+                        {{ register_form.projection_formats(class_="form-check-input") }}
+                    </div>
+
+                    <!-- Link do plakata -->
+                    <div class="form-group">
+                        <label for="poster">Link do plakata</label>
+                        {{ register_form.poster(class_="form-control") }}
+                    </div>
+
+                    <!-- Slike (16:9) -->
+                    <div class="form-group">
+                        <label for="image_1">Slika 1 (16:9)</label>
+                        {{ register_form.image_1(class_="form-control") }}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="image_2">Slika 2 (16:9)</label>
+                        {{ register_form.image_2(class_="form-control") }}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="image_3">Slika 3 (16:9)</label>
+                        {{ register_form.image_3(class_="form-control") }}
+                    </div>
+
+                    <!-- Link ka trejleru -->
+                    <div class="form-group">
+                        <label for="trailer_link">Link ka trejleru</label>
+                        {{ register_form.trailer_link(class_="form-control") }}
+                    </div>
+
+                    <!-- Sinopsis -->
+                    <div class="form-group">
+                        <label for="synopsis">Sinopsis</label>
+                        {{ register_form.synopsis(class_="form-control") }}
+                    </div>
+
+                    <!-- Žanrovi -->
+                    <div class="form-group">
+                        <label for="genres">Žanr</label>
+                        {{ register_form.genres(class_="form-check-input") }}
+                    </div>
+
+                    <!-- Datum starta filma -->
+                    <div class="form-group">
+                        <label for="release_date">Datum starta filma</label>
+                        {{ register_form.release_date(class_="form-control") }}
+                    </div>
+
+                    <!-- Submit dugme -->
+                    <button type="submit" class="btn btn-primary mt-3" id="submit" name="submit">Dodaj film</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

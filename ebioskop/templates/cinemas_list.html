@@ -1,0 +1,82 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4 align-items-center">
+        <div class="col">
+            <h1 class="h2 mb-0">Lista prikazivača</h1>
+        </div>
+        <div class="col-auto">
+            <a href="{{ url_for('cinemas.create_cinema') }}" class="btn btn-primary">
+                <i class="fas fa-plus-circle me-2"></i>Dodaj novog prikazivača
+            </a>
+        </div>
+    </div>
+
+    {% if cinemas %}
+    <div class="card shadow">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Naziv</th>
+                            <th>Lokacija</th>
+                            <th>Kontakt</th>
+                            <th>Pravne informacije</th>
+                            <th>Članstva</th>
+                            <th>Akcije</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cinema in cinemas %}
+                        <tr>
+                            <td>{{ cinema.id }}</td>
+                            <td>
+                                <strong>{{ cinema.name }}</strong>
+                                {% if cinema.website %}
+                                <br><a href="{{ cinema.website }}" target="_blank" class="small text-muted">{{ cinema.website }}</a>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {{ cinema.contry }}<br>
+                                <small class="text-muted">{{ cinema.address }}</small>
+                            </td>
+                            <td>
+                                <!-- <i class="fas fa-envelope me-1"></i> {{ ', '.join(cinema.email) }}<br> -->
+                                <i class="fas fa-envelope me-1"></i> {{ cinema.email }}<br>
+                                <i class="fas fa-phone me-1"></i> {{ cinema.phone }}
+                            </td>
+                            <td>
+                                <span class="badge bg-info">{{ cinema.legal_form }}</span><br>
+                                <small>PIB: {{ cinema.pib }}</small><br>
+                                <small>MB: {{ cinema.mb }}</small>
+                            </td>
+                            <td>
+                                MKPS: <span class="badge {% if cinema.is_member_mkps %}bg-success{% else %}bg-secondary{% endif %}">
+                                    {{ 'Da' if cinema.is_member_mkps else 'Ne' }}
+                                </span><br>
+                                EC: <span class="badge {% if cinema.is_member_ec %}bg-success{% else %}bg-secondary{% endif %}">
+                                    {{ 'Da' if cinema.is_member_ec else 'Ne' }}
+                                </span>
+                            </td>
+                            <td>
+                                <a href="{{ url_for('cinemas.edit_cinema', cinema_id=cinema.id) }}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-edit me-1"></i>Izmeni
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-info" role="alert">
+        <i class="fas fa-info-circle me-2"></i>Nema bioskopa za prikazivanje.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

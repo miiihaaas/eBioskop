@@ -1,0 +1,184 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    {% if route_name == 'distributor.create_distributor' %}
+                    <h1 class="card-title text-center mb-4">Kreiranje novog distributera</h1>
+                    {% elif route_name == 'distributor.edit_distributor' %}
+                    <h1 class="card-title text-center mb-4">Uređivanje distributera</h1>
+                    {% endif %}
+                    
+                    <!-- Flash Messages -->
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            <div class="alert alert-dismissible fade show" role="alert">
+                                {% for category, message in messages %}
+                                    <div class="{{ category }}">{{ message }}</div>
+                                {% endfor %}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endif %}
+                    {% endwith %}
+                    
+                    <!-- Distributor Form -->
+                    <form method="POST" action="">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                {{ form.company_name.label(class="form-label") }}
+                                {{ form.company_name(class="form-control") }}
+                                {% if form.company_name.errors %}
+                                    <div class="text-danger">{{ form.company_name.errors[0] }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6">
+                                {{ form.country.label(class="form-label") }}
+                                {{ form.country(class="form-control") }}
+                                {% if form.country.errors %}
+                                    <div class="text-danger">{{ form.country.errors[0] }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-8">
+                                {{ form.address.label(class="form-label") }}
+                                {{ form.address(class="form-control") }}
+                                {% if form.address.errors %}
+                                    <div class="text-danger">{{ form.address.errors[0] }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-4">
+                                {{ form.postal_code.label(class="form-label") }}
+                                {{ form.postal_code(class="form-control") }}
+                                {% if form.postal_code.errors %}
+                                    <div class="text-danger">{{ form.postal_code.errors[0] }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6">
+                                {{ form.city.label(class="form-label") }}
+                                {{ form.city(class="form-control") }}
+                                {% if form.city.errors %}
+                                    <div class="text-danger">{{ form.city.errors[0] }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6">
+                                {{ form.email.label(class="form-label") }}
+                                {{ form.email(class="form-control") }}
+                                {% if form.email.errors %}
+                                    <div class="text-danger">{{ form.email.errors[0] }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6">
+                                {{ form.phone.label(class="form-label") }}
+                                {{ form.phone(class="form-control") }}
+                                {% if form.phone.errors %}
+                                    <div class="text-danger">{{ form.phone.errors[0] }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-3">
+                                {{ form.pib.label(class="form-label") }}
+                                {{ form.pib(class="form-control") }}
+                                {% if form.pib.errors %}
+                                    <div class="text-danger">{{ form.pib.errors[0] }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-3">
+                                {{ form.mb.label(class="form-label") }}
+                                {{ form.mb(class="form-control") }}
+                                {% if form.mb.errors %}
+                                    <div class="text-danger">{{ form.mb.errors[0] }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6">
+                                {{ form.authorized_person.label(class="form-label") }}
+                                {{ form.authorized_person(class="form-control") }}
+                                {% if form.authorized_person.errors %}
+                                    <div class="text-danger">{{ form.authorized_person.errors[0] }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6">
+                                {{ form.website.label(class="form-label") }}
+                                {{ form.website(class="form-control") }}
+                                {% if form.website.errors %}
+                                    <div class="text-danger">{{ form.website.errors[0] }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- New social media fields -->
+                            <div class="col-md-6">
+                                {{ form.youtube.label(class="form-label") }}
+                                {{ form.youtube(class="form-control") }}
+                                {% if form.youtube.errors %}
+                                    <div class="text-danger">{{ form.youtube.errors[0] }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6">
+                                {{ form.facebook.label(class="form-label") }}
+                                {{ form.facebook(class="form-control") }}
+                                {% if form.facebook.errors %}
+                                    <div class="text-danger">{{ form.facebook.errors[0] }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6">
+                                {{ form.instagram.label(class="form-label") }}
+                                {{ form.instagram(class="form-control") }}
+                                {% if form.instagram.errors %}
+                                    <div class="text-danger">{{ form.instagram.errors[0] }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6">
+                                {{ form.tiktok.label(class="form-label") }}
+                                {{ form.tiktok(class="form-control") }}
+                                {% if form.tiktok.errors %}
+                                    <div class="text-danger">{{ form.tiktok.errors[0] }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Updated representatives field -->
+                            <div class="col-12">
+                                {{ form.representatives.label(class="form-label") }}
+                                {{ form.representatives(class="form-select", multiple="multiple") }}
+                                {% if form.representatives.errors %}
+                                    <div class="text-danger">{{ form.representatives.errors[0] }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-12 text-center mt-4">
+                                {{ form.submit(class="btn btn-primary px-5") }}
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+{{ super() }}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#representatives').select2({
+            placeholder: 'Izaberite zastupnike',
+            allowClear: true
+        });
+    });
+</script>
+{% endblock %}
