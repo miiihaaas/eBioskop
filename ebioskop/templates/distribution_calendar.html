@@ -1,0 +1,72 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container mt-4">
+    <div class="sticky bg-light p-3 mb-4 rounded shadow-sm">
+        <h1 class="text-center mb-4">Kalendar distribucije</h1>
+        <form action="{{ url_for('calendars.distribution_calendar') }}" method="get" class="d-flex justify-content-center align-items-center">
+            <label for="start_date" class="me-2">Datum:</label>
+            <input type="date" id="start_date" name="start_date" value="{{ start_date }}" class="form-control me-2" style="max-width: 200px;">
+            <button type="submit" class="btn btn-primary">Filter</button>
+        </form>
+    </div>
+
+    {% for date, movies in movie_groups.items() %}
+        <div class="card mb-4">
+            <div class="card-header {% if date < today %}bg-secondary text-white{% elif date == today %}bg-primary text-white{% else %}bg-light{% endif %}">
+                {% if date < today %}
+                    <i class="fas fa-history me-2"></i>
+                {% elif date == today %}
+                    <i class="fas fa-star me-2"></i>
+                {% else %}
+                    <i class="fas fa-calendar me-2"></i>
+                {% endif %}
+                {{ date.strftime('%Y-%m-%d') }}
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for movie in movies %}
+                        <div class="col-md-4 col-lg-3 mb-3">
+                            <div class="movie-card" data-distributor-id="{{ movie.distributor_id }}">
+                                <div class="movie-content">
+                                    <div class="movie-poster">
+                                        <img src="{{ movie.poster }}" class="img-fluid rounded" alt="{{ movie.local_title }} poster">
+                                        <div class="movie-title">{{ movie.local_title }}</div>
+                                    </div>
+                                    <div class="movie-details">
+                                        <h5>{{ movie.original_title }}</h5>
+                                        <p>Distributer: {{ movie.distributor.company_name }}</p>
+                                        <p>Trajanje: {{ movie.duration }} min</p>
+                                        <p>Žanr: {{ movie.genres }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        function generateColor(id) {
+            const hue = (id * 137.5) % 360;
+            return `hsl(${hue}, 70%, 50%)`;
+        }
+
+        var movieCards = document.querySelectorAll('.movie-card');
+        movieCards.forEach(function(card) {
+            var distributorId = card.dataset.distributorId;
+            var color = generateColor(distributorId);
+            card.style.setProperty('--distributor-color', color);
+
+            card.addEventListener('click', function() {
+                this.classList.toggle('expanded');
+            });
+        });
+    });
+</script>
+{% endblock %}

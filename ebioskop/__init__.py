@@ -44,6 +44,8 @@ from ebioskop.users.routes import users
 from ebioskop.distributors.routes import distributors
 from ebioskop.movies.routes import movies
 from ebioskop.cinemas.routes import cinemas
+from ebioskop.calendar.routes import calendars
+from ebioskop.projections.routes import projections
 
 from ebioskop.models import User
 
@@ -56,3 +58,5 @@ app.register_blueprint(users)
 app.register_blueprint(distributors)
 app.register_blueprint(movies)
 app.register_blueprint(cinemas)
+app.register_blueprint(calendars)
+app.register_blueprint(projections)

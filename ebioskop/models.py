@@ -61,7 +61,7 @@ class Distributor(db.Model):
     tiktok = db.Column(db.String(200), nullable=True)
 
     users = db.relationship('User', back_populates='distributor', uselist=False)
-    movies = db.relationship('Movie', backref='distributor', lazy=True)
+    movies = db.relationship("Movie", back_populates="distributor")
     
     representative_associations = db.relationship('DistributorRepresentative', back_populates='distributor')
     representatives = association_proxy('representative_associations', 'representative')
@@ -92,27 +92,34 @@ class DistributorRepresentative(db.Model):
 
 
 class Movie(db.Model):
+    __tablename__ = 'movies'
+
     id = db.Column(db.Integer, primary_key=True)
-    original_title = db.Column(db.String(150), nullable=False)  # Originalni naziv filma
-    local_title = db.Column(db.String(150), nullable=False)  # Lokalni naziv filma
-    director = db.Column(db.String(100), nullable=False)  # Režiser
-    actors = db.Column(db.Text, nullable=False)  # Glumci
-    production_country = db.Column(db.String(100), nullable=False)  # Zemlja produkcije
-    production_company = db.Column(db.String(150), nullable=False)  # Kompanija
-    production_year = db.Column(db.Integer, nullable=False)  # Godina produkcije
-    duration = db.Column(db.Integer, nullable=False)  # Trajanje (u minutima)
-    versions = db.Column(db.JSON, nullable=False)  # Verzije filma (lista: originalno, titlovano, sinhronizovano)
-    projection_formats = db.Column(db.JSON, nullable=False)  # Projekcioni formati (lista: 2D, 3D, drugo)
-    poster = db.Column(db.String(200), nullable=False)  # Plakat (link do plakata)
-    images = db.Column(db.JSON, nullable=False)  # 3 slike (lista linkova do slika u 16:9 formatu)
-    trailer_link = db.Column(db.String(200), nullable=True)  # Link ka trejleru
-    synopsis = db.Column(db.Text, nullable=False)  # Sinopsis
-    genres = db.Column(db.JSON, nullable=False)  # Žanr (lista)
-    release_date = db.Column(db.Date, nullable=False)  # Datum starta filma (dan, mesec, godina)
-    distributor_id = db.Column(db.Integer, db.ForeignKey('distributor.id'), nullable=False)  # Veza sa distributerom
+    original_title = db.Column(db.String(200), nullable=False)
+    local_title = db.Column(db.String(200), nullable=False)
+    director = db.Column(db.String(100), nullable=False)
+    actors = db.Column(db.Text, nullable=False)
+    production_country = db.Column(db.String(100), nullable=False)
+    company = db.Column(db.String(100), nullable=False)
+    production_year = db.Column(db.Integer, nullable=False)
+    duration = db.Column(db.Integer, nullable=False)  # in minutes
+    versions = db.Column(JSON, nullable=False)  # ["original", "subtitled", "dubbed"]
+    projection_formats = db.Column(JSON, nullable=False)  # ["2D", "3D"]
+    poster = db.Column(db.String(200), nullable=True)  # URL to poster image
+    images = db.Column(JSON, nullable=True)  # List of URLs to 3 images
+    trailer_link = db.Column(db.String(200))
+    synopsis = db.Column(db.Text, nullable=False)
+    genres = db.Column(JSON, nullable=False)  # List of genres
+    release_date = db.Column(db.Date, nullable=False)
+    status = db.Column(db.String(50), nullable=False)  # "in_showing", "finished_showing", "scheduled_showing"
+
+    distributor_id = db.Column(db.Integer, db.ForeignKey('distributor.id'), nullable=False)
+    distributor = db.relationship("Distributor", back_populates="movies")
+
+    projections = db.relationship("Projection", back_populates="movie")
 
     def __repr__(self):
-        return f'<Movie {self.original_title}>'
+        return f'<Movie {self.local_title}>'
 
 
 class MemberMKPS(db.Model):
@@ -267,8 +274,29 @@ class CinemaHall(db.Model):
     
     cinema_properties_id = db.Column(db.Integer, db.ForeignKey('cinema_properties.id'), nullable=False)
     cinema_properties = db.relationship('CinemaProperties', back_populates='halls')
+    
+    projections = db.relationship("Projection", back_populates="cinema_hall")
 
 
+class Projection(db.Model):
+    __tablename__ = 'projections'
+
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.Date, nullable=False)
+    time = db.Column(db.Time, nullable=False)
+    version = db.Column(db.String(50), nullable=False)  # "original", "subtitled", "dubbed"
+    format = db.Column(db.String(10), nullable=False)  # "2D", "3D"
+    tickets_sold = db.Column(db.Integer, default=0)
+    revenue = db.Column(db.Float, default=0.0)
+
+    movie_id = db.Column(db.Integer, db.ForeignKey('movies.id'), nullable=False)
+    movie = db.relationship("Movie", back_populates="projections")
+
+    cinema_hall_id = db.Column(db.Integer, db.ForeignKey('cinema_halls.id'), nullable=False)
+    cinema_hall = db.relationship("CinemaHall", back_populates="projections")
+
+    def __repr__(self):
+        return f'<Projection {self.movie.local_title} on {self.date} at {self.time}>'
 
 
 with app.app_context():

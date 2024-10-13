@@ -1,0 +1,210 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Lista projekcija</h2>
+        <!-- Dugme za pokretanje modala za novu projekciju -->
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#registerProjectionModal">
+            <i class="fas fa-plus me-2"></i>Dodaj novu projekciju
+        </button>
+    </div>
+
+    <!-- Filter opcije -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Filteri</h5>
+            <form id="filter-form" class="row g-3">
+                <div class="col-md-3">
+                    <label for="film" class="form-label">Film</label>
+                    <select class="form-select" id="film" name="film">
+                        <option value="">Svi filmovi</option>
+                        <!-- Ovde dodati opcije za filmove -->
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label for="date_from" class="form-label">Datum od</label>
+                    <input type="month" class="form-control" id="date_from" name="date_from">
+                </div>
+                <div class="col-md-2">
+                    <label for="date_to" class="form-label">Datum do</label>
+                    <input type="month" class="form-control" id="date_to" name="date_to">
+                </div>
+                <div class="col-md-2">
+                    <label for="filter_format" class="form-label">Format</label>
+                    <select class="form-select" id="filter_format" name="filter_format">
+                        <option value="">Svi formati</option>
+                        <option value="2D">2D</option>
+                        <option value="3D">3D</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label for="verzija" class="form-label">Verzija</label>
+                    <select class="form-select" id="verzija" name="verzija">
+                        <option value="">Sve verzije</option>
+                        <option value="originalno">Originalno</option>
+                        <option value="titlovano">Titlovano</option>
+                        <option value="sinhronizovano">Sinhronizovano</option>
+                    </select>
+                </div>
+                <div class="col-md-1 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary">Filtriraj</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    {{ projections_list }}
+    <!-- Tabela sa projekcijama -->
+    <div class="table-responsive">
+        <table class="table table-hover table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>Datum</th>
+                    <th>Vreme</th>
+                    <th>Naziv filma</th>
+                    <th>Verzija</th>
+                    <th>Format</th>
+                    <th>Prodato ulaznica</th>
+                    <th>Zarada</th>
+                    <th>Akcije</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for projection in projections_list %}
+                <tr>
+                    <td>{{ projection.date }}</td>
+                    <td>{{ projection.time }}</td>
+                    <td>{{ projection.movie.local_title }}</td>
+                    <td>{{ projection.version }}</td>
+                    <td>{{ projection.format }}</td>
+                    <td>{{ projection.tickets_sold }}</td>
+                    <td>{{ projection.revenue }}</td>
+                    <td>
+                        <button type="button" class="btn btn-primary">Detalji</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Dodatne informacije o odabranom filmu -->
+    <div id="selected-film-info" class="mt-4" style="display: none;">
+        <h3>Dodatne informacije o filmu</h3>
+        <div class="row">
+            <div class="col-md-6">
+                <p><strong>Broj nedelja prikazivanja:</strong> <span id="weeks-showing"></span></p>
+            </div>
+            <div class="col-md-6">
+                <p><strong>Broj prikazivanja:</strong> <span id="total-screenings"></span></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal za dodavanje novih projekcija -->
+    <div class="modal fade" id="registerProjectionModal" tabindex="-1" aria-labelledby="registerProjectionModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="registerProjectionModalLabel">Dodaj novu projekciju</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="add-projection-form" method="POST" action="{{ url_for('projections.add_projection') }}">
+                        {{ add_form.hidden_tag() }}
+                        {% for field in add_form if field.widget.input_type != 'hidden' %}
+                            <div class="mb-3">
+                                {{ field.label(class="form-label") }}
+                                {{ field(class="form-control") }}
+                            </div>
+                        {% endfor %}
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zatvori</button>
+                            {{ add_form.submit(class="btn btn-primary") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal za uređivanje projekcije -->
+    <div class="modal fade" id="editProjectionModal" tabindex="-1" aria-labelledby="editProjectionModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editProjectionModalLabel">Uredi projekciju</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="edit-projection-form">
+                        <!-- Ista polja kao i u formi za dodavanje, ali sa id-jem "edit-" prefiksom -->
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zatvori</button>
+                    <button type="button" class="btn btn-primary" id="update-projection">Ažuriraj projekciju</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script id="movies-data" type="application/json">
+    {{ movies_data|tojson|safe }}
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const moviesDataElement = document.getElementById('movies-data');
+        const moviesData = JSON.parse(moviesDataElement.textContent);
+        console.log('moviesData:', moviesData);
+    
+        const movieSelect = document.getElementById('movie_id');
+        const versionSelect = document.getElementById('version');
+        const formatSelect = document.getElementById('format');
+        console.log('formatSelect:', formatSelect);
+    
+        function updateFormOptions() {
+            console.log('movieSelect.value:', movieSelect.value);
+            const movieId = parseInt(movieSelect.value);
+            const movieData = moviesData.find(movie => movie.id === movieId);
+    
+            if (movieData) {
+                console.log('Movie formats:', movieData.projection_formats);
+                // Ažuriranje opcija za verziju
+                versionSelect.innerHTML = '';
+                movieData.versions.forEach(version => {
+                    const option = new Option(version, version);
+                    versionSelect.add(option);
+                });
+    
+                // Ažuriranje opcija za format
+                console.log('formatSelect - pre:', formatSelect.innerHTML);
+                formatSelect.innerHTML = '';
+                console.log('formatSelect - posle:', formatSelect.innerHTML);
+                if (movieData.projection_formats && movieData.projection_formats.length > 0) {
+                    movieData.projection_formats.forEach(format => {
+                        const option = new Option(format, format);
+                        formatSelect.add(option);
+                        console.log('dodata opcija: ', option);
+                    });
+                } else {
+                    console.log('No projection formats found for this movie');
+                }
+            }
+        }
+    
+        if (movieSelect) {
+            movieSelect.addEventListener('change', updateFormOptions);
+    
+            // Inicijalno ažuriranje opcija ako je film već izabran
+            if (movieSelect.value) {
+                updateFormOptions();
+            }
+        } else {
+            console.log('movieSelect element not found');
+        }
+    });
+</script>
+{% endblock %}

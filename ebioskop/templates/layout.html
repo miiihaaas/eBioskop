@@ -37,7 +37,7 @@
             <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
                 <div class="container-fluid">
                     <a class="navbar-brand" href="{{ url_for('main.home') }}">
-                        <img src="{{ url_for('static', filename='img/logo.png') }}" alt="eBioskop" height="30" class="d-inline-block align-top">
+                        <img src="{{ url_for('static', filename='img/logo.webp') }}" alt="eBioskop" height="30" class="d-inline-block align-top">
                         eBioskop
                     </a>
                     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -53,7 +53,7 @@
                                 <a class="nav-link" href="{{ url_for('movies.movies_list') }}">Lista filmova</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="">Kalendar distribucije</a>
+                                <a class="nav-link" href="{{ url_for('calendars.distribution_calendar') }}">Kalendar distribucije</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="">Prikazivači</a>
@@ -101,26 +101,35 @@
                                 <a class="nav-link" href="{{ url_for('movies.movies_list') }}">Lista filmova</a>
                             </li>
                             <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('calendars.distribution_calendar')}}">Kalendar</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('projections.projections_list' )}}">Unos projekcije</a>
+                            </li>
+                            <li class="nav-item">
                                 <a class="nav-link" href="">Sve opcije...</a>
                             </li>
                             {% elif current_user.user_type == 'cinema' %}
-                            <li class="nav-item">
+                            <!-- <li class="nav-item">
                                 <a class="nav-link" href="">Podaci o zastupnicima</a>
-                            </li>
+                            </li> -->
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ url_for('cinemas.edit_cinema_properties', cinema_properties_id=current_user.cinema_properties_id) }}">Podaci o bioskopu</a>
                             </li>
                             <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('movies.movies_list') }}">Lista filmova</a>
+                            </li>
+                            <!-- <li class="nav-item">
                                 <a class="nav-link" href="">Podaci o salama</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="">Kontakti u bioskopu</a>
+                            </li> -->
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('calendars.distribution_calendar') }}">Kalendar distribucije</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="">Kalendar distribucije</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="">Projekcije</a>
+                                <a class="nav-link" href="{{ url_for('projections.projections_list' )}}">Unos projekcije</a>
                             </li>
                             {% elif current_user.user_type == 'producer' %}
                             <li class="nav-item">

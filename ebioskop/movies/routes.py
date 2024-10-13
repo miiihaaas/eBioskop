@@ -1,99 +1,187 @@
-from flask import Blueprint, render_template, request, url_for, flash, redirect
-from flask_login import current_user
+import os
+from flask import Blueprint, current_app, jsonify, render_template, request, url_for, flash, redirect
+from flask_login import current_user, login_required
+from werkzeug.utils import secure_filename
 from ebioskop import app, db
 from ebioskop.models import Distributor, Movie
-from ebioskop.distributors.forms import EditDistributorForm, RegisterDistributorForm
 from ebioskop.movies.forms import EditMovieForm, RegisterMovieForm
+from ebioskop.movies.functions import save_image
 
 
 movies = Blueprint('movies', __name__)
 
 
 @movies.route('/movies_list', methods=['GET', 'POST'])
+@login_required
 def movies_list():
+    # Prikaz liste filmova
+    if current_user.user_type == 'distributor':
+        movies_list = Movie.query.filter_by(distributor_id=current_user.distributor_id).all()
+    elif current_user.user_type in ['admin', 'cinema']:
+        movies_list = Movie.query.all()
+    else:
+        flash('Nemate pravo pristupa ovoj stranici.', 'warning')
+        return redirect(url_for('main.home'))
     route_name = request.endpoint
     
-    # Provera da li je korisnik autentifikovan
-    if not current_user.is_authenticated:
-        flash('Nemate pravo da pristupite ovoj stranici.', 'warning')
-        return redirect(url_for('users.login'))
-    
-    # Kreiranje i instanciranje formi
+    # Kreiranje formi
     register_form = RegisterMovieForm()
     edit_form = EditMovieForm()
 
     # Dinamički napuni SelectField opcije za produkciju zemalja i žanrove
-    register_form.production_country.choices = [("USA", "USA"), ("UK", "UK"), ("France", "France")]
-    edit_form.production_country.choices = register_form.production_country.choices
-    register_form.genres.choices = [("Drama", "Drama"), ("Action", "Action"), ("Comedy", "Comedy")]
-    edit_form.genres.choices = register_form.genres.choices
+    countries = [("USA", "USA"), ("UK", "UK"), ("France", "France")]  # Dodajte više zemalja po potrebi
 
-    # Kreiranje novog filma
-    if register_form.validate_on_submit():
-        if 'submit' in request.form:
-            new_movie = Movie(
-                original_title=register_form.original_title.data,
-                local_title=register_form.local_title.data,
-                director=register_form.director.data,
-                actors=register_form.actors.data,
-                production_country=register_form.production_country.data,
-                production_company=register_form.production_company.data,
-                production_year=register_form.production_year.data,
-                duration=register_form.duration.data,
-                versions=register_form.versions.data,
-                projection_formats=register_form.projection_formats.data,
-                poster=register_form.poster.data,
-                images=[register_form.image_1.data, register_form.image_2.data, register_form.image_3.data],
-                trailer_link=register_form.trailer_link.data,
-                synopsis=register_form.synopsis.data,
-                genres=register_form.genres.data,
-                release_date=register_form.release_date.data,
-                distributor_id=current_user.distributor_id  # dodeli ID trenutnog distributera
-            )
-            db.session.add(new_movie)
-            db.session.commit()
-            flash(f'Film "{new_movie.original_title}" je uspešno kreiran.', 'success')
-            return redirect(url_for('movies.movies_list'))
+    register_form.production_country.choices = countries
+    edit_form.production_country.choices = countries
 
-    # Uređivanje filma
-    if edit_form.validate_on_submit():
-        if 'edit' in request.form:
-            movie_id = request.form.get('movie_id')  # ID filma iz hidden input polja
-            movie = Movie.query.get_or_404(movie_id)
-            
-            # Samo distributer vlasnik ili admin mogu uređivati
-            if current_user.user_type == 'admin' or movie.distributor_id == current_user.distributor_id:
-                movie.original_title = edit_form.original_title.data
-                movie.local_title = edit_form.local_title.data
-                movie.director = edit_form.director.data
-                movie.actors = edit_form.actors.data
-                movie.production_country = edit_form.production_country.data
-                movie.production_company = edit_form.production_company.data
-                movie.production_year = edit_form.production_year.data
-                movie.duration = edit_form.duration.data
-                movie.versions = edit_form.versions.data
-                movie.projection_formats = edit_form.projection_formats.data
-                movie.poster = edit_form.poster.data
-                movie.images = [edit_form.image_1.data, edit_form.image_2.data, edit_form.image_3.data]
-                movie.trailer_link = edit_form.trailer_link.data
-                movie.synopsis = edit_form.synopsis.data
-                movie.genres = edit_form.genres.data
-                movie.release_date = edit_form.release_date.data
-                
-                db.session.commit()
-                flash(f'Film "{movie.original_title}" je uspešno izmenjen.', 'success')
-                return redirect(url_for('movies.movies_list'))
-            else:
-                flash('Nemate dozvolu za uređivanje ovog filma.', 'danger')
-
-    # Prikaz liste filmova
-    if current_user.user_type == 'distributor':
-        movies_list = Movie.query.filter_by(distributor_id=current_user.distributor_id).all()
-    elif current_user.user_type == 'admin':
-        movies_list = Movie.query.all()
 
     return render_template('movies_list.html',
                             route_name=route_name,
                             movies_list=movies_list,
                             register_form=register_form,
                             edit_form=edit_form)
+
+
+@movies.route('/add_movie', methods=['POST'])
+@login_required
+def add_movie():
+    print("Debug: Request method:", request.method)
+    print("Debug: Request files:", request.files)
+    print("Debug: Form data:", request.form)
+    form = RegisterMovieForm()
+    countries = [("USA", "USA"), ("UK", "UK"), ("France", "France")]
+    form.production_country.choices = countries
+    
+    try:
+        print(f'{form=}')
+        if form.validate_on_submit():
+            # Prvo kreiramo movie objekat bez slika
+            new_movie = Movie(
+                original_title=form.original_title.data,
+                local_title=form.local_title.data,
+                director=form.director.data,
+                actors=form.actors.data,
+                production_country=form.production_country.data,
+                company=form.company.data,
+                production_year=form.production_year.data,
+                duration=form.duration.data,
+                versions=form.versions.data,
+                projection_formats=form.projection_formats.data,
+                trailer_link=form.trailer_link.data,
+                synopsis=form.synopsis.data,
+                genres=form.genres.data,
+                release_date=form.release_date.data,
+                distributor_id=current_user.distributor_id,
+                status='scheduled_showing'
+            )
+            
+            # Dodajemo movie u sesiju da bismo dobili ID
+            db.session.add(new_movie)
+            db.session.flush()
+            
+
+            # Čuvanje postera
+            movie_id = f'{new_movie.id:04d}'
+            poster_path = save_image(form.poster.data, f'{movie_id}_poster.jpg')
+            if poster_path:
+                new_movie.poster = poster_path
+
+            # Čuvanje slika
+            images = []
+            for i, image_field in enumerate([form.image_1, form.image_2, form.image_3], start=1):
+                image_path = save_image(image_field.data, f'{movie_id}_image_{i}.jpg')
+                if image_path:
+                    images.append(image_path)
+
+            if images:
+                new_movie.images = images
+
+            # Sada commit-ujemo sve promene
+            db.session.commit()
+
+            flash(f'Film "{new_movie.original_title}" je uspešno kreiran.', 'success')
+            return jsonify({"success": True, "message": "Film je uspešno dodat."})
+        else:
+            print(f"Greška: {str(form.errors)=}")
+            return jsonify({"success": False, "errors": form.errors}), 400
+
+    except Exception as e:
+        db.session.rollback()
+        print(f"Greška: {str(e)}")
+        return jsonify({"success": False, "message": "Doslo je do greske pri kreiranju filmova."}), 500
+
+
+@movies.route('/edit_movie/<int:movie_id>', methods=['GET', 'POST'])
+@login_required
+def edit_movie(movie_id):
+    movie = Movie.query.get_or_404(movie_id)
+    
+    if current_user.user_type != 'admin' and movie.distributor_id != current_user.distributor_id:
+        return jsonify({"success": False, "message": "Nemate dozvolu za uređivanje ovog filma."}), 403
+
+    if request.method == 'GET':
+        return jsonify({
+            "id": movie.id,
+            "original_title": movie.original_title,
+            "local_title": movie.local_title,
+            "director": movie.director,
+            "actors": movie.actors,
+            "production_country": movie.production_country,
+            "company": movie.company,
+            "production_year": movie.production_year,
+            "duration": movie.duration,
+            "versions": movie.versions,
+            "projection_formats": movie.projection_formats,
+            "poster": movie.poster,
+            "images": movie.images,
+            "trailer_link": movie.trailer_link,
+            "synopsis": movie.synopsis,
+            "genres": movie.genres,
+            "release_date": movie.release_date.strftime('%Y-%m-%d') if movie.release_date else None,
+            "status": movie.status
+        })
+
+    if request.method == 'POST':
+        form = EditMovieForm()
+        countries = [("USA", "USA"), ("UK", "UK"), ("France", "France")]
+        form.production_country.choices = countries
+        
+        
+        if form.validate_on_submit():
+            movie.original_title = form.original_title.data
+            movie.local_title = form.local_title.data
+            movie.director = form.director.data
+            movie.actors = form.actors.data
+            movie.production_country = form.production_country.data
+            movie.company = form.company.data
+            movie.production_year = form.production_year.data
+            movie.duration = form.duration.data
+            movie.versions = form.versions.data
+            movie.projection_formats = form.projection_formats.data
+            movie.trailer_link = form.trailer_link.data
+            movie.synopsis = form.synopsis.data
+            movie.genres = form.genres.data
+            movie.release_date = form.release_date.data
+            movie.status = form.status.data
+
+            # Obrada postera i slika
+            if form.poster.data:
+                movie.poster = save_image(form.poster.data, f'{movie.id:04d}_poster.jpg')
+            
+            new_images = []
+            for i, image_field in enumerate([form.image_1, form.image_2, form.image_3], start=1):
+                if image_field.data:
+                    image_path = save_image(image_field.data, f'{movie.id:04d}_image_{i}.jpg')
+                    if image_path:
+                        new_images.append(image_path)
+            
+            if new_images:
+                movie.images = new_images
+
+            db.session.commit()
+            flash(f'Film "{movie.original_title}" je uspešno izmenjen.', 'success')
+            return jsonify({"success": True, "message": "Film je uspešno izmenjen."})
+        else:
+            return jsonify({"success": False, "errors": form.errors}), 400
+
+    return jsonify({"success": False, "message": "Nevažeći zahtev."}), 400

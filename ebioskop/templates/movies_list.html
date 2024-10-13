@@ -1,227 +1,414 @@
 {% extends "layout.html" %}
 {% block content %}
-<div class="container">
-    <h2>Lista filmova</h2>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Lista filmova</h2>
+        <!-- Dugme za pokretanje modala za novi film -->
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#registerMovieModal">
+            <i class="fas fa-plus me-2"></i>Dodaj novi film
+        </button>
+    </div>
     
-    <!-- Dugme za pokretanje modala za novi film -->
-    <button type="button" class="btn btn-primary my-3" data-bs-toggle="modal" data-bs-target="#registerMovieModal">
-        Dodaj novi film
-    </button>
-
     <!-- Tabela sa filmovima -->
-    <table class="table table-hover">
-        <thead>
-            <tr>
-                <th>Originalni naziv</th>
-                <th>Lokalni naziv</th>
-                <th>Režiser</th>
-                <th>Glumci</th>
-                <th>Trajanje (min)</th>
-                <th>Akcije</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for movie in movies_list %}
-            <tr>
-                <td>{{ movie.original_title }}</td>
-                <td>{{ movie.local_title }}</td>
-                <td>{{ movie.director }}</td>
-                <td>{{ movie.actors }}</td>
-                <td>{{ movie.duration }}</td>
-                <td>
-                    <!-- Dugme za pokretanje modala za uređivanje filma -->
-                    <button type="button" class="btn btn-secondary" 
-                            data-bs-toggle="modal" 
-                            data-bs-target="#editMovieModal{{ movie.id }}"
-                            data-movie-id="{{ movie.id }}"
-                            data-original-title="{{ movie.original_title }}"
-                            data-local-title="{{ movie.local_title }}"
-                            data-director="{{ movie.director }}"
-                            data-actors="{{ movie.actors }}"
-                            data-duration="{{ movie.duration }}">
-                        Uredi
-                    </button>
-                </td>
-            </tr>
-
-            <!-- Modal za uređivanje filma -->
-            <div class="modal fade" id="editMovieModal{{ movie.id }}" tabindex="-1" aria-labelledby="editMovieModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="editMovieModalLabel">Uredi film</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <form method="POST" action="{{ url_for('movies.movies_list') }}">
-                                {{ edit_form.csrf_token }}
-                                
-                                <input type="hidden" name="movie_id" value="{{ movie.id }}">
-                                
-                                <div class="form-group">
-                                    <label for="original_title">Originalni naziv</label>
-                                    <input type="text" class="form-control" id="original_title" name="original_title" value="{{ movie.original_title }}">
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="local_title">Lokalni naziv</label>
-                                    <input type="text" class="form-control" id="local_title" name="local_title" value="{{ movie.local_title }}">
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="director">Režiser</label>
-                                    <input type="text" class="form-control" id="director" name="director" value="{{ movie.director }}">
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="actors">Glumci</label>
-                                    <textarea class="form-control" id="actors" name="actors">{{ movie.actors }}</textarea>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="duration">Trajanje (min)</label>
-                                    <input type="number" class="form-control" id="duration" name="duration" value="{{ movie.duration }}">
-                                </div>
-
-                                <!-- Ostali inputi prema modelu -->
-                                
-                                <button type="submit" class="btn btn-primary mt-3" name="edit">Sačuvaj izmene</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
+    <div class="table-responsive">
+        <table class="table table-hover table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>Poster</th>
+                    <th>Naziv</th>
+                    <th>Režiser i glumci</th>
+                    <th>Detalji</th>
+                    <th>Kompanija i godina</th>
+                    <th>Datum starta</th>
+                    <th>Žanr</th>
+                    {% if current_user.user_type in ['admin', 'distributor'] %}
+                    <th>Akcije</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody id="movies-list">
+                {% for movie in movies_list %}
+                <tr>
+                    <td>
+                        {% if movie.poster %}
+                            <img src="{{ movie.poster }}" alt="Poster za {{ movie.local_title }}" class="img-thumbnail" style="max-width: 100px; max-height: 150px;">
+                        {% else %}
+                            <span class="text-muted">Nema postera</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <strong>{{ movie.local_title }}</strong><br>
+                        <small class="text-muted">{{ movie.original_title }}</small>
+                    </td>
+                    <td>
+                        <strong>{{ movie.director }}</strong><br>
+                        <small class="text-muted">{{ movie.actors }}</small>
+                    </td>
+                    <td>
+                        <strong>{{ movie.duration }} min</strong><br>
+                        <small class="text-muted">
+                            Verzije: {{ ', '.join(movie.versions) }}<br>
+                            Format: {{ ', '.join(movie.projection_formats) }}
+                        </small>
+                    </td>
+                    <td>
+                        <strong>{{ movie.company }}</strong><br>
+                        <small class="text-muted">{{ movie.production_year }}</small>
+                    </td>
+                    <td>{{ movie.release_date.strftime('%d.%m.%Y') if movie.release_date else 'Nije postavljeno' }}</td>
+                    <td>{{ ', '.join(movie.genres) if movie.genres else 'Nije postavljeno' }}</td>
+                    {% if current_user.user_type in ['admin', 'distributor'] %}
+                    <td>
+                        <button type="button" class="btn btn-outline-secondary btn-sm edit-movie-btn" 
+                                data-bs-toggle="modal" 
+                                data-bs-target="#editMovieModal"
+                                data-movie-id="{{ movie.id }}">
+                            <i class="fas fa-edit me-1"></i>Uredi
+                        </button>
+                    </td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
 <!-- Modal za registraciju novog filma -->
 <div class="modal fade" id="registerMovieModal" tabindex="-1" aria-labelledby="registerMovieModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header bg-primary text-white">
                 <h5 class="modal-title" id="registerMovieModalLabel">Dodaj novi film</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form method="POST" action="{{ url_for('movies.movies_list') }}">
+                <form id="registerMovieForm" enctype="multipart/form-data" method="POST">
                     {{ register_form.csrf_token }}
-
-                    <!-- Originalni naziv filma -->
-                    <div class="form-group">
-                        <label for="original_title">Originalni naziv filma</label>
-                        {{ register_form.original_title(class_="form-control") }}
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="original_title" class="form-label">Originalni naziv filma</label>
+                            {{ register_form.original_title(class="form-control") }}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="local_title" class="form-label">Lokalni naziv filma</label>
+                            {{ register_form.local_title(class="form-control") }}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="director" class="form-label">Režiser</label>
+                            {{ register_form.director(class="form-control") }}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="actors" class="form-label">Glumci</label>
+                            {{ register_form.actors(class="form-control") }}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="production_country" class="form-label">Zemlja produkcije</label>
+                            {{ register_form.production_country(class="form-select") }}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="company" class="form-label">Kompanija</label>
+                            {{ register_form.company(class="form-control") }}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="production_year" class="form-label">Godina produkcije</label>
+                            {{ register_form.production_year(class="form-control") }}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="duration" class="form-label">Trajanje (u minutima)</label>
+                            {{ register_form.duration(class="form-control") }}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="versions" class="form-label">Verzije filma</label>
+                            {{ register_form.versions(class="form-select", multiple="multiple", size="3") }}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="projection_formats" class="form-label">Projekcioni format</label>
+                            {{ register_form.projection_formats(class="form-select", multiple="multiple", size="3") }}
+                        </div>
+                        <div class="col-12">
+                            <label for="poster" class="form-label">Link do plakata</label>
+                            {{ register_form.poster(class="form-control", type="file") }}
+                        </div>
+                        <div class="col-md-4">
+                            <label for="image_1" class="form-label">Slika 1 (16:9)</label>
+                            {{ register_form.image_1(class="form-control", type="file") }}
+                        </div>
+                        <div class="col-md-4">
+                            <label for="image_2" class="form-label">Slika 2 (16:9)</label>
+                            {{ register_form.image_2(class="form-control", type="file") }}
+                        </div>
+                        <div class="col-md-4">
+                            <label for="image_3" class="form-label">Slika 3 (16:9)</label>
+                            {{ register_form.image_3(class="form-control", type="file") }}
+                        </div>
+                        <div class="col-12">
+                            <label for="trailer_link" class="form-label">Link ka trejleru</label>
+                            {{ register_form.trailer_link(class="form-control") }}
+                        </div>
+                        <div class="col-12">
+                            <label for="synopsis" class="form-label">Sinopsis</label>
+                            {{ register_form.synopsis(class="form-control", rows="3") }}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="genres" class="form-label">Žanr</label>
+                            {{ register_form.genres(class="form-select", multiple="multiple", size="5") }}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="release_date" class="form-label">Datum starta filma</label>
+                            {{ register_form.release_date(class="form-control", type="date") }}
+                        </div>
                     </div>
-
-                    <!-- Lokalni naziv filma -->
-                    <div class="form-group">
-                        <label for="local_title">Lokalni naziv filma</label>
-                        {{ register_form.local_title(class_="form-control") }}
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary" id="submit-new-movie">
+                            <i class="fas fa-save me-2"></i>Dodaj film
+                        </button>
                     </div>
-
-                    <!-- Režiser -->
-                    <div class="form-group">
-                        <label for="director">Režiser</label>
-                        {{ register_form.director(class_="form-control") }}
-                    </div>
-
-                    <!-- Glumci -->
-                    <div class="form-group">
-                        <label for="actors">Glumci</label>
-                        {{ register_form.actors(class_="form-control") }}
-                    </div>
-
-                    <!-- Zemlja produkcije -->
-                    <div class="form-group">
-                        <label for="production_country">Zemlja produkcije</label>
-                        {{ register_form.production_country(class_="form-control") }}
-                    </div>
-
-                    <!-- Kompanija -->
-                    <div class="form-group">
-                        <label for="production_company">Kompanija</label>
-                        {{ register_form.production_company(class_="form-control") }}
-                    </div>
-
-                    <!-- Godina produkcije -->
-                    <div class="form-group">
-                        <label for="production_year">Godina produkcije</label>
-                        {{ register_form.production_year(class_="form-control") }}
-                    </div>
-
-                    <!-- Trajanje (u minutima) -->
-                    <div class="form-group">
-                        <label for="duration">Trajanje (u minutima)</label>
-                        {{ register_form.duration(class_="form-control") }}
-                    </div>
-
-                    <!-- Verzije filma -->
-                    <div class="form-group">
-                        <label for="versions">Verzije filma</label>
-                        {{ register_form.versions(class_="form-check-input") }}
-                    </div>
-
-                    <!-- Projekcioni format -->
-                    <div class="form-group">
-                        <label for="projection_formats">Projekcioni format</label>
-                        {{ register_form.projection_formats(class_="form-check-input") }}
-                    </div>
-
-                    <!-- Link do plakata -->
-                    <div class="form-group">
-                        <label for="poster">Link do plakata</label>
-                        {{ register_form.poster(class_="form-control") }}
-                    </div>
-
-                    <!-- Slike (16:9) -->
-                    <div class="form-group">
-                        <label for="image_1">Slika 1 (16:9)</label>
-                        {{ register_form.image_1(class_="form-control") }}
-                    </div>
-
-                    <div class="form-group">
-                        <label for="image_2">Slika 2 (16:9)</label>
-                        {{ register_form.image_2(class_="form-control") }}
-                    </div>
-
-                    <div class="form-group">
-                        <label for="image_3">Slika 3 (16:9)</label>
-                        {{ register_form.image_3(class_="form-control") }}
-                    </div>
-
-                    <!-- Link ka trejleru -->
-                    <div class="form-group">
-                        <label for="trailer_link">Link ka trejleru</label>
-                        {{ register_form.trailer_link(class_="form-control") }}
-                    </div>
-
-                    <!-- Sinopsis -->
-                    <div class="form-group">
-                        <label for="synopsis">Sinopsis</label>
-                        {{ register_form.synopsis(class_="form-control") }}
-                    </div>
-
-                    <!-- Žanrovi -->
-                    <div class="form-group">
-                        <label for="genres">Žanr</label>
-                        {{ register_form.genres(class_="form-check-input") }}
-                    </div>
-
-                    <!-- Datum starta filma -->
-                    <div class="form-group">
-                        <label for="release_date">Datum starta filma</label>
-                        {{ register_form.release_date(class_="form-control") }}
-                    </div>
-
-                    <!-- Submit dugme -->
-                    <button type="submit" class="btn btn-primary mt-3" id="submit" name="submit">Dodaj film</button>
                 </form>
             </div>
         </div>
     </div>
 </div>
 
+<!-- Modal za uređivanje filma -->
+<div class="modal fade" id="editMovieModal" tabindex="-1" aria-labelledby="editMovieModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-secondary text-white">
+                <h5 class="modal-title" id="editMovieModalLabel">Uredi film</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <img id="edit_current_poster" src="" alt="Trenutni poster" class="img-fluid rounded">
+                    </div>
+                    <div class="col-md-6">
+                        <div id="editImageCarousel" class="carousel slide" data-bs-ride="carousel">
+                            <div class="carousel-inner">
+                                <div class="carousel-item active">
+                                    <img id="edit_current_image_1" src="" class="d-block w-100 rounded" alt="Slika 1">
+                                </div>
+                                <div class="carousel-item">
+                                    <img id="edit_current_image_2" src="" class="d-block w-100 rounded" alt="Slika 2">
+                                </div>
+                                <div class="carousel-item">
+                                    <img id="edit_current_image_3" src="" class="d-block w-100 rounded" alt="Slika 3">
+                                </div>
+                            </div>
+                            <button class="carousel-control-prev" type="button" data-bs-target="#editImageCarousel" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Prethodna</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#editImageCarousel" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Sledeća</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <form id="editMovieForm" method="post" enctype="multipart/form-data">
+                    {{ edit_form.csrf_token }}
+                    <input type="hidden" id="edit-movie-id" name="movie_id">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="edit_original_title" class="form-label">Originalni naziv filma</label>
+                            {{ edit_form.original_title(class="form-control", id="edit_original_title") }}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="edit_local_title" class="form-label">Lokalni naziv filma</label>
+                            {{ edit_form.local_title(class="form-control", id="edit_local_title") }}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="edit_director" class="form-label">Režiser</label>
+                            {{ edit_form.director(class="form-control", id="edit_director") }}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="edit_actors" class="form-label">Glumci</label>
+                            {{ edit_form.actors(class="form-control", id="edit_actors") }}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="edit_production_country" class="form-label">Zemlja produkcije</label>
+                            {{ edit_form.production_country(class="form-select", id="edit_production_country") }}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="edit_company" class="form-label">Kompanija</label>
+                            {{ edit_form.company(class="form-control", id="edit_company") }}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="edit_production_year" class="form-label">Godina produkcije</label>
+                            {{ edit_form.production_year(class="form-control", id="edit_production_year") }}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="edit_duration" class="form-label">Trajanje (u minutima)</label>
+                            {{ edit_form.duration(class="form-control", id="edit_duration") }}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="edit_versions" class="form-label">Verzije filma</label>
+                            {{ edit_form.versions(class="form-select", multiple="multiple", size="3", id="edit_versions") }}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="edit_projection_formats" class="form-label">Projekcioni format</label>
+                            {{ edit_form.projection_formats(class="form-select", multiple="multiple", size="3", id="edit_projection_formats") }}
+                        </div>
+                        <div class="col-12">
+                            <label for="edit_poster" class="form-label">Link do plakata</label>
+                            {{ edit_form.poster(class="form-control", id="edit_poster") }}
+                        </div>
+                        <div class="col-md-4">
+                            <label for="edit_image_1" class="form-label">Slika 1 (16:9)</label>
+                            {{ edit_form.image_1(class="form-control", id="edit_image_1") }}
+                        </div>
+                        <div class="col-md-4">
+                            <label for="edit_image_2" class="form-label">Slika 2 (16:9)</label>
+                            {{ edit_form.image_2(class="form-control", id="edit_image_2") }}
+                        </div>
+                        <div class="col-md-4">
+                            <label for="edit_image_3" class="form-label">Slika 3 (16:9)</label>
+                            {{ edit_form.image_3(class="form-control", id="edit_image_3") }}
+                        </div>
+                        <div class="col-12">
+                            <label for="edit_trailer_link" class="form-label">Link ka trejleru</label>
+                            {{ edit_form.trailer_link(class="form-control", id="edit_trailer_link") }}
+                        </div>
+                        <div class="col-12">
+                            <label for="edit_synopsis" class="form-label">Sinopsis</label>
+                            {{ edit_form.synopsis(class="form-control", rows="3", id="edit_synopsis") }}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="edit_genres" class="form-label">Žanr</label>
+                            {{ edit_form.genres(class="form-select", multiple="multiple", size="5", id="edit_genres") }}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="edit_release_date" class="form-label">Datum starta filma</label>
+                            {{ edit_form.release_date(class="form-control", type="date", id="edit_release_date") }}
+                        </div>
+                        <div class="col-md-12">
+                            <label for="edit_status" class="form-label">Status</label>
+                            {{ edit_form.status(class="form-select", id="edit_status") }}
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary" id="submit-edit-movie">
+                            <i class="fas fa-save me-2"></i>Sačuvaj izmene
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
+{% endblock %}
+
+{% block scripts %}
+<script>
+$(document).ready(function() {
+    // Dodavanje novog filma
+    $("#registerMovieForm").submit(function(e) {
+        e.preventDefault();
+        var formData = new FormData(this);
+        $.ajax({
+            url: "{{ url_for('movies.add_movie') }}",
+            type: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                if (response.success) {
+                    alert(response.message);
+                    location.reload();  // Osvežava stranicu da prikaže novi film
+                } else {
+                    alert("Greška pri dodavanju filma: " + JSON.stringify(response.errors));
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("AJAX Error: " + status + ": " + error);
+                alert("Došlo je do greške pri slanju podataka.");
+            }
+        });
+    });
+
+
+    // Popunjavanje forme za uređivanje
+    $(".edit-movie-btn").click(function() {
+        var movieId = $(this).data("movie-id");
+        $.ajax({
+            url: "{{ url_for('movies.edit_movie', movie_id=0) }}".replace('0', movieId),
+            type: "GET",
+            success: function(response) {
+                $("#edit-movie-id").val(response.id);
+                $("#edit_original_title").val(response.original_title);
+                $("#edit_local_title").val(response.local_title);
+                $("#edit_director").val(response.director);
+                $("#edit_actors").val(response.actors);
+                $("#edit_production_country").val(response.production_country);
+                $("#edit_company").val(response.company);
+                $("#edit_production_year").val(response.production_year);
+                $("#edit_duration").val(response.duration);
+                $("#edit_versions").val(response.versions);
+                $("#edit_projection_formats").val(response.projection_formats);
+                $("#edit_trailer_link").val(response.trailer_link);
+                $("#edit_synopsis").val(response.synopsis);
+                $("#edit_genres").val(response.genres);
+                $("#edit_release_date").val(response.release_date);
+                $("#edit_status").val(response.status);
+
+                // Prikazivanje trenutnog postera
+                if (response.poster) {
+                    $("#edit_current_poster").attr("src", response.poster).show();
+                } else {
+                    $("#edit_current_poster").hide();
+                }
+
+                // Prikazivanje trenutnih slika u carousel-u
+                for (var i = 0; i < 3; i++) {
+                    var imgElement = $("#edit_current_image_" + (i + 1));
+                    if (response.images && response.images[i]) {
+                        imgElement.attr("src", response.images[i]).closest('.carousel-item').show();
+                    } else {
+                        imgElement.closest('.carousel-item').hide();
+                    }
+                }
+
+                // Resetovanje carousel-a
+                $('#editImageCarousel').carousel(0);
+            }
+        });
+    });
+
+    // Uređivanje filma
+    $("#editMovieForm").submit(function(e) {
+        e.preventDefault();
+        var movieId = $("#edit-movie-id").val();
+        var formData = new FormData(this);
+
+        $.ajax({
+            url: "{{ url_for('movies.edit_movie', movie_id=0) }}".replace('0', movieId),
+            type: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                if (response.success) {
+                    alert(response.message);
+                    location.reload();  // Osvežava stranicu da prikaže izmene
+                } else {
+                    var errorMessage = "Greška pri uređivanju filma:";
+                    if (response.errors) {
+                        for (var field in response.errors) {
+                            errorMessage += "\n- " + field + ": " + response.errors[field].join(", ");
+                        }
+                    } else {
+                        errorMessage += " " + response.message;
+                    }
+                    alert(errorMessage);
+                }
+            },
+            error: function(xhr, status, error) {
+                alert("Došlo je do greške pri slanju podataka: " + error);
+            }
+        });
+    });
+});
+</script>
 {% endblock %}
