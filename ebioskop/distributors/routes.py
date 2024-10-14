@@ -1,7 +1,8 @@
+from datetime import datetime, timedelta
 from flask import Blueprint, render_template, request, url_for, flash, redirect
 from flask_login import current_user
 from ebioskop import app, db
-from ebioskop.models import Distributor, DistributorRepresentative, Representative
+from ebioskop.models import Cinema, CinemaHall, CinemaProperties, Distributor, DistributorRepresentative, Movie, Projection, Representative
 from ebioskop.distributors.forms import EditDistributorForm, RegisterDistributorForm
 
 
@@ -135,3 +136,76 @@ def distributors_list():
     distributors = Distributor.query.all()
     return render_template('distributors_list.html', distributors=distributors, route_name=route_name)
 
+
+@distributors.route('/exhibitors', methods=['GET'])
+def exhibitors():
+    route_name = request.endpoint
+    
+    # Dobijanje trenutno ulogovanog distributera
+    current_distributor = Distributor.query.get(current_user.distributor_id)
+    
+    # Dobijanje parametara za filtere
+    start_date = request.args.get('start_date', datetime.now().strftime('%Y-%m-%d'))
+    end_date = request.args.get('end_date', (datetime.now() + timedelta(days=7)).strftime('%Y-%m-%d'))
+    status = request.args.get('status', 'active')
+    
+    # Pretvaranje stringova u datetime objekte
+    start_date = datetime.strptime(start_date, '%Y-%m-%d')
+    end_date = datetime.strptime(end_date, '%Y-%m-%d')
+    
+    # Dobijanje svih prikazivača koji prikazuju filmove ovog distributera
+    exhibitors = Cinema.query.join(CinemaProperties).join(CinemaHall).join(Projection).join(Movie).filter(
+        Movie.distributor_id == current_distributor.id
+    ).distinct().all()
+    
+    exhibitors_data = []
+    
+    for exhibitor in exhibitors:
+        projections = Projection.query.join(CinemaHall).join(CinemaProperties).join(Cinema).join(Movie).filter(
+            Movie.distributor_id == current_distributor.id,
+            Cinema.id == exhibitor.id,
+            Projection.date.between(start_date, end_date)
+        ).all()
+        
+        movies_data = {}
+        for projection in projections:
+            movie = projection.movie
+            if movie.id not in movies_data:
+                movies_data[movie.id] = {
+                    'name': movie.local_title,
+                    'versions': set(),
+                    'formats': set(),
+                    'projection_count': 0,
+                    'weeks_showing': 0,
+                    'tickets_sold': 0,
+                    'revenue': 0
+                }
+            
+            movies_data[movie.id]['versions'].add(projection.version)
+            movies_data[movie.id]['formats'].add(projection.format)
+            movies_data[movie.id]['projection_count'] += 1
+            movies_data[movie.id]['tickets_sold'] += projection.tickets_sold
+            movies_data[movie.id]['revenue'] += projection.revenue
+        
+        # Računanje broja nedelja prikazivanja
+        for movie_id, data in movies_data.items():
+            first_projection = Projection.query.join(Movie).filter(
+                Movie.id == movie_id,
+                Projection.cinema_hall_id.in_([hall.id for hall in exhibitor.properties.halls])
+            ).order_by(Projection.date).first()
+            
+            if first_projection:
+                weeks = (end_date - first_projection.date).days // 7
+                data['weeks_showing'] = weeks + 1  # +1 jer uključujemo i tekuću nedelju
+        
+        exhibitors_data.append({
+            'exhibitor': exhibitor,
+            'movies': list(movies_data.values())
+        })
+    
+    return render_template('exhibitors.html', 
+                            route_name=route_name, 
+                            exhibitors_data=exhibitors_data, 
+                            start_date=start_date.strftime('%Y-%m-%d'), 
+                            end_date=end_date.strftime('%Y-%m-%d'), 
+                            status=status)

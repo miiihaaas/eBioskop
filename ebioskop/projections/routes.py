@@ -1,3 +1,4 @@
+import datetime
 import json
 from flask import Blueprint, render_template, request, url_for, flash, redirect, jsonify
 from flask_login import current_user, login_required
@@ -24,7 +25,7 @@ def projections_list():
     else:
         flash('Nemate pravo pristupa ovoj stranici.', 'warning')
         return redirect(url_for('main.home'))
-    movies = Movie.query.all()
+    movies = Movie.query.filter(Movie.release_date<=datetime.date.today()).all()
     movies_data = [{
         'id': movie.id,
         'versions': movie.versions,
@@ -75,3 +76,26 @@ def add_projection():
                 flash(f"Greška u polju {getattr(add_form, field).label.text}: {error}", 'danger')
     
     return redirect(url_for('projections.projections_list'))
+
+
+@projections.route('/projections/details/<int:projection_id>')
+@login_required
+def projection_details(projection_id):
+    projection = Projection.query.get_or_404(projection_id)
+    
+    # Izračunavanje broja nedelja prikazivanja i ukupnog broja prikazivanja
+    # Ovo je primer logike, trebalo bi je prilagoditi stvarnim potrebama
+    weeks_showing = (datetime.date.today() - projection.movie.release_date).days // 7 + 1
+    total_screenings = Projection.query.filter_by(movie_id=projection.movie_id).count()
+    
+    return jsonify({
+        'movie_title': projection.movie.local_title,
+        'date': projection.date.strftime('%d.%m.%Y'),
+        'time': projection.time.strftime('%H:%M'),
+        'version': projection.version,
+        'format': projection.format,
+        'tickets_sold': projection.tickets_sold,
+        'revenue': projection.revenue,
+        'weeks_showing': weeks_showing,
+        'total_screenings': total_screenings
+    })

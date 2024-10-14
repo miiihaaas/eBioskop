@@ -56,7 +56,7 @@
                                 <a class="nav-link" href="{{ url_for('calendars.distribution_calendar') }}">Kalendar distribucije</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="">Prikazivači</a>
+                                <a class="nav-link" href="{{ url_for('distributor.exhibitors') }}">Prikazivači</a>
                             </li>
                             {% elif current_user.user_type == 'cinema_ceo' %}
                             <li class="nav-item">
