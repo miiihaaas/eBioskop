@@ -1,6 +1,11 @@
 import os
-from flask import current_app
+# from sqlalchemy import in_, or_
+from flask import current_app, render_template
+from flask_mail import Message
+from threading import Thread
 from werkzeug.utils import secure_filename
+from ebioskop import mail
+from ebioskop.models import User
 
 
 # Funkcija za čuvanje slike
@@ -19,3 +24,31 @@ def save_image(file, filename):
     else:
         print(f'debug: nije učitan fajl za {filename}!')
     return None
+
+
+def send_async_email(app, msg):
+    with app.app_context():
+        mail.send(msg)
+
+def send_email(subject, recipients, html_body):
+    app = current_app._get_current_object()
+    msg = Message(subject, recipients=recipients)
+    msg.html = html_body
+    Thread(target=send_async_email, args=(app, msg)).start()
+
+def send_email_about_new_movie(new_movie):
+    # Pronađi sve korisnike koji su admini, distributeri ili bioskopi
+    recipients = User.query.filter(User.user_type.in_(['admin', 'distributor', 'cinema'])).all() #! nešto mi je sumnjiv ovaj in_???
+    
+    # Kreiraj listu email adresa
+    email_list = [user.user_mail for user in recipients]
+    
+    # Pripremi sadržaj emaila
+    subject = f"Novi film: {new_movie.lokalni_naziv}"
+    html_body = render_template('message_html_send_email_about_new_movie.html', 
+                                movie_name=new_movie.lokalni_naziv,
+                                director=new_movie.director,
+                                release_date=new_movie.release_date.strftime('%d.%m.%Y'))
+    
+    # Pošalji email
+    send_email(subject, email_list, html_body)

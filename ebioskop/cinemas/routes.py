@@ -1,4 +1,4 @@
-from flask import Blueprint, json, render_template, request, url_for, flash, redirect
+from flask import Blueprint, json, jsonify, render_template, request, url_for, flash, redirect
 from flask_login import current_user
 from ebioskop import app, db
 from ebioskop.cinemas.forms import EditCinemaForm, EditCinemaHallForm, EditCinemaPropertiesForm, EditCinemaRepresentativeForm, EditMemberMKPSForm, RegisterCinemaForm, RegisterCinemaHallForm, RegisterCinemaPropertiesForm, RegisterCinemaRepresentativeForm, RegisterMemberMKPSForm
@@ -14,21 +14,43 @@ cinemas = Blueprint('cinemas', __name__)
 
 @cinemas.route('/cinemas_list', methods=['GET'])
 def cinemas_list():
-    if not current_user.is_authenticated or current_user.user_type != 'admin':
+    if not current_user.is_authenticated or current_user.user_type not in ['admin', 'user']:
         flash('Nemate pravo da pristupite ovoj stranici.', 'warning')
         return redirect(url_for('main.home'))
     route_name = request.endpoint
 
-    # Proveravamo da li je korisnik autentifikovan i da li je admin
-    if not current_user.is_authenticated or current_user.user_type != 'admin':
-        flash('Nemate pravo da pristupite ovoj stranici.', 'warning')
-        return redirect(url_for('main.home'))
+    # # Proveravamo da li je korisnik autentifikovan i da li je admin
+    # if not current_user.is_authenticated or current_user.user_type != 'admin':
+    #     flash('Nemate pravo da pristupite ovoj stranici.', 'warning')
+    #     return redirect(url_for('main.home'))
     
     # Dohvatanje svih prikazivača iz baze podataka
     cinemas_list = Cinema.query.all()
     
     # Renderovanje šablona sa listom prikazivača
     return render_template('cinemas_list.html', cinemas=cinemas_list, route_name=route_name)
+
+@cinemas.route('/cinema_details/<int:cinema_id>', methods=['GET'])
+def cinema_details(cinema_id):
+    cinema = Cinema.query.get_or_404(cinema_id)
+    cinema_properties = cinema.properties
+    halls = cinema_properties.halls if cinema_properties else []
+
+    data = {
+        'name': cinema.name,
+        'address': cinema.address,
+        'city': cinema.city,
+        'phone': cinema.phone,
+        'email': cinema.email,
+        'website': cinema.website,
+        'social_links': cinema.social_links,
+        'halls_count': len(halls),
+        'total_seats': sum(hall.hall_capacity for hall in halls),
+        # 'year_founded': halls.year_built if cinema_properties else None,
+        'image': cinema_properties.photo_1 if cinema_properties and cinema_properties.photo_1 else None
+    }
+
+    return jsonify(data)
 
 
 @cinemas.route('/create_cinema', methods=['GET', 'POST'])

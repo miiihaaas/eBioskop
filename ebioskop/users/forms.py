@@ -4,7 +4,7 @@ from wtforms import FileField, StringField, PasswordField, SubmitField, BooleanF
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError, Optional
 from flask_wtf.file import FileAllowed
 from ebioskop import db
-from ebioskop.models import  User
+from ebioskop.models import User
 
 
 class LoginForm(FlaskForm):
@@ -45,4 +45,15 @@ class RegisterCinemaManagerForm(FlaskForm):
 
 
 class EditCinemaManagerForm(RegisterCinemaManagerForm):
+    submit = SubmitField('Ažuriraj podatke korisnika')
+
+
+class RegisterDistributorManagerForm(FlaskForm):
+    user_name = StringField('Ime', validators=[DataRequired(), Length(max=255)])
+    user_surname = StringField('Prezime', validators=[DataRequired(), Length(max=255)])
+    user_mail = StringField('Email', validators=[DataRequired(), Email(), Length(max=255)])
+    submit = SubmitField('Kreiraj korisnika')
+
+
+class EditDistributorManagerForm(RegisterDistributorManagerForm):
     submit = SubmitField('Ažuriraj podatke korisnika')

@@ -7,9 +7,11 @@
             <h1 class="h2 mb-0">Lista distributera</h1>
         </div>
         <div class="col-auto">
+            {% if current_user.user_type == 'admin' %}
             <a href="{{ url_for('distributor.create_distributor') }}" class="btn btn-primary">
                 <i class="fas fa-plus-circle me-2"></i>Novi distributer
             </a>
+            {% endif %}
         </div>
     </div>
 
@@ -49,9 +51,15 @@
                             </td>
                             <td>{{ distributor.authorized_person }}</td>
                             <td>
+                                {% if current_user.user_type == 'admin' %}
                                 <a href="{{ url_for('distributor.edit_distributor', distributor_id=distributor.id) }}" class="btn btn-outline-primary btn-sm">
                                     <i class="fas fa-edit me-1"></i>Izmeni
                                 </a>
+                                {% else %}
+                                <button type="button" class="btn btn-outline-info btn-sm" data-bs-toggle="modal" data-bs-target="#distributorModal{{ distributor.id }}">
+                                    <i class="fas fa-info-circle me-1"></i>Opširnije
+                                </button>
+                                {% endif %}
                             </td>
                         </tr>
                         {% endfor %}
@@ -66,5 +74,45 @@
         </div>
     </div>
 </div>
+{% for distributor in distributors %}
+<div class="modal fade" id="distributorModal{{ distributor.id }}" tabindex="-1" aria-labelledby="distributorModalLabel{{ distributor.id }}" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="distributorModalLabel{{ distributor.id }}">Detalji distributera</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <img src="{{ url_for('static', filename='images/distributor_logos/' + distributor.id|string + '.png') if distributor.has_logo else url_for('static', filename='images/default_logo.png') }}" alt="Logo distributera" class="img-fluid mb-3">
+                    </div>
+                    <div class="col-md-8">
+                        <h3>{{ distributor.company_name }}</h3>
+                        <p><strong>Adresa:</strong> {{ distributor.address }}, {{ distributor.postal_code }} {{ distributor.city }}</p>
+                        <p><strong>Telefon:</strong> {{ distributor.phone }}</p>
+                        <p><strong>E-mail:</strong> {{ distributor.email }}</p>
+                        <p><strong>Web sajt:</strong> <a href="{{ distributor.website }}" target="_blank">{{ distributor.website }}</a></p>
+                        <div class="mt-3">
+                            {% if distributor.facebook %}
+                            <a href="{{ distributor.facebook }}" target="_blank" class="me-2"><i class="fab fa-facebook fa-2x"></i></a>
+                            {% endif %}
+                            {% if distributor.instagram %}
+                            <a href="{{ distributor.instagram }}" target="_blank" class="me-2"><i class="fab fa-instagram fa-2x"></i></a>
+                            {% endif %}
+                            {% if distributor.youtube %}
+                            <a href="{{ distributor.youtube }}" target="_blank" class="me-2"><i class="fab fa-youtube fa-2x"></i></a>
+                            {% endif %}
+                            {% if distributor.tiktok %}
+                            <a href="{{ distributor.tiktok }}" target="_blank"><i class="fab fa-tiktok fa-2x"></i></a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
 {% endblock %}
 

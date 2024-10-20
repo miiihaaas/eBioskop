@@ -105,13 +105,14 @@ class Movie(db.Model):
     duration = db.Column(db.Integer, nullable=False)  # in minutes
     versions = db.Column(JSON, nullable=False)  # ["original", "subtitled", "dubbed"]
     projection_formats = db.Column(JSON, nullable=False)  # ["2D", "3D"]
+    age_rating = db.Column(db.String(50), nullable=False) #! 5+, 7+, 12+ ...
     poster = db.Column(db.String(200), nullable=True)  # URL to poster image
     images = db.Column(JSON, nullable=True)  # List of URLs to 3 images
     trailer_link = db.Column(db.String(200))
     synopsis = db.Column(db.Text, nullable=False)
     genres = db.Column(JSON, nullable=False)  # List of genres
     release_date = db.Column(db.Date, nullable=False)
-    status = db.Column(db.String(50), nullable=False)  # "in_showing", "finished_showing", "scheduled_showing"
+    is_showing_finished = db.Column(db.Boolean, default=False)  # "in_showing", "finished_showing", "scheduled_showing" #! prepraviti da bude check polje "Označiti ako je završeno prikazivanje filma"
 
     distributor_id = db.Column(db.Integer, db.ForeignKey('distributor.id'), nullable=False)
     distributor = db.relationship("Distributor", back_populates="movies")

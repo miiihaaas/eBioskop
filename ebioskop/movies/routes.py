@@ -1,3 +1,4 @@
+from datetime import datetime
 import os
 from flask import Blueprint, current_app, jsonify, render_template, request, url_for, flash, redirect
 from flask_login import current_user, login_required
@@ -5,7 +6,7 @@ from werkzeug.utils import secure_filename
 from ebioskop import app, db
 from ebioskop.models import Distributor, Movie
 from ebioskop.movies.forms import EditMovieForm, RegisterMovieForm
-from ebioskop.movies.functions import save_image
+from ebioskop.movies.functions import save_image, send_email_about_new_movie
 
 
 movies = Blueprint('movies', __name__)
@@ -30,15 +31,18 @@ def movies_list():
 
     # Dinamički napuni SelectField opcije za produkciju zemalja i žanrove
     countries = [("USA", "USA"), ("UK", "UK"), ("France", "France")]  # Dodajte više zemalja po potrebi
+    distributor_list = Distributor.query.all()
+    today = datetime.now().date()
 
     register_form.production_country.choices = countries
     edit_form.production_country.choices = countries
-
 
     return render_template('movies_list.html',
                             route_name=route_name,
                             movies_list=movies_list,
                             register_form=register_form,
+                            distributor_list=distributor_list,
+                            today=today,
                             edit_form=edit_form)
 
 
@@ -100,6 +104,11 @@ def add_movie():
             db.session.commit()
 
             flash(f'Film "{new_movie.original_title}" je uspešno kreiran.', 'success')
+            #! implementirati funkcionalnost slanaj mejla svim distributerima i svim prikazivačima (tema podatak o datumu starta fima)
+            #! implementirati funkcionalnost slanaj mejla svim distributerima i svim prikazivačima (tema podatak o datumu starta fima)
+            send_email_about_new_movie(new_movie)
+            #! implementirati funkcionalnost slanaj mejla svim distributerima i svim prikazivačima (tema podatak o datumu starta fima)
+            #! implementirati funkcionalnost slanaj mejla svim distributerima i svim prikazivačima (tema podatak o datumu starta fima)
             return jsonify({"success": True, "message": "Film je uspešno dodat."})
         else:
             print(f"Greška: {str(form.errors)=}")
@@ -116,8 +125,6 @@ def add_movie():
 def edit_movie(movie_id):
     movie = Movie.query.get_or_404(movie_id)
     
-    if current_user.user_type != 'admin' and movie.distributor_id != current_user.distributor_id:
-        return jsonify({"success": False, "message": "Nemate dozvolu za uređivanje ovog filma."}), 403
 
     if request.method == 'GET':
         return jsonify({
@@ -132,14 +139,18 @@ def edit_movie(movie_id):
             "duration": movie.duration,
             "versions": movie.versions,
             "projection_formats": movie.projection_formats,
+            "age_rating": movie.age_rating,
             "poster": movie.poster,
             "images": movie.images,
             "trailer_link": movie.trailer_link,
             "synopsis": movie.synopsis,
             "genres": movie.genres,
             "release_date": movie.release_date.strftime('%Y-%m-%d') if movie.release_date else None,
-            "status": movie.status
+            "is_showing_finished": movie.is_showing_finished
         })
+    
+    if current_user.user_type != 'admin' and movie.distributor_id != current_user.distributor_id:
+        return jsonify({"success": False, "message": "Nemate dozvolu za uređivanje ovog filma."}), 403
 
     if request.method == 'POST':
         form = EditMovieForm()
@@ -158,11 +169,12 @@ def edit_movie(movie_id):
             movie.duration = form.duration.data
             movie.versions = form.versions.data
             movie.projection_formats = form.projection_formats.data
+            movie.age_rating = form.age_rating.data
             movie.trailer_link = form.trailer_link.data
             movie.synopsis = form.synopsis.data
             movie.genres = form.genres.data
             movie.release_date = form.release_date.data
-            movie.status = form.status.data
+            movie.is_showing_finished = form.is_showing_finished.data
 
             # Obrada postera i slika
             if form.poster.data:

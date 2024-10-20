@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileAllowed
-from wtforms import FileField, StringField, TextAreaField, SelectField, IntegerField, SelectMultipleField, DateField, URLField, SubmitField
+from wtforms import BooleanField, FileField, StringField, TextAreaField, SelectField, IntegerField, SelectMultipleField, DateField, URLField, SubmitField
 from wtforms.validators import DataRequired, Length, NumberRange, URL, Optional
 from wtforms.widgets import ListWidget, CheckboxInput
 
@@ -24,7 +24,16 @@ class RegisterMovieForm(FlaskForm):
         ('2D', '2D'),
         ('3D', '3D')
     ], validators=[DataRequired()])
-    
+    age_rating = SelectField('Starosna preporuka', choices=[
+        ('bez ogranicenja', 'Bez ograničenja'),
+        ('5+', '5+'),
+        ('6+', '6+'),
+        ('7+', '7+'),
+        ('12+', '12+'),
+        ('15+', '15+'),
+        ('16+', '16+'),
+        ('18+', '18+')
+    ], validators=[DataRequired()])
     poster = FileField('Plakat', validators=[
         Optional(),
         FileAllowed(['jpg', 'png'], 'Samo slike su dozvoljene!')
@@ -60,9 +69,5 @@ class RegisterMovieForm(FlaskForm):
 
 
 class EditMovieForm(RegisterMovieForm):
-    status = SelectField('Status', choices=[
-        ('scheduled_showing', 'Planirano prikazivanje'),
-        ('in_showing', 'U prikazivanju'),
-        ('finished_showing', 'Zavrseno prikazivanje')
-    ])
+    is_showing_finished = BooleanField('Označiti ako je završeno prikazivanje filma') #! ovo ispraviti da bude check polje "Označiti ako je završeno prikazivanje filma"
     submit = SubmitField('Sačuvaj izmene')

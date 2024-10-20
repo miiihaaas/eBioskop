@@ -88,7 +88,7 @@ class RegisterCinemaPropertiesForm(FlaskForm):
     e_ticket_system = StringField('Koji sistem elektronske prodaje karata?', validators=[Optional()])
     promotion_methods = TextAreaField('Na koji način vršite promociju bioskopa i reklamiranje filmskog programa?', validators=[DataRequired(message="Metode promocije su obavezne."), Length(max=500)])
     programming_methods = TextAreaField('Na koji način vršite programiranje u vašem bioskopu?', validators=[DataRequired(message="Metode programiranja su obavezne."), Length(max=500)])
-    is_distributor = BooleanField('Da li ste istovremeno i distributer?')
+    is_distributor = BooleanField('Označiti ako je prikazivač istovremeno i distributer')
     photo_1 = FileField('Fotografija 1', validators=[Optional(), FileAllowed(['jpg', 'png'], 'Samo slike!')])
     photo_2 = FileField('Fotografija 2', validators=[Optional(), FileAllowed(['jpg', 'png'], 'Samo slike!')])
     submit = SubmitField('Registruj Svojstva Bioskopa')
@@ -102,7 +102,7 @@ class EditCinemaPropertiesForm(FlaskForm):
     e_ticket_system = StringField('Koji sistem elektronske prodaje karata?', validators=[Optional()])
     promotion_methods = TextAreaField('Na koji način vršite promociju bioskopa i reklamiranje filmskog programa?', validators=[DataRequired(message="Metode promocije su obavezne."), Length(max=500)])
     programming_methods = TextAreaField('Na koji način vršite programiranje u vašem bioskopu?', validators=[DataRequired(message="Metode programiranja su obavezne."), Length(max=500)])
-    is_distributor = BooleanField('Da li ste istovremeno i distributer?')
+    is_distributor = BooleanField('Označiti ako je prikazivač istovremeno i distributer')
     photo_1 = FileField('Fotografija 1', validators=[Optional(), FileAllowed(['jpg', 'png'], 'Samo slike!')])
     photo_2 = FileField('Fotografija 2', validators=[Optional(), FileAllowed(['jpg', 'png'], 'Samo slike!')])
     submit = SubmitField('Izmeni Svojstva Bioskopa')
@@ -131,20 +131,20 @@ class RegisterCinemaHallForm(FlaskForm):
     dimensions = StringField('Dimenzije sale (u metrima) [š x d x v]', validators=[DataRequired(message="Dimenzije sale su obavezne.")])
     distance_to_screen = FloatField('Udaljenost kino kabine od projekcionog ekrana (u metrima)', validators=[DataRequired(message="Udaljenost od ekrana je obavezna.")])
     
-    has_power_supply = BooleanField('Obezbeđeno mrežno napajanje audio i projekcione opreme')
+    has_power_supply = BooleanField('Označite ukoliko je obezbeđeno mrežno napajanje audio i projekcione opreme')
     seat_description = TextAreaField('Opis sedišta (do 300 karaktera)', validators=[DataRequired(message="Opis sedišta je obavezan."), Length(max=300)])
-    has_air_conditioning = BooleanField('Obezbeđena klimatizacija sale')
-    has_heating = BooleanField('Obezbeđeno grejanje sale')
-    has_acoustic_treatment = BooleanField('Akustička obrada sale')
-    has_acoustic_screen_treatment = BooleanField('Akustička obrada iza projekcionog ekrana')
-    has_interior_project_docs = BooleanField('Projektna dokumentacija enterijera sale')
-    has_tech_project_docs = BooleanField('Projektna dokumentacija za tehnološku opremu sale')
+    has_air_conditioning = BooleanField('Označite ukoliko je obezbeđena klimatizacija sale')
+    has_heating = BooleanField('Označite ukoliko je obezbeđeno grejanje sale')
+    has_acoustic_treatment = BooleanField('Označite ukoliko postoji akustička obrada sale')
+    has_acoustic_screen_treatment = BooleanField('Označite ukoliko postoji akustička obrada iza projekcionog ekrana')
+    has_interior_project_docs = BooleanField('Označite ukoliko postoji projektna dokumentacija enterijera sale')
+    has_tech_project_docs = BooleanField('Označite ukoliko postoji projektna dokumentacija za tehnološku opremu sale')
     
     screen_size = StringField('Veličina projektnog platna (a x b)', validators=[Optional()])
-    sound_system = SelectField('Zvuk', choices=[('mono', 'Mono'), ('stereo', 'Stereo'), ('dolby', 'Dolby'), ('digital', 'Digital')],
+    sound_system = SelectField('Zvuk', choices=[('mono', 'Mono'), ('stereo', 'Stereo'), ('dolby', 'Dolby'), ('digital', 'Digital standard')],
                                 validators=[DataRequired(message="Odaberite zvučni sistem.")])
     
-    is_digitalized = BooleanField('Da li je sala digitalizovana?')
+    is_digitalized = BooleanField('Označite ukoliko je sala digitalizovana')
     projector_brand = StringField('Brend projektora', validators=[Optional()])
     projector_model = StringField('Model projektora', validators=[Optional()])
     projector_resolution = StringField('Rezolucija projektora', validators=[Optional()])
@@ -152,8 +152,8 @@ class RegisterCinemaHallForm(FlaskForm):
     projector_contrast = StringField('Kontrast projektora', validators=[Optional()])
     server_brand = StringField('Brend servera', validators=[Optional()])
     server_model = StringField('Model servera', validators=[Optional()])
-    has_3d_equipment = BooleanField('Da li posedujete 3D opremu?')
-    has_silver_screen = BooleanField('Da li posedujete silver screen?')
+    has_3d_equipment = BooleanField('Označiti ukoliko posedujete 3D opremu')
+    has_silver_screen = BooleanField('Označiti ukoliko posedujete silver screen')
     
     connected_devices = SelectMultipleField('Konekcije sa glavnim projektorom', choices=[('blu-ray', 'Blu-ray'), ('dvd', 'DVD'), ('racunar', 'Računar')],
                                             option_widget=CheckboxInput(), widget=ListWidget(prefix_label=False),
@@ -170,7 +170,7 @@ class RegisterCinemaHallForm(FlaskForm):
                                                 validators=[Optional()])
     
     # Polja za video projektor ako sala nije digitalizovana
-    has_video_projector = BooleanField('Da li posedujete video projektor (manje rezolucije od 2K)?')
+    has_video_projector = BooleanField('Označiti ukoliko posedujete video projektor (manje rezolucije od 2K)?')
     video_projector_brand = StringField('Brend video projektora', validators=[Optional()])
     video_projector_model = StringField('Model video projektora', validators=[Optional()])
     video_projector_resolution = StringField('Rezolucija video projektora', validators=[Optional()])
@@ -179,7 +179,7 @@ class RegisterCinemaHallForm(FlaskForm):
                                                                 validators=[Optional()])
     
     # Polja za 35mm projektor
-    has_35mm_projector = BooleanField('Da li posedujete 35mm projektor?')
+    has_35mm_projector = BooleanField('Označiti ukoliko posedujete projektor 35mm')
     projector_35mm_brand = StringField('Brend 35mm projektora', validators=[Optional()])
     projector_35mm_model = StringField('Model 35mm projektora', validators=[Optional()])
     

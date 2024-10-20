@@ -7,9 +7,11 @@
             <h1 class="h2 mb-0">Lista prikazivača</h1>
         </div>
         <div class="col-auto">
+            {% if current_user.user_type == 'admin' %}
             <a href="{{ url_for('cinemas.create_cinema') }}" class="btn btn-primary">
                 <i class="fas fa-plus-circle me-2"></i>Dodaj novog prikazivača
             </a>
+            {% endif %}
         </div>
     </div>
 
@@ -62,9 +64,15 @@
                                 </span>
                             </td>
                             <td>
+                                {% if current_user.user_type == 'admin' %}
                                 <a href="{{ url_for('cinemas.edit_cinema', cinema_id=cinema.id) }}" class="btn btn-sm btn-outline-primary">
                                     <i class="fas fa-edit me-1"></i>Izmeni
                                 </a>
+                                {% else %}
+                                <button class="btn btn-sm btn-outline-primary view-details" data-cinema-id="{{ cinema.id }}">
+                                    <i class="fas fa-info-circle me-1"></i>Opširnije
+                                </button>
+                                {% endif %}
                             </td>
                         </tr>
                         {% endfor %}
@@ -79,4 +87,57 @@
     </div>
     {% endif %}
 </div>
+<!-- Modal za prikaz detalja o bioskopu -->
+<div class="modal fade" id="cinemaDetailsModal" tabindex="-1" aria-labelledby="cinemaDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cinemaDetailsModalLabel">Detalji o bioskopu</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="cinemaDetailsContent">
+                <!-- Ovde će se dinamički učitati podaci o bioskopu -->
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const viewDetailsButtons = document.querySelectorAll('.view-details');
+    const modal = new bootstrap.Modal(document.getElementById('cinemaDetailsModal'));
+    const modalContent = document.getElementById('cinemaDetailsContent');
+
+    viewDetailsButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const cinemaId = this.getAttribute('data-cinema-id');
+            fetch(`/cinema_details/${cinemaId}`)
+                .then(response => response.json())
+                .then(data => {
+                    modalContent.innerHTML = `
+                        <p><strong>Naziv:</strong> ${data.name}</p>
+                        <p><strong>Adresa:</strong> ${data.address}</p>
+                        <p><strong>Mesto:</strong> ${data.city}</p>
+                        <p><strong>Telefon:</strong> ${data.phone}</p>
+                        <p><strong>Mejl:</strong> ${data.email}</p>
+                        <p><strong>Veb sajt:</strong> <a href="${data.website}" target="_blank">${data.website}</a></p>
+                        <p><strong>Linkovi ka društvenim mrežama:</strong></p>
+                        <ul>
+                            ${Object.entries(data.social_links).map(([key, value]) => 
+                                `<li>${key}: <a href="${value}" target="_blank">${value}</a></li>`
+                            ).join('')}
+                        </ul>
+                        <p><strong>Broj sala:</strong> ${data.halls_count}</p>
+                        <p><strong>Ukupan broj mesta:</strong> ${data.total_seats}</p>
+                        <p><strong>Godina osnivanja:</strong> ${data.year_founded}</p>
+                        <img src="${data.image || '/static/images/default_cinema.jpg'}" alt="${data.name}" class="img-fluid mt-3">
+                    `;
+                    modal.show();
+                })
+                .catch(error => console.error('Error:', error));
+        });
+    });
+});
+</script>
 {% endblock %}

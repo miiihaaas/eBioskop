@@ -1,0 +1,48 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0">{{ 'Uređivanje' if user else 'Registracija' }} menadžera distributora</h2>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="" enctype="multipart/form-data">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                {{ form.user_name.label(class="form-label") }}
+                                {{ form.user_name(class="form-control", placeholder="Unesite ime") }}
+                                {% for error in form.user_name.errors %}
+                                    <span class="text-danger">{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.user_surname.label(class="form-label") }}
+                                {{ form.user_surname(class="form-control", placeholder="Unesite prezime") }}
+                                {% for error in form.user_surname.errors %}
+                                    <span class="text-danger">{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.user_mail.label(class="form-label") }}
+                            {{ form.user_mail(class="form-control", placeholder="ime.prezime@example.com") }}
+                            {% for error in form.user_mail.errors %}
+                                <span class="text-danger">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            {{ form.submit(class="btn btn-primary btn-lg") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

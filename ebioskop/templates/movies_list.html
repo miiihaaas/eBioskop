@@ -3,10 +3,28 @@
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>Lista filmova</h2>
+        <!-- select element u kome se nalazi lista svih distributera -->
+        {% if current_user.user_type != 'distributor' %}
+        <select class="form-select" id="distributors-select">
+            <option value="">Svi distributeri</option>
+            {% for distributor in distributor_list %}
+            <option value="{{ distributor.id }}">{{ distributor.company_name }}</option>
+            {% endfor %}
+        </select>
+        {% endif %}
+        <!-- select element u kome postoje opcije za filtriranje: u prikazivanju, završeno prikazivanje i planirano prikazivanje -->
+        <select class="form-select" id="status-select">
+            <option value="">Svi statusi</option>
+            <option value="in_showing">U prikazivanju</option>
+            <option value="finished_showing">Zavrseno prikazivanje</option>
+            <option value="scheduled_showing">Planirano prikazivanje</option>
+        </select>
         <!-- Dugme za pokretanje modala za novi film -->
+        {% if current_user.user_type in ['admin', 'distributor'] %}
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#registerMovieModal">
             <i class="fas fa-plus me-2"></i>Dodaj novi film
         </button>
+        {% endif %}
     </div>
     
     <!-- Tabela sa filmovima -->
@@ -19,11 +37,14 @@
                     <th>Režiser i glumci</th>
                     <th>Detalji</th>
                     <th>Kompanija i godina</th>
+                    {% if current_user.user_type != 'distributor' %}
+                    <th>Distributer</th>
+                    {% endif %}
                     <th>Datum starta</th>
                     <th>Žanr</th>
-                    {% if current_user.user_type in ['admin', 'distributor'] %}
+                    <td>Starnosna preporuka</td>
+                    <th>Status</th>
                     <th>Akcije</th>
-                    {% endif %}
                 </tr>
             </thead>
             <tbody id="movies-list">
@@ -55,18 +76,40 @@
                         <strong>{{ movie.company }}</strong><br>
                         <small class="text-muted">{{ movie.production_year }}</small>
                     </td>
+                    {% if current_user.user_type != 'distributor' %}
+                    <td>
+                        <strong>{{ movie.distributor.company_name }}</strong><br>
+                        <small class="text-muted">{{ movie.distributor.phone }}</small>
+                    </td>
+                    {% endif %}
                     <td>{{ movie.release_date.strftime('%d.%m.%Y') if movie.release_date else 'Nije postavljeno' }}</td>
                     <td>{{ ', '.join(movie.genres) if movie.genres else 'Nije postavljeno' }}</td>
-                    {% if current_user.user_type in ['admin', 'distributor'] %}
+                    <td>{{ movie.age_rating }}</td>
+                    <td>
+                        {% if movie.is_showing_finished %}
+                            <span class="badge bg-secondary">Završeno</span>
+                        {% else %}
+                            {% if movie.release_date >= today %}
+                                <span class="badge bg-primary">Planirano</span>
+                            {% else %}
+                                <span class="badge bg-success">U prikazivanju</span>
+                            {% endif %}
+                        {% endif %}
+                    </td>
                     <td>
                         <button type="button" class="btn btn-outline-secondary btn-sm edit-movie-btn" 
                                 data-bs-toggle="modal" 
-                                data-bs-target="#editMovieModal"
+                                data-bs-target={% if current_user.user_type in ['admin', 'distributor'] %} "#editMovieModal" {% else %} "#detailsModal" {% endif %}
                                 data-movie-id="{{ movie.id }}">
-                            <i class="fas fa-edit me-1"></i>Uredi
+                            {% if current_user.user_type in ['admin', 'distributor'] %}
+                            <i class="fas fa-edit me-1"></i>
+                            Uredi
+                            {% else %}
+                            <i class="fas fa-info-circle me-1"></i>
+                            Opširnije
+                            {% endif %}
                         </button>
                     </td>
-                    {% endif %}
                 </tr>
                 {% endfor %}
             </tbody>
@@ -74,6 +117,7 @@
     </div>
 
 <!-- Modal za registraciju novog filma -->
+{% if current_user.user_type in ['admin', 'distributor'] %}
 <div class="modal fade" id="registerMovieModal" tabindex="-1" aria-labelledby="registerMovieModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -125,6 +169,10 @@
                             <label for="projection_formats" class="form-label">Projekcioni format</label>
                             {{ register_form.projection_formats(class="form-select", multiple="multiple", size="3") }}
                         </div>
+                        <div class="col-md-6">
+                            <label for="age_rating" class="form-label">Starosna preporuka</label>
+                            {{ register_form.age_rating(class="form-select") }}
+                        </div>
                         <div class="col-12">
                             <label for="poster" class="form-label">Link do plakata</label>
                             {{ register_form.poster(class="form-control", type="file") }}
@@ -168,6 +216,7 @@
         </div>
     </div>
 </div>
+{% endif %}
 
 <!-- Modal za uređivanje filma -->
 <div class="modal fade" id="editMovieModal" tabindex="-1" aria-labelledby="editMovieModalLabel" aria-hidden="true">
@@ -250,6 +299,10 @@
                             <label for="edit_projection_formats" class="form-label">Projekcioni format</label>
                             {{ edit_form.projection_formats(class="form-select", multiple="multiple", size="3", id="edit_projection_formats") }}
                         </div>
+                        <div class="col-md-6">
+                            <label for="edit_age_rating" class="form-label">Starosna preporuka</label>
+                            {{ edit_form.age_rating(class="form-select", id="edit_age_rating") }}
+                        </div>
                         <div class="col-12">
                             <label for="edit_poster" class="form-label">Link do plakata</label>
                             {{ edit_form.poster(class="form-control", id="edit_poster") }}
@@ -283,8 +336,12 @@
                             {{ edit_form.release_date(class="form-control", type="date", id="edit_release_date") }}
                         </div>
                         <div class="col-md-12">
-                            <label for="edit_status" class="form-label">Status</label>
-                            {{ edit_form.status(class="form-select", id="edit_status") }}
+                            <div class="form-check">
+                                {{ edit_form.is_showing_finished(class="form-check-input", id="edit_is_showing_finished") }}
+                                <label class="form-check-label" for="edit_is_showing_finished">
+                                    Označiti ako je završeno prikazivanje filma
+                                </label>
+                            </div>
                         </div>
                     </div>
                     <div class="mt-4">
@@ -293,6 +350,112 @@
                         </button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- detail modal -->
+<div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title" id="detailsModalLabel">Detalji filma</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <img id="details_current_poster" src="" alt="Poster filma" class="img-fluid rounded">
+                    </div>
+                    <div class="col-md-6">
+                        <div id="detailsImageCarousel" class="carousel slide" data-bs-ride="carousel">
+                            <div class="carousel-inner">
+                                <div class="carousel-item active">
+                                    <img id="details_current_image_1" src="" class="d-block w-100 rounded" alt="Slika 1">
+                                </div>
+                                <div class="carousel-item">
+                                    <img id="details_current_image_2" src="" class="d-block w-100 rounded" alt="Slika 2">
+                                </div>
+                                <div class="carousel-item">
+                                    <img id="details_current_image_3" src="" class="d-block w-100 rounded" alt="Slika 3">
+                                </div>
+                            </div>
+                            <button class="carousel-control-prev" type="button" data-bs-target="#detailsImageCarousel" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Prethodna</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#detailsImageCarousel" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Sledeća</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <h6>Originalni naziv filma</h6>
+                        <p id="details_original_title"></p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Lokalni naziv filma</h6>
+                        <p id="details_local_title"></p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Režiser</h6>
+                        <p id="details_director"></p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Glumci</h6>
+                        <p id="details_actors"></p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Zemlja produkcije</h6>
+                        <p id="details_production_country"></p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Kompanija</h6>
+                        <p id="details_company"></p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Godina produkcije</h6>
+                        <p id="details_production_year"></p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Trajanje (u minutima)</h6>
+                        <p id="details_duration"></p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Verzije filma</h6>
+                        <ul id="details_versions"></ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Projekcioni format</h6>
+                        <ul id="details_projection_formats"></ul>
+                    </div>
+                    <div class="col-12">
+                        <h6>Link ka trejleru</h6>
+                        <p><a id="details_trailer_link" href="" target="_blank">Pogledaj trejler</a></p>
+                    </div>
+                    <div class="col-12">
+                        <h6>Sinopsis</h6>
+                        <p id="details_synopsis"></p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Žanr</h6>
+                        <ul id="details_genres"></ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Datum starta filma</h6>
+                        <p id="details_release_date"></p>
+                    </div>
+                    <div class="col-md-12">
+                        <h6>Status</h6>
+                        <p id="details_status"></p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zatvori</button>
             </div>
         </div>
     </div>
@@ -347,11 +510,12 @@ $(document).ready(function() {
                 $("#edit_duration").val(response.duration);
                 $("#edit_versions").val(response.versions);
                 $("#edit_projection_formats").val(response.projection_formats);
+                $("#edit_age_rating").val(response.age_rating);
                 $("#edit_trailer_link").val(response.trailer_link);
                 $("#edit_synopsis").val(response.synopsis);
                 $("#edit_genres").val(response.genres);
                 $("#edit_release_date").val(response.release_date);
-                $("#edit_status").val(response.status);
+                $("#edit_is_showing_finished").prop('checked', response.is_showing_finished);
 
                 // Prikazivanje trenutnog postera
                 if (response.poster) {
@@ -372,6 +536,64 @@ $(document).ready(function() {
 
                 // Resetovanje carousel-a
                 $('#editImageCarousel').carousel(0);
+            }
+        });
+    });
+    // popunjavavanje detail modala
+    $(".edit-movie-btn").click(function() {
+        var movieId = $(this).data("movie-id");
+        $.ajax({
+            url: "{{ url_for('movies.edit_movie', movie_id=0) }}".replace('0', movieId),
+            type: "GET",
+            success: function(response) {
+                $("#details_original_title").text(response.original_title);
+                $("#details_local_title").text(response.local_title);
+                $("#details_director").text(response.director);
+                $("#details_actors").text(response.actors);
+                $("#details_production_country").text(response.production_country);
+                $("#details_company").text(response.company);
+                $("#details_production_year").text(response.production_year);
+                $("#details_duration").text(response.duration);
+                $("#details_trailer_link").attr("href", response.trailer_link);
+                $("#details_synopsis").text(response.synopsis);
+                $("#details_release_date").text(response.release_date);
+                $("#details_status").text(response.status);
+
+                // Popunjavanje lista
+                $("#details_versions").empty();
+                response.versions.forEach(function(version) {
+                    $("#details_versions").append("<li>" + version + "</li>");
+                });
+
+                $("#details_projection_formats").empty();
+                response.projection_formats.forEach(function(format) {
+                    $("#details_projection_formats").append("<li>" + format + "</li>");
+                });
+
+                $("#details_genres").empty();
+                response.genres.forEach(function(genre) {
+                    $("#details_genres").append("<li>" + genre + "</li>");
+                });
+
+                // Prikazivanje postera
+                if (response.poster) {
+                    $("#details_current_poster").attr("src", response.poster).show();
+                } else {
+                    $("#details_current_poster").hide();
+                }
+
+                // Prikazivanje slika u carousel-u
+                for (var i = 0; i < 3; i++) {
+                    var imgElement = $("#details_current_image_" + (i + 1));
+                    if (response.images && response.images[i]) {
+                        imgElement.attr("src", response.images[i]).closest('.carousel-item').show();
+                    } else {
+                        imgElement.closest('.carousel-item').hide();
+                    }
+                }
+
+                // Resetovanje carousel-a
+                $('#detailsImageCarousel').carousel(0);
             }
         });
     });

@@ -18,3 +18,18 @@ def home():
 def faq():
     route_name = request.endpoint
     return render_template('faq.html', route_name=route_name)
+
+
+@main.route('/box_office', methods=['GET', 'POST'])
+def box_office():
+    route_name = request.endpoint
+    totals = []
+    return render_template('box_office.html', 
+                            route_name=route_name,
+                            totals=totals)
+
+
+@main.route('/contact', methods=['GET', 'POST'])
+def contact():
+    route_name = request.endpoint
+    return render_template('contact.html', route_name=route_name)

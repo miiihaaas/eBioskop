@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from flask import Blueprint, render_template, request, url_for, flash, redirect
 from flask_login import current_user
 from ebioskop import app, db
-from ebioskop.models import Cinema, CinemaHall, CinemaProperties, Distributor, DistributorRepresentative, Movie, Projection, Representative
+from ebioskop.models import Cinema, CinemaHall, CinemaProperties, Distributor, DistributorRepresentative, Movie, Projection, Representative, User
 from ebioskop.distributors.forms import EditDistributorForm, RegisterDistributorForm
 
 
@@ -106,8 +106,12 @@ def edit_distributor(distributor_id):
                 db.session.add(distributor_rep)
 
         db.session.commit()
-        flash(f'Distributor {form.company_name.data} je uspešno ažuriran!', 'success')
-        return redirect(url_for('distributor.distributors_list'))
+        if current_user.user_type == 'admin':
+            flash(f'Distributor {form.company_name.data} je uspešno ažuriran!', 'success')
+            return redirect(url_for('distributor.distributors_list'))
+        else:
+            flash(f'Uspešno ste ažurirali podatke distributera', 'success')
+            return redirect(url_for('main.home'))
     
     elif request.method == 'GET':
         form.company_name.data = distributor.company_name
@@ -127,11 +131,20 @@ def edit_distributor(distributor_id):
         form.tiktok.data = distributor.tiktok
         form.representatives.data = [rep.name for rep in distributor.representatives]
     
-    return render_template('distributor.html', title=f'Ažuriranje distributera {distributor.company_name}', form=form, route_name=route_name)
-
+    users = User.query.filter_by(distributor_id=distributor_id).all()
+    
+    return render_template('distributor.html', 
+                            title=f'Ažuriranje distributera {distributor.company_name}', 
+                            form=form,
+                            distributor=distributor,
+                            route_name=route_name,
+                            users=users)
 
 @distributors.route('/distributors_list')
 def distributors_list():
+    if current_user.user_type not in ['admin', 'user']:
+        flash('Nemate pravo da pristupite ovoj stranici.', 'warning')
+        return redirect(url_for('main.home'))
     route_name = request.endpoint
     distributors = Distributor.query.all()
     return render_template('distributors_list.html', distributors=distributors, route_name=route_name)
@@ -144,14 +157,27 @@ def exhibitors():
     # Dobijanje trenutno ulogovanog distributera
     current_distributor = Distributor.query.get(current_user.distributor_id)
     
+    # Dobijanje trenutnog datuma
+    today = datetime.now().date()
+
+    # Pronalaženje prvog četvrtka pre današnjeg dana
+    start_date = today - timedelta(days=(today.weekday() - 3) % 7)
+
+    # Formatiranje start_date u string
+    start_date_str = start_date.strftime('%Y-%m-%d')
+
+    # Postavljanje end_date na 7 dana nakon start_date
+    end_date = start_date + timedelta(days=7)
+    end_date_str = end_date.strftime('%Y-%m-%d')
+
     # Dobijanje parametara za filtere
-    start_date = request.args.get('start_date', datetime.now().strftime('%Y-%m-%d'))
-    end_date = request.args.get('end_date', (datetime.now() + timedelta(days=7)).strftime('%Y-%m-%d'))
+    start_date = request.args.get('start_date', start_date_str)
+    end_date = request.args.get('end_date', end_date_str)
     status = request.args.get('status', 'active')
-    
+
     # Pretvaranje stringova u datetime objekte
-    start_date = datetime.strptime(start_date, '%Y-%m-%d')
-    end_date = datetime.strptime(end_date, '%Y-%m-%d')
+    start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
+    end_date = datetime.strptime(end_date, '%Y-%m-%d').date()
     
     # Dobijanje svih prikazivača koji prikazuju filmove ovog distributera
     exhibitors = Cinema.query.join(CinemaProperties).join(CinemaHall).join(Projection).join(Movie).filter(
@@ -208,4 +234,6 @@ def exhibitors():
                             exhibitors_data=exhibitors_data, 
                             start_date=start_date.strftime('%Y-%m-%d'), 
                             end_date=end_date.strftime('%Y-%m-%d'), 
+                            projections=projections,
+                            exhibitors=exhibitors,
                             status=status)

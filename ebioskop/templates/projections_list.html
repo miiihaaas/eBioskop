@@ -1,12 +1,14 @@
 {% extends "layout.html" %}
 {% block content %}
 <div class="container mt-4">
+    {% if current_user.user_type != 'admin' %}
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>Lista projekcija</h2>
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#registerProjectionModal">
             <i class="fas fa-plus me-2"></i>Dodaj novu projekciju
         </button>
     </div>
+    {% endif %}
 
     <!-- Filter opcije -->
     <div class="card mb-4">
@@ -18,37 +20,40 @@
                     <select class="form-select" id="film" name="film">
                         <option value="">Svi filmovi</option>
                         {% for movie in movies %}
-                            <option value="{{ movie.id }}">{{ movie.local_title }}</option>
+                            <option value="{{ movie.id }}" {% if request.args.get('film') == movie.id|string %}selected{% endif %}>
+                                {{ movie.local_title }}
+                            </option>
                         {% endfor %}
                     </select>
                 </div>
                 <div class="col-md-2">
                     <label for="date_from" class="form-label">Datum od</label>
-                    <input type="month" class="form-control" id="date_from" name="date_from">
+                    <input type="month" class="form-control" id="date_from" name="date_from" value="{{ request.args.get('date_from', '') }}">
                 </div>
                 <div class="col-md-2">
                     <label for="date_to" class="form-label">Datum do</label>
-                    <input type="month" class="form-control" id="date_to" name="date_to">
+                    <input type="month" class="form-control" id="date_to" name="date_to" value="{{ request.args.get('date_to', '') }}">
                 </div>
                 <div class="col-md-2">
                     <label for="filter_format" class="form-label">Format</label>
                     <select class="form-select" id="filter_format" name="filter_format">
                         <option value="">Svi formati</option>
-                        <option value="2D">2D</option>
-                        <option value="3D">3D</option>
+                        <option value="2D" {% if request.args.get('filter_format') == '2D' %}selected{% endif %}>2D</option>
+                        <option value="3D" {% if request.args.get('filter_format') == '3D' %}selected{% endif %}>3D</option>
                     </select>
                 </div>
                 <div class="col-md-2">
                     <label for="verzija" class="form-label">Verzija</label>
                     <select class="form-select" id="verzija" name="verzija">
                         <option value="">Sve verzije</option>
-                        <option value="originalno">Originalno</option>
-                        <option value="titlovano">Titlovano</option>
-                        <option value="sinhronizovano">Sinhronizovano</option>
+                        <option value="original" {% if request.args.get('verzija') == 'original' %}selected{% endif %}>Originalno</option>
+                        <option value="subtitled" {% if request.args.get('verzija') == 'subtitled' %}selected{% endif %}>Titlovano</option>
+                        <option value="dubbed" {% if request.args.get('verzija') == 'dubbed' %}selected{% endif %}>Sinhronizovano</option>
                     </select>
                 </div>
                 <div class="col-md-1 d-flex align-items-end">
                     <button type="submit" class="btn btn-primary">Filtriraj</button>
+                    <a href="{{ url_for('projections.projections_list') }}" class="btn btn-secondary ms-2">Resetuj</a>
                 </div>
             </form>
         </div>
@@ -83,6 +88,15 @@
                         <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#detailsModal" data-projection-id="{{ projection.id }}">
                             Detalji
                         </button>
+                        {% if current_user.user_type != 'admin' %}
+                        <button type="button" class="btn btn-danger btn-sm delete-projection" 
+                                data-bs-toggle="modal" 
+                                data-bs-target="#deleteProjectionModal"
+                                data-projection-id="{{ projection.id }}"
+                                data-projection-title="{{ projection.movie.local_title }} ({{ projection.date }} {{ projection.time }})">
+                            Obriši projekciju
+                        </button>
+                        {% endif %}
                     </td>
                 </tr>
                 {% endfor %}
@@ -127,17 +141,36 @@
                 </div>
                 <div class="modal-body">
                     <p><strong>Naziv filma:</strong> <span id="modalMovieTitle"></span></p>
-                    <p><strong>Datum:</strong> <span id="modalDate"></span></p>
+                    <!-- <p><strong>Datum:</strong> <span id="modalDate"></span></p>
                     <p><strong>Vreme:</strong> <span id="modalTime"></span></p>
                     <p><strong>Verzija:</strong> <span id="modalVersion"></span></p>
                     <p><strong>Format:</strong> <span id="modalFormat"></span></p>
                     <p><strong>Broj prodatih ulaznica:</strong> <span id="modalTicketsSold"></span></p>
-                    <p><strong>Zarada:</strong> <span id="modalRevenue"></span></p>
+                    <p><strong>Zarada:</strong> <span id="modalRevenue"></span></p> -->
                     <p><strong>Broj nedelja prikazivanja:</strong> <span id="modalWeeksShowing"></span></p>
                     <p><strong>Ukupan broj prikazivanja:</strong> <span id="modalTotalScreenings"></span></p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zatvori</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal za potvrdu brisanja projekcije -->
+    <div class="modal fade" id="deleteProjectionModal" tabindex="-1" aria-labelledby="deleteProjectionModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteProjectionModalLabel">Potvrda brisanja</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Da li ste sigurni da želite da obrišete projekciju <span id="deleteProjectionTitle"></span>?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Odustani</button>
+                    <a id="confirmDeleteButton" href="#" class="btn btn-danger">Obriši</a>
                 </div>
             </div>
         </div>
@@ -156,6 +189,27 @@
 {% block scripts %}
 <script id="movies-data" type="application/json">
     {{ movies_data|tojson|safe }}
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // ... (postojeći kod) ...
+
+        // Upravljanje modalom za brisanje projekcije
+        const deleteProjectionModal = document.getElementById('deleteProjectionModal');
+        const deleteProjectionTitle = document.getElementById('deleteProjectionTitle');
+        const confirmDeleteButton = document.getElementById('confirmDeleteButton');
+
+        deleteProjectionModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            const projectionId = button.getAttribute('data-projection-id');
+            const projectionTitle = button.getAttribute('data-projection-title');
+
+            deleteProjectionTitle.textContent = projectionTitle;
+            confirmDeleteButton.href = `/projections/delete_projection/${projectionId}`;
+        });
+
+        // ... (ostatak postojećeg koda) ...
+    });
 </script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -221,12 +275,12 @@
                     .then(response => response.json())
                     .then(data => {
                         document.getElementById('modalMovieTitle').textContent = data.movie_title;
-                        document.getElementById('modalDate').textContent = data.date;
-                        document.getElementById('modalTime').textContent = data.time;
-                        document.getElementById('modalVersion').textContent = data.version;
-                        document.getElementById('modalFormat').textContent = data.format;
-                        document.getElementById('modalTicketsSold').textContent = data.tickets_sold;
-                        document.getElementById('modalRevenue').textContent = data.revenue;
+                        // document.getElementById('modalDate').textContent = data.date;
+                        // document.getElementById('modalTime').textContent = data.time;
+                        // document.getElementById('modalVersion').textContent = data.version;
+                        // document.getElementById('modalFormat').textContent = data.format;
+                        // document.getElementById('modalTicketsSold').textContent = data.tickets_sold;
+                        // document.getElementById('modalRevenue').textContent = data.revenue;
                         document.getElementById('modalWeeksShowing').textContent = data.weeks_showing;
                         document.getElementById('modalTotalScreenings').textContent = data.total_screenings;
                     });

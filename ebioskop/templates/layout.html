@@ -80,13 +80,6 @@
                             <li class="nav-item">
                                 <a class="nav-link" href="">Projekcije</a>
                             </li>
-                            {% elif current_user.user_type == 'producer' %}
-                            <li class="nav-item">
-                                <a class="nav-link" href="">O pravnom licu</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="">Lista filmova</a>
-                            </li>
                             {% elif current_user.user_type == 'admin' %}
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ url_for('distributor.distributors_list') }}">Distributeri</a>
@@ -104,7 +97,7 @@
                                 <a class="nav-link" href="{{ url_for('calendars.distribution_calendar')}}">Kalendar</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ url_for('projections.projections_list' )}}">Unos projekcije</a>
+                                <a class="nav-link" href="{{ url_for('projections.projections_list' )}}">Detalji projekcije</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="">Sve opcije...</a>
@@ -131,41 +124,24 @@
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ url_for('projections.projections_list' )}}">Unos projekcije</a>
                             </li>
-                            {% elif current_user.user_type == 'producer' %}
-                            <li class="nav-item">
-                                <a class="nav-link" href="">O pravnom licu</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="">Lista filmova</a>
-                            </li>
-                            {% elif current_user.user_type == 'admin' %}
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ url_for('distributor.distributors_list') }}">Distributeri</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ url_for('cinemas.cinemas_list') }}">Prikazivači</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="">Sve opcije...</a>
-                            </li>
                             {% else %}
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ url_for('main.home') }}">Početna</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="">Prikazivači</a>
+                                <a class="nav-link" href="{{ url_for('cinemas.cinemas_list') }}">Prikazivači</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="">Distributeri</a>
+                                <a class="nav-link" href="{{ url_for('distributor.distributors_list') }}">Distributeri</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="">Producenti</a>
+                                <a class="nav-link" href="{{ url_for('main.box_office') }}">Box office</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ url_for('main.faq') }}">FAQ</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="">Kontakt</a>
+                                <a class="nav-link" href="{{ url_for('main.contact') }}">Kontakt</a>
                             </li>
                             {% endif %}
                             <!-- Dodajte druge stavke menija po potrebi -->

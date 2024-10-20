@@ -6,7 +6,7 @@ from flask_mail import Message
 from werkzeug.security import generate_password_hash
 from ebioskop import mail, db
 from ebioskop.models import User
-from ebioskop.users.forms import EditCinemaManagerForm, LoginForm, RegisterCinemaManagerForm, RequestResetForm, ResetPasswordForm
+from ebioskop.users.forms import EditCinemaManagerForm, EditDistributorManagerForm, LoginForm, RegisterCinemaManagerForm, RegisterDistributorManagerForm, RequestResetForm, ResetPasswordForm
 
 
 users = Blueprint('users', __name__)
@@ -167,3 +167,51 @@ def edit_cinema_manager(user_id):
         return redirect(url_for('cinemas.edit_cinema_properties', cinema_properties_id=user.cinema_properties_id))
 
     return render_template('cinema_manager.html', form=form, route_name=route_name, user=user)
+
+
+@users.route("/register_distributor_manager/<int:distributor_id>", methods=['GET', 'POST'])
+def register_distributor_manager(distributor_id):
+    route_name = request.endpoint
+    form = RegisterDistributorManagerForm()
+
+    if form.validate_on_submit():
+        hashed_password = generate_password_hash("test")
+        
+        new_user = User(
+            user_name=form.user_name.data,
+            user_surname=form.user_surname.data,
+            user_mail=form.user_mail.data,
+            user_password=hashed_password,
+            user_type="distributor",
+            distributor_id=distributor_id,
+            cinema_id=None,
+            cinema_properties_id=None,
+            position=None,
+            phone=None,
+            photo=None
+        )
+
+        db.session.add(new_user)
+        db.session.commit()
+        flash('Novi distributer je uspešno registrovan.', 'success')
+        return redirect(url_for('distributor.edit_distributor', distributor_id=distributor_id))
+
+    return render_template('distributor_manager.html', form=form, route_name=route_name)
+
+
+@users.route("/edit_distributor_manager/<int:user_id>", methods=['GET', 'POST'])
+def edit_distributor_manager(user_id):
+    route_name = request.endpoint
+    user = User.query.get(user_id)
+    form = EditDistributorManagerForm(obj=user)
+
+    if form.validate_on_submit():
+        user.user_name = form.user_name.data
+        user.user_surname = form.user_surname.data
+        user.user_mail = form.user_mail.data
+
+        db.session.commit()
+        flash('Podaci distributera su uspešno ažurirani.', 'success')
+        return redirect(url_for('distributor.edit_distributor', distributor_id=user.distributor_id))
+
+    return render_template('distributor_manager.html', form=form, route_name=route_name, user=user)
