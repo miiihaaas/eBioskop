@@ -199,7 +199,7 @@
                         </div>
                         <div class="col-md-6">
                             <label for="genres" class="form-label">Žanr</label>
-                            {{ register_form.genres(class="form-select", multiple="multiple", size="5") }}
+                            {{ register_form.genres(class="form-select select2-multiple", multiple="multiple", id="genres") }}
                         </div>
                         <div class="col-md-6">
                             <label for="release_date" class="form-label">Datum starta filma</label>
@@ -329,7 +329,7 @@
                         </div>
                         <div class="col-md-6">
                             <label for="edit_genres" class="form-label">Žanr</label>
-                            {{ edit_form.genres(class="form-select", multiple="multiple", size="5", id="edit_genres") }}
+                            {{ edit_form.genres(class="form-select select2-multiple", multiple="multiple", id="edit_genres") }}
                         </div>
                         <div class="col-md-6">
                             <label for="edit_release_date" class="form-label">Datum starta filma</label>
@@ -465,6 +465,30 @@
 
 {% block scripts %}
 <script>
+$(document).ready(function() {
+    // $('.select2-multiple').select2()
+    $('#registerMovieModal').on('shown.bs.modal', function() {
+        $('#genres').select2({
+            placeholder: "Izaberi žanrove",
+            // tags: true,
+            dropdownParent: $(this)
+        })
+    })
+
+    $('#editMovieModal').on('shown.bs.modal', function() {
+        $('#edit_genres').select2({
+            placeholder: "Izaberi žanrove",
+            // tags: true,
+            dropdownParent: $(this)
+        })
+    })
+
+});
+
+
+
+
+
 $(document).ready(function() {
     // Dodavanje novog filma
     $("#registerMovieForm").submit(function(e) {
@@ -633,4 +657,5 @@ $(document).ready(function() {
     });
 });
 </script>
+
 {% endblock %}

@@ -4,7 +4,7 @@ from flask import current_app, render_template
 from flask_mail import Message
 from threading import Thread
 from werkzeug.utils import secure_filename
-from ebioskop import mail
+from ebioskop import mail, app
 from ebioskop.models import User
 
 
@@ -31,24 +31,27 @@ def send_async_email(app, msg):
         mail.send(msg)
 
 def send_email(subject, recipients, html_body):
-    app = current_app._get_current_object()
-    msg = Message(subject, recipients=recipients)
+    # app = current_app._get_current_object()
+    msg = Message(subject, sender=app.config['MAIL_USERNAME'], recipients=recipients)
     msg.html = html_body
     Thread(target=send_async_email, args=(app, msg)).start()
 
 def send_email_about_new_movie(new_movie):
     # Pronađi sve korisnike koji su admini, distributeri ili bioskopi
     recipients = User.query.filter(User.user_type.in_(['admin', 'distributor', 'cinema'])).all() #! nešto mi je sumnjiv ovaj in_???
-    
+    print(f'debug: {recipients=}')
     # Kreiraj listu email adresa
     email_list = [user.user_mail for user in recipients]
-    
+    print(f'debug: {email_list=}')
     # Pripremi sadržaj emaila
-    subject = f"Novi film: {new_movie.lokalni_naziv}"
+    subject = f"Novi film: {new_movie.local_title}"
+    poster = new_movie.poster
     html_body = render_template('message_html_send_email_about_new_movie.html', 
-                                movie_name=new_movie.lokalni_naziv,
+                                movie_name=new_movie.local_title,
                                 director=new_movie.director,
-                                release_date=new_movie.release_date.strftime('%d.%m.%Y'))
+                                distributor=new_movie.distributor.company_name,
+                                release_date=new_movie.release_date.strftime('%d.%m.%Y'), 
+                                poster=poster)
     
     # Pošalji email
     send_email(subject, email_list, html_body)

@@ -3,7 +3,7 @@ from flask_login import current_user
 from ebioskop import app, db
 from ebioskop.cinemas.forms import EditCinemaForm, EditCinemaHallForm, EditCinemaPropertiesForm, EditCinemaRepresentativeForm, EditMemberMKPSForm, RegisterCinemaForm, RegisterCinemaHallForm, RegisterCinemaPropertiesForm, RegisterCinemaRepresentativeForm, RegisterMemberMKPSForm
 from ebioskop.cinemas.functions import save_picture
-from ebioskop.models import Cinema, CinemaHall, CinemaProperties, CinemaRepresentative, MemberMKPS, User
+from ebioskop.models import Cinema, CinemaHall, CinemaProperties, CinemaRepresentative, MemberMKPS, Municipality, User
 import os
 from werkzeug.utils import secure_filename
 from flask import current_app
@@ -61,7 +61,8 @@ def create_cinema():
     route_name = request.endpoint
 
     form = RegisterCinemaForm()
-    form.city.choices = [('gm', 'Gornji Milanovac')]
+    municipality_list = Municipality.query.all()
+    form.municipality.choices = [(municipality.id, municipality.municipality_name) for municipality in municipality_list]
 
     if form.validate_on_submit():
         # Kreiranje objekta Cinema sa podacima iz forme
@@ -71,6 +72,7 @@ def create_cinema():
             address=form.address.data,
             postal_code=form.postal_code.data,
             city=form.city.data,
+            municipality=form.municipality.data,
             email=form.email.data,  # Emaili se unose kao string, ali možemo ih splitovati po zarezima ako je potrebno
             phone=form.phone.data,
             legal_form=form.legal_form.data,
@@ -111,17 +113,18 @@ def edit_cinema(cinema_id):
     cinema_properties = CinemaProperties.query.filter_by(cinema_id=cinema_id).all()
     
     form = EditCinemaForm()
-    form.city.choices = [('gm', 'Gornji Milanovac')]
+    municipality_list = Municipality.query.all()
+    form.municipality.choices = [(municipality.id, municipality.municipality_name) for municipality in municipality_list]
 
     edited_cinema = Cinema.query.get_or_404(cinema_id)
     if form.validate_on_submit():
         # Kreiranje objekta Cinema sa podacima iz forme
-        edited_cinema = Cinema.query.get_or_404(cinema_id)
         edited_cinema.name = form.name.data
         edited_cinema.country = form.country.data
         edited_cinema.address = form.address.data
         edited_cinema.postal_code = form.postal_code.data
         edited_cinema.city = form.city.data
+        edited_cinema.municipality = form.municipality.data
         edited_cinema.email = form.email.data
         edited_cinema.phone = form.phone.data
         edited_cinema.legal_form = form.legal_form.data
@@ -143,6 +146,7 @@ def edit_cinema(cinema_id):
         form.address.data = edited_cinema.address
         form.postal_code.data = edited_cinema.postal_code
         form.city.data = edited_cinema.city
+        form.municipality.data = edited_cinema.municipality
         form.email.data = edited_cinema.email
         form.phone.data = edited_cinema.phone
         form.legal_form.data = edited_cinema.legal_form
@@ -575,8 +579,8 @@ def mkps_members_list():
 def create_mkps_member():
     route_name = request.endpoint
     form = RegisterMemberMKPSForm()
-    # Populate the cinema choices
-    form.cinema.choices = [(0, 'Select MKPS Cinema')] + [(c.id, c.name) for c in Cinema.query.filter_by(is_member_mkps=True).all()]
+    # Populate the cinema_id choices
+    form.cinema_id.choices = [(0, 'Select MKPS Cinema')] + [(c.id, c.name) for c in Cinema.query.filter_by(is_member_mkps=True).all()]
     
     if form.validate_on_submit():
         new_member = MemberMKPS(
@@ -588,9 +592,9 @@ def create_mkps_member():
             status=form.status.data
         )
         
-        # Handle cinema selection
-        if form.cinema.data != 0:  # If an MKPS cinema is selected
-            new_member.cinema_id = form.cinema.data
+        # Handle cinema_id selection
+        if form.cinema_id.data != 0:  # If an MKPS cinema is selected
+            new_member.cinema_id = form.cinema_id.data
         else:  # If a non-MKPS cinema is entered
             new_member.cinema_not_mkps = form.cinema_not_mkps.data
         
@@ -618,8 +622,18 @@ def create_mkps_member():
 def edit_mkps_member(member_id):
     route_name = request.endpoint
     member = MemberMKPS.query.get(member_id)
-    form = EditMemberMKPSForm(obj=member)
-    form.cinema.choices = [(0, 'Select MKPS Cinema')] + [(c.id, c.name) for c in Cinema.query.filter_by(is_member_mkps=True).all()]
+    # Kreirajte formu bez objekta
+    form = EditMemberMKPSForm()
+    
+    # Postavite izbore za cinema polje
+    form.cinema_id.choices = [(0, 'Select MKPS Cinema')] + [(c.id, c.name) for c in Cinema.query.filter_by(is_member_mkps=True).all()]
+    print(f'{form.cinema_id.choices=}')
+    
+    # Popunite formu s podacima iz member objekta
+    if request.method == 'GET':
+        form.process(obj=member)
+        print(f'{member=}')
+        print(f'{form.data=}')
     if form.validate_on_submit():
         member.name = form.name.data
         member.surname = form.surname.data
@@ -627,12 +641,12 @@ def edit_mkps_member(member_id):
         member.city = form.city.data
         member.job_position = form.job_position.data
         member.status = form.status.data
-        member.cinema_id = form.cinema.data
-        member.cinema_not_mkps = form.cinema_not_mkps.data
+        member.cinema_id = form.cinema_id.data
+        member.cinema_not_mkps = form.cinema_not_mkps.data if form.cinema_id.data == 0 else None
         member.emails = form.emails.data
         member.phones = form.phones.data
         db.session.commit()
-        flash('MKPS member has been successfully updated!', 'success')
+        flash('Podaci MKPS član su uspešno azurirani!', 'success')
         return redirect(url_for('cinemas.mkps_members_list'))
 
     return render_template('mkps_member.html', title='Create MKPS Member', form=form, route_name=route_name)

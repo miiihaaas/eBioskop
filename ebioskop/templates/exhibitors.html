@@ -6,25 +6,17 @@
     <div class="card mb-4">
         <div class="card-body">
             <form method="GET" action="{{ url_for('distributor.exhibitors') }}" class="row g-3 align-items-end">
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <label for="start_date" class="form-label">Početni datum:</label>
                     <input type="date" id="start_date" name="start_date" value="{{ start_date }}" class="form-control">
                 </div>
                 
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <label for="end_date" class="form-label">Krajnji datum:</label>
                     <input type="date" id="end_date" name="end_date" value="{{ end_date }}" class="form-control">
                 </div>
                 
-                <div class="col-md-3">
-                    <label for="status" class="form-label">Status:</label>
-                    <select id="status" name="status" class="form-select">
-                        <option value="active" {% if status == 'active' %}selected{% endif %}>Aktivan</option>
-                        <option value="inactive" {% if status == 'inactive' %}selected{% endif %}>Neaktivan</option>
-                    </select>
-                </div>
-                
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <button type="submit" class="btn btn-primary w-100">Filtriraj</button>
                 </div>
             </form>

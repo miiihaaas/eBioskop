@@ -174,6 +174,7 @@ def exhibitors():
     start_date = request.args.get('start_date', start_date_str)
     end_date = request.args.get('end_date', end_date_str)
     status = request.args.get('status', 'active')
+    print(f'{start_date=} {end_date=} {status=}')
 
     # Pretvaranje stringova u datetime objekte
     start_date = datetime.strptime(start_date, '%Y-%m-%d').date()

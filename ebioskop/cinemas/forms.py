@@ -12,7 +12,8 @@ class RegisterCinemaForm(FlaskForm):
     country = StringField('Zemlja', validators=[DataRequired(), Length(max=100)])
     address = StringField('Adresa', validators=[DataRequired(), Length(max=200)])
     postal_code = StringField('Poštanski broj', validators=[DataRequired(), Length(max=20)])
-    city = SelectField('Mesto', choices=[], validators=[DataRequired()])  # Dinamički napuniti padajući meni
+    city = StringField('Mesto', validators=[DataRequired(), Length(max=100)])
+    municipality = SelectField('Opština', validators=[DataRequired(), Length(max=100)])
     email = StringField('Imejl', validators=[DataRequired(), Length(max=500), Regexp(r'^(\S+@\S+\.\S+)(,\s*\S+@\S+\.\S+)*$', message="Unesite validne email adrese odvojene zarezom")])  # Provera unosa više mejlova odvojenih zarezom
     phone = StringField('Telefon', validators=[DataRequired(), Length(max=20)])
     legal_form = SelectField('Oblik pravnog lica', choices=[('javna ustanova', 'Javna ustanova'), ('kompanija', 'Kompanija')], validators=[DataRequired()])
@@ -36,7 +37,8 @@ class EditCinemaForm(FlaskForm):
     country = StringField('Zemlja', validators=[DataRequired(), Length(max=100)])
     address = StringField('Adresa', validators=[DataRequired(), Length(max=200)])
     postal_code = StringField('Poštanski broj', validators=[DataRequired(), Length(max=20)])
-    city = SelectField('Mesto', choices=[], validators=[DataRequired()])  # Dinamički napuniti padajući meni
+    city = StringField('Mesto', validators=[DataRequired(), Length(max=100)])
+    municipality = SelectField('Opština', validators=[DataRequired(), Length(max=100)])
     email = StringField('Imejl', validators=[DataRequired(), Length(max=500), Regexp(r'^(\S+@\S+\.\S+)(,\s*\S+@\S+\.\S+)*$', message="Unesite validne email adrese odvojene zarezom")])
     phone = StringField('Telefon', validators=[DataRequired(), Length(max=20)])
     legal_form = SelectField('Oblik pravnog lica', choices=[('javna ustanova', 'Javna ustanova'), ('kompanija', 'Kompanija')], validators=[DataRequired()])
@@ -203,7 +205,7 @@ class RegisterMemberMKPSForm(FlaskForm):
     surname = StringField('Prezime', validators=[DataRequired(), Length(max=50)])
     address = StringField('Adresa', validators=[Optional(), Length(max=200)])
     city = StringField('Mesto', validators=[Optional(), Length(max=100)])
-    cinema = SelectField('MKPS Cinema', coerce=int, validators=[Optional()])
+    cinema_id = SelectField('MKPS Cinema', coerce=int, validators=[Optional()])
     cinema_not_mkps = StringField('Non-MKPS Cinema', validators=[Optional(), Length(max=100)])
     job_position = StringField('Radno mesto', validators=[Optional(), Length(max=100)])
     emails = TextAreaField('Imejl adresa', validators=[Optional()])

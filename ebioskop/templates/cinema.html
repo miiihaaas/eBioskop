@@ -194,6 +194,13 @@
                                     <div class="text-danger">{{ form.city.errors[0] }}</div>
                                 {% endif %}
                             </div>
+                            <div class="col-md-3">
+                                {{ form.municipality.label(class="form-label") }}
+                                {{ form.municipality(class="form-control", placeholder="Unesite grad") }}
+                                {% if form.municipality.errors %}
+                                    <div class="text-danger">{{ form.municipality.errors[0] }}</div>
+                                {% endif %}
+                            </div>
                             <div class="col-md-6">
                                 {{ form.email.label(class="form-label") }}
                                 {{ form.email(class="form-control", placeholder="Unesite email adrese odvojene zarezom") }}

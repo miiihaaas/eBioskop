@@ -57,10 +57,31 @@ class RegisterMovieForm(FlaskForm):
     
     genres = SelectMultipleField('Žanr', choices=[
         # Ovde dodajte listu žanrova prema vašim potrebama
-        ('action', 'Akcija'),
-        ('comedy', 'Komedija'),
-        ('drama', 'Drama'),
-        # ... dodajte ostale žanrove
+        ('Avanturistički', 'Avanturistički'),
+        ('Akcioni', 'Akcioni'),
+        ('Arthaus', 'Arthaus'),
+        ('Animirani', 'Animirani'),
+        ('Biografski', 'Biografski'),
+        ('Vestern', 'Vestern'),
+        ('Domaći', 'Domaći'),
+        ('Dečji', 'Dečji'),
+        ('Dokumentarni', 'Dokumentarni'),
+        ('Drama ', 'Drama '),
+        ('Istorijski', 'Istorijski'),
+        ('Komedija', 'Komedija'),
+        ('Kriminalistički', 'Kriminalistički'),
+        ('Misterija ', 'Misterija '),
+        ('Mjuzikl ', 'Mjuzikl '),
+        ('Naučna fantastika', 'Naučna fantastika'),
+        ('Nezavisni', 'Nezavisni'),
+        ('Porodični', 'Porodični'),
+        ('Psihološki triler', 'Psihološki triler'),
+        ('Ratni', 'Ratni'),
+        ('Romantična komedija', 'Romantična komedija'),
+        ('Sportski', 'Sportski'),
+        ('Tinejdžerski', 'Tinejdžerski'),
+        ('Triler', 'Triler'),
+        ('Horor', 'Horor'),
     ], validators=[DataRequired()])
     
     release_date = DateField('Dan, mesec i godina starta filma', validators=[DataRequired()])
@@ -69,5 +90,5 @@ class RegisterMovieForm(FlaskForm):
 
 
 class EditMovieForm(RegisterMovieForm):
-    is_showing_finished = BooleanField('Označiti ako je završeno prikazivanje filma') #! ovo ispraviti da bude check polje "Označiti ako je završeno prikazivanje filma"
+    is_showing_finished = BooleanField('Označiti ako je završeno prikazivanje filma')
     submit = SubmitField('Sačuvaj izmene')

@@ -71,12 +71,13 @@ def add_movie():
                 duration=form.duration.data,
                 versions=form.versions.data,
                 projection_formats=form.projection_formats.data,
+                age_rating=form.age_rating.data,
                 trailer_link=form.trailer_link.data,
                 synopsis=form.synopsis.data,
                 genres=form.genres.data,
                 release_date=form.release_date.data,
                 distributor_id=current_user.distributor_id,
-                status='scheduled_showing'
+                is_showing_finished=False
             )
             
             # Dodajemo movie u sesiju da bismo dobili ID
@@ -116,7 +117,7 @@ def add_movie():
 
     except Exception as e:
         db.session.rollback()
-        print(f"Greška: {str(e)}")
+        print(f"Greška--: {str(e)}")
         return jsonify({"success": False, "message": "Doslo je do greske pri kreiranju filmova."}), 500
 
 

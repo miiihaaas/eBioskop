@@ -46,9 +46,9 @@
                                 {% endfor %}
                             </div>
                             <div class="col-md-6 mb-3">
-                                {{ form.cinema.label(class="form-label") }}
-                                {{ form.cinema(class="form-select") }}
-                                {% for error in form.cinema.errors %}
+                                {{ form.cinema_id.label(class="form-label") }}
+                                {{ form.cinema_id(class="form-select") }}
+                                {% for error in form.cinema_id.errors %}
                                     <div class="text-danger"><small>{{ error }}</small></div>
                                 {% endfor %}
                             </div>
@@ -109,11 +109,11 @@
 {% block scripts %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        var cinemaSelect = document.getElementById('cinema');
+        var cinemaSelect = document.getElementById('cinema_id');
         var cinemaNotMkpsField = document.getElementById('cinema_not_mkps_field');
     
         function toggleCinemaNotMkpsField() {
-            if (cinemaSelect.value === '') {
+            if (cinemaSelect.value === '0') {
                 cinemaNotMkpsField.style.display = 'block';
             } else {
                 cinemaNotMkpsField.style.display = 'none';

@@ -39,6 +39,13 @@ class User(db.Model, UserMixin):
 
     def __repr__(self):
         return f"{self.id}, '{self.user_name} {self.user_surname}'"
+    
+
+
+class Municipality(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    municipality_name = db.Column(db.String(100), nullable=False)
+    municipality_zip_code = db.Column(db.String(10), nullable=False)
 
 
 class Distributor(db.Model):
@@ -158,26 +165,27 @@ class Cinema(db.Model):
     country = db.Column(db.String(100), nullable=False)
     address = db.Column(db.String(200), nullable=False)
     postal_code = db.Column(db.String(20), nullable=False)
-    city = db.Column(db.String(100), nullable=False)  # Ovo će biti povezano sa padajućim menijem sa listom gradova
-    email = db.Column(db.String, nullable=False)  # Čuva email adrese kao jedan string
+    city = db.Column(db.String(100), nullable=False)
+    municipality = db.Column(db.String(100), nullable=False)  # Novo polje za opštinu
+    email = db.Column(db.String(500), nullable=False)  # Povećana dužina za više email adresa
     phone = db.Column(db.String(20), nullable=False)
-    legal_form = db.Column(db.String(50), nullable=False)  # Padajući meni: 'javna ustanova', 'kompanija'
+    legal_form = db.Column(db.String(50), nullable=False)
     pib = db.Column(db.String(20), nullable=False)
     mb = db.Column(db.String(20), nullable=False)
     website = db.Column(db.String(200))
-    social_links = db.Column(db.JSON)  # JSON polje za linkove društvenih mreža (YouTube, Facebook, Instagram, TikTok)
-    is_member_mkps = db.Column(db.Boolean, nullable=False)  # Da li je član MKPS?
-    is_member_ec = db.Column(db.Boolean, nullable=False)  # Da li je član EC?
+    social_links = db.Column(db.Text)  # Promena u Text za jednostavnije rukovanje
+    is_member_mkps = db.Column(db.Boolean, default=False)
+    is_member_ec = db.Column(db.Boolean, default=False)
     
     users = db.relationship('User', back_populates='cinema', uselist=False)
     properties = db.relationship('CinemaProperties', back_populates='cinema', uselist=False)
     representatives = db.relationship('CinemaRepresentative', back_populates='cinema')
     
     def get_emails(self):
-        return self.email.split(',')  # Vraća listu email adresa
+        return [email.strip() for email in self.email.split(',')]
 
     def set_emails(self, email_list):
-        self.email = ','.join(email_list)
+        self.email = ', '.join(email.strip() for email in email_list)
 
 
 class CinemaRepresentative(db.Model):

@@ -24,14 +24,36 @@
             border-bottom: 2px solid #3498db;
             padding-bottom: 10px;
         }
+        .movie-info {
+            display: flex;
+            align-items: flex-start;
+            margin-top: 20px;
+        }
+        .poster-container {
+            flex: 0 0 40%;
+            margin-right: 20px;
+        }
+        .poster {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
         .movie-details {
+            flex: 1;
+            background-color: #fff;
+            border: 1px solid #eee;
+            border-radius: 3px;
+            padding: 15px;
+        }
+        .movie-details-full {
             background-color: #fff;
             border: 1px solid #eee;
             border-radius: 3px;
             padding: 15px;
             margin-top: 20px;
         }
-        .movie-details p {
+        .movie-details p, .movie-details-full p {
             margin: 5px 0;
         }
         .cta-button {
@@ -62,13 +84,29 @@
         <h1>Novi film u sistemu eBioskop</h1>
         <p>Poštovani,</p>
         <p>Obaveštavamo vas da je u sistem unet novi film sa sledećim detaljima:</p>
-        <div class="movie-details">
+        {% if poster %}
+        <div class="movie-info">
+            <div class="poster-container">
+                <!-- <img src="{{ url_for('static', filename=poster, _external=True) }}" alt="Poster filma {{ movie_name }}" class="poster"> -->
+                <img src="{{ url_for('static', filename=poster.replace('static\\', '').replace('\\', '/'), _external=True) }}" alt="Poster filma {{ movie_name }}" class="poster">
+            </div>
+            <div class="movie-details">
+                <p><strong>Naziv:</strong> {{ movie_name }}</p>
+                <p><strong>Režiser:</strong> {{ director }}</p>
+                <p><strong>Datum početka prikazivanja:</strong> {{ release_date }}</p>
+                <p><strong>Distributor:</strong> {{ distributor }}</p>
+            </div>
+        </div>
+        {% else %}
+        <div class="movie-details-full">
             <p><strong>Naziv:</strong> {{ movie_name }}</p>
             <p><strong>Režiser:</strong> {{ director }}</p>
             <p><strong>Datum početka prikazivanja:</strong> {{ release_date }}</p>
+            <p><strong>Distributor:</strong> {{ distributor }}</p>
         </div>
+        {% endif %}
         <p>Za više informacija, molimo vas da posetite našu platformu.</p>
-        <a href="{{ url_for('calendars.distributon_calendar')}}" class="cta-button">Pogledajte kalendar distribucije</a>
+        <a href="{{ url_for('calendars.distribution_calendar', _external=True)}}" class="cta-button">Pogledajte kalendar distribucije</a>
         <p class="footer">
             Srdačan pozdrav,<br>
             Tim eBioskop
