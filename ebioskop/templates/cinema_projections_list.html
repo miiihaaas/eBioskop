@@ -1,18 +1,6 @@
 {% extends "layout.html" %}
 {% block content %}
 <div class="container-fluid mt-4">
-    <!-- Flash poruke -->
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, message in messages %}
-                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
-
     <!-- Kartica sa tabelom -->
     <div class="card cinema-card">
         <div class="card-header d-flex justify-content-between align-items-center">
@@ -33,10 +21,10 @@
                         <tr>
                             <th>Naziv bioskopa</th>
                             <th>Mesto</th>
-                            <th class="text-center">Član MKPS</th>
+                            <!-- <th class="text-center">Član MKPS</th>
                             <th class="text-center">Član EC</th>
                             <th class="text-center">E-karte</th>
-                            <th class="text-center">Digitalizovan</th>
+                            <th class="text-center">Digitalizovan</th>  -->
                             <th class="text-center">Akcije</th>
                         </tr>
                     </thead>
@@ -47,7 +35,7 @@
                                 <div class="cinema-info">
                                     {% if cinema.logo %}
                                     <div class="cinema-logo me-2">
-                                        <img src="{{ url_for('static', filename='cinema_logos/' + cinema.logo) }}" 
+                                        <img src="{{ url_for('static', filename='img/cinema/' + cinema.logo) }}" 
                                              alt="{{ cinema.name }}" class="cinema-logo-img">
                                     </div>
                                     {% endif %}
@@ -67,7 +55,7 @@
                                     <small class="address text-muted d-block">{{ cinema.address }}</small>
                                 </div>
                             </td>
-                            <td class="text-center">
+                            <!-- <td class="text-center">
                                 {% if cinema.is_member_mkps %}
                                     <span class="membership-badge badge-success">DA</span>
                                 {% else %}
@@ -102,7 +90,7 @@
                                 {% else %}
                                     <span class="membership-badge badge-secondary">NE</span>
                                 {% endif %}
-                            </td>
+                            </td> -->
                             <td class="text-center">
                                 <a href="{{ url_for('projections.projections_list', cinema_properties_id=cinema.properties.id) }}" 
                                    class="btn btn-primary btn-sm action-btn">

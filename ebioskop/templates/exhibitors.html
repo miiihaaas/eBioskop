@@ -1,57 +1,108 @@
 {% extends "layout.html" %}
 {% block content %}
-<div class="container my-5">
-    <h1 class="text-center mb-4">Pregled prikazivača</h1>
+<div class="container-fluid py-4">
+    <!-- Page Header -->
+    <div class="page-header d-flex justify-content-between align-items-center mb-4">
+        <h1 class="page-title">Pregled prikazivača</h1>
+    </div>
 
-    <div class="card mb-4">
-        <div class="card-body">
+    <!-- Filter Card -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-body p-4">
             <form method="GET" action="{{ url_for('distributor.exhibitors') }}" class="row g-3 align-items-end">
                 <div class="col-md-4">
-                    <label for="start_date" class="form-label">Početni datum:</label>
-                    <input type="date" id="start_date" name="start_date" value="{{ start_date }}" class="form-control">
+                    <label for="start_date" class="form-label fw-semibold">Početni datum</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-calendar"></i></span>
+                        <input type="date" id="start_date" name="start_date" value="{{ start_date }}" 
+                               class="form-control">
+                    </div>
                 </div>
                 
                 <div class="col-md-4">
-                    <label for="end_date" class="form-label">Krajnji datum:</label>
-                    <input type="date" id="end_date" name="end_date" value="{{ end_date }}" class="form-control">
+                    <label for="end_date" class="form-label fw-semibold">Krajnji datum</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-calendar"></i></span>
+                        <input type="date" id="end_date" name="end_date" value="{{ end_date }}" 
+                               class="form-control">
+                    </div>
                 </div>
                 
                 <div class="col-md-4">
-                    <button type="submit" class="btn btn-primary w-100">Filtriraj</button>
+                    <button type="submit" class="btn btn-primary btn-add w-100">
+                        <i class="fas fa-filter me-2"></i>Primeni filter
+                    </button>
                 </div>
             </form>
         </div>
     </div>
 
+    <!-- Exhibitors List -->
     {% for exhibitor_data in exhibitors_data %}
-        <div class="card mb-4">
-            <div class="card-header">
-                <h2 class="mb-0">{{ exhibitor_data.exhibitor.name }}</h2>
+        <div class="cinema-card mb-4">
+            <div class="card-header bg-light py-3">
+                <div class="d-flex align-items-center">
+                    <div class="cinema-logo me-3">
+                        <img src="{{ url_for('static', filename='img/cinema/' + exhibitor_data.exhibitor.logo) }}" 
+                             alt="{{ exhibitor_data.exhibitor.name }}" class="cinema-logo-img">
+                    </div>
+                    <h2 class="cinema-name h4 mb-0">{{ exhibitor_data.exhibitor.name }}</h2>
+                </div>
             </div>
-            <div class="card-body">
+            <div class="card-body p-0">
                 <div class="table-responsive">
-                    <table class="table table-striped table-hover">
-                        <thead class="table-dark">
+                    <table class="cinema-table table mb-0">
+                        <thead>
                             <tr>
                                 <th>Naziv filma</th>
                                 <th>Verzija filma</th>
                                 <th>Projekcioni format</th>
                                 <th>Broj projekcija</th>
-                                <th>Broj nedelja prikazivanja</th>
-                                <th>Broj prodatih karata</th>
+                                <th>Broj nedelja</th>
+                                <th>Prodato karata</th>
                                 <th>Prihod</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for movie in exhibitor_data.movies %}
-                                <tr>
-                                    <td>{{ movie.name }}</td>
-                                    <td>{{ movie.versions|join(', ') }}</td>
-                                    <td>{{ movie.formats|join(', ') }}</td>
+                                <tr class="cinema-row">
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <strong>{{ movie.name }}</strong>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex gap-1 flex-wrap">
+                                            {% for version in movie.versions %}
+                                                {% if version == 'original' %}
+                                                    <span class="badge bg-success-subtle text-success rounded-pill px-3 py-2">Originalno</span>
+                                                {% elif version == 'subtitled' %}
+                                                    <span class="badge bg-warning-subtle text-warning rounded-pill px-3 py-2">Titlovano</span>
+                                                {% elif version == 'dubbed' %}
+                                                    <span class="badge bg-info-subtle text-info rounded-pill px-3 py-2">Sinhronizovano</span>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex gap-1 flex-wrap">
+                                            {% for format in movie.formats %}
+                                                {% if format == '2D' %}
+                                                    <span class="badge bg-primary-subtle text-primary rounded-pill px-3 py-2">2D</span>
+                                                {% elif format == '3D' %}
+                                                    <span class="badge bg-secondary-subtle text-secondary rounded-pill px-3 py-2">3D</span>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                    </td>
                                     <td>{{ movie.projection_count }}</td>
                                     <td>{{ movie.weeks_showing }}</td>
                                     <td>{{ movie.tickets_sold }}</td>
-                                    <td>{{ '{:,.2f}'.format(movie.revenue) }} RSD</td>
+                                    <td>
+                                        <span class="fw-bold text-success">
+                                            {{ '{:,.2f}'.format(movie.revenue) }} RSD
+                                        </span>
+                                    </td>
                                 </tr>
                             {% endfor %}
                         </tbody>
@@ -60,10 +111,21 @@
             </div>
         </div>
     {% endfor %}
-    {{exhibitors_data|safe}}
-    <hr>
-    {{projections}}
-    <hr>
-    {{exhibitors}}
+
+    <!-- Debug info (if needed) -->
+    {% if debug %}
+        <div class="card mt-4">
+            <div class="card-header">
+                <h3 class="h5 mb-0">Debug Information</h3>
+            </div>
+            <div class="card-body">
+                <pre>{{exhibitors_data|safe}}</pre>
+                <hr>
+                <pre>{{projections}}</pre>
+                <hr>
+                <pre>{{exhibitors}}</pre>
+            </div>
+        </div>
+    {% endif %}
 </div>
 {% endblock %}

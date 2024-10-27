@@ -11,7 +11,7 @@
             <div class="cinema-info">
                 {% if cinema_info.logo %}
                 <div class="cinema-logo me-3">
-                    <img src="{{ url_for('static', filename='cinema_logos/' + cinema_info.logo) }}" 
+                    <img src="{{ url_for('static', filename='img/cinema/' + cinema_info.logo) }}" 
                             alt="{{ cinema_info.name }}" class="cinema-logo-img">
                 </div>
                 {% endif %}
@@ -188,23 +188,89 @@
     {% if current_user.user_type == 'cinema' %}
     <!-- Modal za dodavanje novih projekcija -->
     <div class="modal fade" id="registerProjectionModal" tabindex="-1" aria-labelledby="registerProjectionModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="registerProjectionModalLabel">Dodaj novu projekciju</h5>
+                    <h5 class="modal-title" id="registerProjectionModalLabel">
+                        <i class="fas fa-film me-2"></i>
+                        Dodaj novu projekciju
+                    </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <form id="add-projection-form" method="POST" action="{{ url_for('projections.add_projection') }}">
+                <div class="modal-body p-4">
+                    <form id="add-projection-form" method="POST" action="{{ url_for('projections.add_projection') }}" class="needs-validation">
                         {{ add_form.hidden_tag() }}
-                        {% for field in add_form if field.widget.input_type != 'hidden' %}
-                            <div class="mb-3">
-                                {{ field.label(class="form-label") }}
-                                {{ field(class="form-control") }}
+                        
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    {{ add_form.date.label(class="form-label fw-bold") }}
+                                    {{ add_form.date(class="form-control", placeholder="Izaberite datum") }}
+                                </div>
                             </div>
-                        {% endfor %}
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zatvori</button>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    {{ add_form.time.label(class="form-label fw-bold") }}
+                                    {{ add_form.time(class="form-control", placeholder="Izaberite vreme") }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    {{ add_form.movie_id.label(class="form-label fw-bold") }}
+                                    {{ add_form.movie_id(class="form-select") }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    {{ add_form.version.label(class="form-label fw-bold") }}
+                                    {{ add_form.version(class="form-select") }}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    {{ add_form.format.label(class="form-label fw-bold") }}
+                                    {{ add_form.format(class="form-select") }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    {{ add_form.cinema_hall_id.label(class="form-label fw-bold") }}
+                                    {{ add_form.cinema_hall_id(class="form-select") }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    {{ add_form.tickets_sold.label(class="form-label fw-bold") }}
+                                    {{ add_form.tickets_sold(class="form-control", placeholder="Unesite broj prodatih ulaznica") }}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    {{ add_form.revenue.label(class="form-label fw-bold") }}
+                                    <div class="input-group">
+                                        {{ add_form.revenue(class="form-control", placeholder="Unesite zaradu") }}
+                                        <span class="input-group-text">RSD</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer px-0 pb-0">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                <i class="fas fa-times me-2"></i>Otkaži
+                            </button>
                             {{ add_form.submit(class="btn btn-primary") }}
                         </div>
                     </form>
@@ -215,18 +281,37 @@
 
     <!-- Modal za potvrdu brisanja projekcije -->
     <div class="modal fade" id="deleteProjectionModal" tabindex="-1" aria-labelledby="deleteProjectionModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="deleteProjectionModalLabel">Potvrda brisanja</h5>
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-light border-bottom-0 py-3">
+                    <h5 class="modal-title text-danger fw-bold" id="deleteProjectionModalLabel">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Potvrda brisanja projekcije
+                    </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    Da li ste sigurni da želite da obrišete projekciju <span id="deleteProjectionTitle"></span>?
+                
+                <div class="modal-body p-4">
+                    <div class="alert alert-warning mb-4">
+                        <p class="mb-0">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Ova akcija je nepovratna. Nakon brisanja, projekcija će biti trajno uklonjena iz sistema.
+                        </p>
+                    </div>
+                    
+                    <p class="mb-0">Da li ste sigurni da želite da obrišete projekciju:</p>
+                    <p class="h5 text-primary mt-2" id="deleteProjectionTitle"></p>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Odustani</button>
-                    <a id="confirmDeleteButton" href="#" class="btn btn-danger">Obriši</a>
+                
+                <div class="modal-footer border-top-0 pt-0">
+                    <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>
+                        Odustani
+                    </button>
+                    <a id="confirmDeleteButton" href="#" class="btn btn-danger px-4">
+                        <i class="fas fa-trash-alt me-2"></i>
+                        Obriši projekciju
+                    </a>
                 </div>
             </div>
         </div>
@@ -234,29 +319,58 @@
     {% endif %}
     
     <!-- Modal za prikaz detalja projekcije -->
+    <!-- Modal za detalje projekcije -->
     <div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="detailsModalLabel">Detalji projekcije</h5>
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <!-- Modal Header -->
+                <div class="modal-header bg-light border-bottom-0 py-3">
+                    <h5 class="modal-title" id="detailsModalLabel">
+                        <i class="fas fa-film me-2 text-primary"></i>
+                        Detalji projekcije
+                    </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <div class="info-item">
-                        <span class="info-label">Naziv filma:</span>
-                        <span id="modalMovieTitle"></span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">Broj nedelja prikazivanja:</span>
-                        <span id="modalWeeksShowing"></span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">Ukupan broj prikazivanja:</span>
-                        <span id="modalTotalScreenings"></span>
+
+                <!-- Modal Body -->
+                <div class="modal-body p-4">
+                    <div class="cinema-details-card mb-0">
+                        <!-- Naziv filma -->
+                        <div class="info-section">
+                            <div class="info-item">
+                                <i class="fas fa-video text-primary"></i>
+                                <span class="info-label">Naziv filma:</span>
+                                <span id="modalMovieTitle" class="fw-bold text-dark"></span>
+                            </div>
+
+                            <!-- Statistika prikazivanja -->
+                            <div class="info-item">
+                                <i class="fas fa-calendar-week text-primary"></i>
+                                <span class="info-label">Broj nedelja:</span>
+                                <span id="modalWeeksShowing" class="badge bg-primary px-3 py-2"></span>
+                            </div>
+
+                            <div class="info-item">
+                                <i class="fas fa-play-circle text-primary"></i>
+                                <span class="info-label">Ukupno prikazivanja:</span>
+                                <span id="modalTotalScreenings" class="badge bg-info px-3 py-2"></span>
+                            </div>
+                        </div>
+
+                        <!-- Informativni tekst -->
+                        <div class="alert alert-info mt-4 mb-0">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <small>Prikazani podaci obuhvataju period od početka prikazivanja filma do danas, nezavisno od izabranog perioda u filteru.</small>
+                        </div>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zatvori</button>
+
+                <!-- Modal Footer -->
+                <div class="modal-footer border-top-0">
+                    <button type="button" class="btn btn-primary px-4" data-bs-dismiss="modal">
+                        <i class="fas fa-check me-2"></i>
+                        Zatvori
+                    </button>
                 </div>
             </div>
         </div>

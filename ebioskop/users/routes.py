@@ -249,7 +249,7 @@ def add_privileged_user():
     if current_user.user_type != "admin":
         flash('Nemate pravo pristupa ovoj strani.', 'danger')
         return redirect(url_for('main.home'))
-    
+    route_name = request.endpoint
     form = PrivilegedUserForm()
     if form.validate_on_submit():
         # Automatski generisanje hash-a za password 'test'
@@ -275,9 +275,10 @@ def add_privileged_user():
         return redirect(url_for('users.privileged_users'))
     
     return render_template('privileged_user.html', 
-                         title='Novi privilegovani korisnik',
-                         form=form,
-                         legend='Novi privilegovani korisnik')
+                            title='Novi privilegovani korisnik',
+                            form=form,
+                            route_name=route_name,
+                            legend='Novi privilegovani korisnik')
 
 @users.route("/edit_privileged_user/<int:user_id>", methods=['GET', 'POST'])
 @login_required

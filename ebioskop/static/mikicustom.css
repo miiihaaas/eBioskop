@@ -837,3 +837,63 @@ main.container {
     font-weight: 500;
     font-size: 0.75rem;
 }
+
+.nav-link.active {
+    color: #007bff !important;  /* plava boja za aktivni link */
+    font-weight: 600;  /* podebljani font */
+    position: relative;  /* za donju liniju */
+}
+
+.nav-link.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 1rem;  /* usklađeno sa paddingom linka */
+    right: 1rem;
+    height: 2px;
+    background-color: #007bff;  /* plava linija ispod aktivnog linka */
+}
+
+.nav-link {
+    color: #495057;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    position: relative;
+    transition: all 0.3s ease;  /* glatka tranzicija za sve promene */
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 1rem;
+    right: 1rem;
+    height: 2px;
+    background-color: #007bff;
+    transform: scaleX(0);  /* inicijalno sakrivena linija */
+    transition: transform 0.3s ease;  /* tranzicija za liniju */
+}
+
+.nav-link:hover {
+    color: #007bff;  /* plava boja na hover */
+    transform: translateY(-1px);  /* blago podizanje linka */
+}
+
+.nav-link:hover::after {
+    transform: scaleX(1);  /* prikazivanje linije na hover */
+}
+
+/* Aktivni link */
+.nav-link.active {
+    color: #007bff !important;
+    font-weight: 600;
+}
+
+.nav-link.active::after {
+    transform: scaleX(1);  /* linija je uvek vidljiva za aktivni link */
+}
+
+/* Dodatni efekat za aktivni link na hover */
+.nav-link.active:hover {
+    color: #0056b3 !important;  /* tamnija plava na hover preko aktivnog linka */
+}
