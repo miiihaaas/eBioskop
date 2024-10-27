@@ -11,6 +11,7 @@
                     <form method="POST" action="">
                         {{ form.hidden_tag() }}
                         
+                        <!-- Osnovni podaci -->
                         <div class="row mb-3">
                             <div class="col-md-6 mb-3">
                                 {{ form.hall_name.label(class="form-label") }}
@@ -22,6 +23,7 @@
                             </div>
                         </div>
 
+                        <!-- Radni dani -->
                         <div class="mb-3">
                             {{ form.workdays.label(class="form-label") }}
                             <div class="btn-group" role="group">
@@ -33,6 +35,7 @@
                             </div>
                         </div>
 
+                        <!-- Zaposleni i godina izgradnje -->
                         <div class="row mb-3">
                             <div class="col-md-6 mb-3">
                                 {{ form.employee_count.label(class="form-label") }}
@@ -44,6 +47,7 @@
                             </div>
                         </div>
 
+                        <!-- Dimenzije i udaljenost -->
                         <div class="row mb-3">
                             <div class="col-md-6 mb-3">
                                 {{ form.dimensions.label(class="form-label") }}
@@ -55,6 +59,7 @@
                             </div>
                         </div>
 
+                        <!-- Napajanje i opis sedišta -->
                         <div class="row mb-3">
                             <div class="col-md-6 mb-3">
                                 <div class="form-check">
@@ -68,6 +73,7 @@
                             </div>
                         </div>
 
+                        <!-- Klimatizacija i slično -->
                         <div class="row mb-3">
                             <div class="col-md-3 mb-2">
                                 <div class="form-check">
@@ -95,6 +101,7 @@
                             </div>
                         </div>
 
+                        <!-- Dokumentacija -->
                         <div class="row mb-3">
                             <div class="col-md-6 mb-2">
                                 <div class="form-check">
@@ -110,6 +117,7 @@
                             </div>
                         </div>
 
+                        <!-- Ekran i zvuk -->
                         <div class="row mb-3">
                             <div class="col-md-6 mb-3">
                                 {{ form.screen_size.label(class="form-label") }}
@@ -121,6 +129,7 @@
                             </div>
                         </div>
 
+                        <!-- Digitalizacija -->
                         <div class="mb-3">
                             <div class="form-check">
                                 {{ form.is_digitalized(class="form-check-input") }}
@@ -128,18 +137,157 @@
                             </div>
                         </div>
 
-                        <div id="digitalized-fields" style="display: none;">
-                            <!-- Digitalized fields content -->
-                            <!-- ... (keep the existing content for digitalized fields) ... -->
-                        </div>
+                        <!-- Digitalizovana oprema -->
+                        <div id="digitalized-fields" class="mb-3" style="display: none;">
+                            <div class="row mb-3">
+                                <div class="col-md-6 mb-3">
+                                    {{ form.projector_brand.label(class="form-label") }}
+                                    {{ form.projector_brand(class="form-control", placeholder="Brend projektora") }}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    {{ form.projector_model.label(class="form-label") }}
+                                    {{ form.projector_model(class="form-control", placeholder="Model projektora") }}
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-4 mb-3">
+                                    {{ form.projector_resolution.label(class="form-label") }}
+                                    {{ form.projector_resolution(class="form-control", placeholder="Rezolucija projektora") }}
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    {{ form.projector_lumens.label(class="form-label") }}
+                                    {{ form.projector_lumens(class="form-control", placeholder="Broj lumena") }}
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    {{ form.projector_contrast.label(class="form-label") }}
+                                    {{ form.projector_contrast(class="form-control", placeholder="Kontrast projektora") }}
+                                </div>
+                            </div>
 
-                        <div id="non-digitalized-fields">
-                            <!-- Non-digitalized fields content -->
-                            <!-- ... (keep the existing content for non-digitalized fields) ... -->
+                            <div class="row mb-3">
+                                <div class="col-md-6 mb-3">
+                                    {{ form.server_brand.label(class="form-label") }}
+                                    {{ form.server_brand(class="form-control", placeholder="Brend servera") }}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    {{ form.server_model.label(class="form-label") }}
+                                    {{ form.server_model(class="form-control", placeholder="Model servera") }}
+                                </div>
+                            </div>
+
+                            <!-- 3D Oprema -->
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    {{ form.has_3d_equipment(class="form-check-input") }}
+                                    {{ form.has_3d_equipment.label(class="form-check-label") }}
+                                </div>
+                            </div>
+
+                            <div id="3d-equipment-fields" class="mb-3" style="display: none;">
+                                <div class="form-check">
+                                    {{ form.has_silver_screen(class="form-check-input") }}
+                                    {{ form.has_silver_screen.label(class="form-check-label") }}
+                                </div>
+                            </div>
+
+                            <!-- Povezani uređaji -->
+                            <div class="mb-3">
+                                {{ form.connected_devices.label(class="form-label") }}
+                                <div class="btn-group" role="group">
+                                {% for device in form.connected_devices %}
+                                    <input type="checkbox" class="btn-check" id="{{ device.id }}" name="{{ device.name }}" value="{{ device.data }}"
+                                            {% if form.connected_devices.data and device.data in form.connected_devices.data %}checked{% endif %}>
+                                    <label class="btn btn-outline-primary" for="{{ device.id }}">{{ device.label.text }}</label>
+                                {% endfor %}
+                                </div>
+                            </div>
+
+                            <!-- Datum instalacije -->
+                            <div class="mb-3">
+                                {{ form.installation_date.label(class="form-label") }}
+                                {{ form.installation_date(class="form-control", type="date") }}
+                            </div>
+
+                            <!-- Načini nabavke -->
+                            <div class="mb-3">
+                                {{ form.acquisition_method.label(class="form-label") }}
+                                {% for method in form.acquisition_method %}
+                                <div class="input-group mb-2">
+                                    <div class="form-check">
+                                        {{ method(class="form-check-input") }}
+                                        {{ method.label(class="form-check-label") }}
+                                    </div>
+                                    <input type="number" 
+                                           name="acquisition_percentage_{{ loop.index }}" 
+                                           class="form-control percentage-input" 
+                                           placeholder="Procenat" 
+                                           min="0" 
+                                           max="100" 
+                                           style="display: none;">
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <hr>
+
+                        <!-- Video projektor -->
+                        <div class="mb-3">
+                            <div class="form-check">
+                                {{ form.has_video_projector(class="form-check-input") }}
+                                {{ form.has_video_projector.label(class="form-check-label") }}
+                            </div>
+                        </div>
+                        <div id="video-projector-fields" class="mb-3" style="display: none;">
+                            <div class="row mb-3">
+                                <div class="col-md-4 mb-3">
+                                    {{ form.video_projector_brand.label(class="form-label") }}
+                                    {{ form.video_projector_brand(class="form-control", placeholder="Brend video projektora") }}
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    {{ form.video_projector_model.label(class="form-label") }}
+                                    {{ form.video_projector_model(class="form-control", placeholder="Model video projektora") }}
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    {{ form.video_projector_resolution.label(class="form-label") }}
+                                    {{ form.video_projector_resolution(class="form-control", placeholder="Rezolucija") }}
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                {{ form.connected_devices_to_video_projector.label(class="form-label") }}
+                                <div class="btn-group" role="group">
+                                {% for device in form.connected_devices_to_video_projector %}
+                                    <input type="checkbox" class="btn-check" id="{{ device.id }}" name="{{ device.name }}" value="{{ device.data }}"
+                                            {% if form.connected_devices_to_video_projector.data and device.data in form.connected_devices_to_video_projector.data %}checked{% endif %}>
+                                    <label class="btn btn-outline-primary" for="{{ device.id }}">{{ device.label.text }}</label>
+                                {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <!-- 35mm projektor -->
+                        <div class="mb-3">
+                            <div class="form-check">
+                                {{ form.has_35mm_projector(class="form-check-input") }}
+                                {{ form.has_35mm_projector.label(class="form-check-label") }}
+                            </div>
+                        </div>
+                        <div id="35mm-projector-fields" class="mb-3" style="display: none;">
+                            <div class="row mb-3">
+                                <div class="col-md-6 mb-3">
+                                    {{ form.projector_35mm_brand.label(class="form-label") }}
+                                    {{ form.projector_35mm_brand(class="form-control", placeholder="Brend 35mm projektora") }}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    {{ form.projector_35mm_model.label(class="form-label") }}
+                                    {{ form.projector_35mm_model(class="form-control", placeholder="Model 35mm projektora") }}
+                                </div>
+                            </div>
                         </div>
 
                         <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary btn-lg">{{ form.submit.label }}</button>
+                            {{ form.submit(class="btn btn-primary btn-lg") }}
                         </div>
                     </form>
                 </div>
@@ -147,50 +295,150 @@
         </div>
     </div>
 </div>
-
+{% endblock %}
+{% block scripts %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Helper funkcija za toggle vidljivosti
+        function toggleVisibility(element, show) {
+            if (element) {
+                element.style.display = show ? 'block' : 'none';
+            }
+        }
+
+        // Helper funkcija za validaciju zavisnih polja
+        function validateDependentFields(isChecked, requiredFields) {
+            requiredFields.forEach(field => {
+                if (field) {
+                    if (isChecked) {
+                        field.setAttribute('required', '');
+                    } else {
+                        field.removeAttribute('required');
+                        field.value = '';
+                    }
+                }
+            });
+        }
+
+        // Digitalizacija
         const isDigitalized = document.getElementById('is_digitalized');
         const digitalizedFields = document.getElementById('digitalized-fields');
+        
+        if (isDigitalized) {
+            isDigitalized.addEventListener('change', function() {
+                const isChecked = this.checked;
+                toggleVisibility(digitalizedFields, isChecked);
+                
+                const requiredFields = [
+                    document.getElementById('projector_brand'),
+                    document.getElementById('projector_model'),
+                    document.getElementById('projector_resolution'),
+                    document.getElementById('projector_lumens'),
+                    document.getElementById('projector_contrast'),
+                    document.getElementById('server_brand'),
+                    document.getElementById('server_model'),
+                    document.getElementById('installation_date')
+                ];
+                
+                validateDependentFields(isChecked, requiredFields);
+            });
+        }
+
+        // 3D Oprema (unutar digitalizacije)
         const has3DEquipment = document.getElementById('has_3d_equipment');
         const fields3DEquipment = document.getElementById('3d-equipment-fields');
+        
+        if (has3DEquipment) {
+            has3DEquipment.addEventListener('change', function() {
+                const isChecked = this.checked;
+                toggleVisibility(fields3DEquipment, isChecked);
+                
+                const silverScreen = document.getElementById('has_silver_screen');
+                validateDependentFields(isChecked, [silverScreen]);
+            });
+        }
+
+        // Video projektor
         const hasVideoProjector = document.getElementById('has_video_projector');
         const videoProjectorFields = document.getElementById('video-projector-fields');
+        
+        if (hasVideoProjector) {
+            hasVideoProjector.addEventListener('change', function() {
+                const isChecked = this.checked;
+                toggleVisibility(videoProjectorFields, isChecked);
+                
+                const requiredFields = [
+                    document.getElementById('video_projector_brand'),
+                    document.getElementById('video_projector_model'),
+                    document.getElementById('video_projector_resolution')
+                ];
+                
+                validateDependentFields(isChecked, requiredFields);
+            });
+        }
+
+        // 35mm projektor
         const has35mmProjector = document.getElementById('has_35mm_projector');
         const projector35mmFields = document.getElementById('35mm-projector-fields');
-    
-        isDigitalized.addEventListener('change', function() {
-            digitalizedFields.style.display = this.checked ? 'block' : 'none';
-            // Uklanjamo sakrivanje non-digitalized polja
-        });
-    
-        has3DEquipment.addEventListener('change', function() {
-            fields3DEquipment.style.display = this.checked ? 'block' : 'none';
-        });
-    
-        hasVideoProjector.addEventListener('change', function() {
-            videoProjectorFields.style.display = this.checked ? 'block' : 'none';
-        });
-    
-        has35mmProjector.addEventListener('change', function() {
-            projector35mmFields.style.display = this.checked ? 'block' : 'none';
-        });
-    
+        
+        if (has35mmProjector) {
+            has35mmProjector.addEventListener('change', function() {
+                const isChecked = this.checked;
+                toggleVisibility(projector35mmFields, isChecked);
+                
+                const requiredFields = [
+                    document.getElementById('projector_35mm_brand'),
+                    document.getElementById('projector_35mm_model')
+                ];
+                
+                validateDependentFields(isChecked, requiredFields);
+            });
+        }
+
+        // Način nabavke opreme i procenti
         const acquisitionMethods = document.querySelectorAll('input[name^="acquisition_method"]');
         acquisitionMethods.forEach(function(method) {
             method.addEventListener('change', function() {
-                const percentageInput = this.parentNode.querySelector('input[type="number"]');
-                percentageInput.style.display = this.checked ? 'block' : 'none';
+                const percentageInput = this.closest('.input-group').querySelector('.percentage-input');
+                if (percentageInput) {
+                    toggleVisibility(percentageInput, this.checked);
+                    validateDependentFields(this.checked, [percentageInput]);
+                }
             });
         });
-    
-        // Trigger change event on page load to set initial state
-        isDigitalized.dispatchEvent(new Event('change'));
-        has3DEquipment.dispatchEvent(new Event('change'));
-        hasVideoProjector.dispatchEvent(new Event('change'));
-        has35mmProjector.dispatchEvent(new Event('change'));
-        acquisitionMethods.forEach(method => method.dispatchEvent(new Event('change')));
-    });
-    </script>
 
+        // Validacija procenata nabavke
+        const form = document.querySelector('form');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                const checkedMethods = document.querySelectorAll('input[name^="acquisition_method"]:checked');
+                if (checkedMethods.length > 0) {
+                    let totalPercentage = 0;
+                    checkedMethods.forEach(method => {
+                        const percentageInput = method.closest('.input-group').querySelector('.percentage-input');
+                        if (percentageInput) {
+                            totalPercentage += parseFloat(percentageInput.value || 0);
+                        }
+                    });
+
+                    if (totalPercentage !== 100) {
+                        e.preventDefault();
+                        alert('Ukupan zbir procenata načina nabavke mora biti 100%');
+                    }
+                }
+            });
+        }
+
+        // Inicijalizacija forme
+        function initializeFormState() {
+            if (isDigitalized) isDigitalized.dispatchEvent(new Event('change'));
+            if (has3DEquipment) has3DEquipment.dispatchEvent(new Event('change'));
+            if (hasVideoProjector) hasVideoProjector.dispatchEvent(new Event('change'));
+            if (has35mmProjector) has35mmProjector.dispatchEvent(new Event('change'));
+            acquisitionMethods.forEach(method => method.dispatchEvent(new Event('change')));
+        }
+
+        initializeFormState();
+    });
+</script>
 {% endblock %}

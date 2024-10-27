@@ -62,6 +62,8 @@ class Distributor(db.Model):
     authorized_person = db.Column(db.String(100), nullable=False)
     website = db.Column(db.String(200), nullable=True)
     
+    logo = db.Column(db.String(255), nullable=True, default='default_logo.jpg')
+    
     youtube = db.Column(db.String(200), nullable=True)
     facebook = db.Column(db.String(200), nullable=True)
     instagram = db.Column(db.String(200), nullable=True)
@@ -173,6 +175,7 @@ class Cinema(db.Model):
     pib = db.Column(db.String(20), nullable=False)
     mb = db.Column(db.String(20), nullable=False)
     website = db.Column(db.String(200))
+    logo = db.Column(db.String(255), nullable=True, default='default_logo.jpg')
     social_links = db.Column(db.Text)  # Promena u Text za jednostavnije rukovanje
     is_member_mkps = db.Column(db.Boolean, default=False)
     is_member_ec = db.Column(db.Boolean, default=False)
@@ -261,15 +264,15 @@ class CinemaHall(db.Model):
     projector_contrast = db.Column(db.String(50))  # Kontrast projektora
     server_brand = db.Column(db.String(100))  # Brend servera
     server_model = db.Column(db.String(100))  # Model servera
+    
     has_3d_equipment = db.Column(db.Boolean)  # Da li poseduje 3D opremu
     has_silver_screen = db.Column(db.Boolean)  # Da li poseduje silver screen (ako postoji 3D oprema)
     
-    # Ostala oprema
     connected_devices = db.Column(JSON)  # Povezani uređaji (Blue-ray, DVD, računar)
     installation_date = db.Column(db.Date)  # Datum instalacije
     acquisition_method = db.Column(JSON)  # Način nabavke opreme i procenat finansiranja
     
-    # Polja koja se pojavljuju ako sala nije digitalizovana
+    # Ostala Polja - Video projektor sekcija
     has_video_projector = db.Column(db.Boolean)  # Da li posedujete video projektor (manje rezolucije od 2K)
     video_projector_brand = db.Column(db.String(100))  # Brend video projektora
     video_projector_model = db.Column(db.String(100))  # Model video projektora

@@ -1,4 +1,5 @@
 from flask_wtf import FlaskForm
+from flask_wtf.file import FileAllowed, FileField
 from wtforms import StringField, SubmitField, TextAreaField, SelectField, SelectMultipleField, TelField, URLField
 from wtforms.validators import DataRequired, Email, Length, Optional, URL
 from wtforms.widgets import ListWidget, CheckboxInput
@@ -16,6 +17,12 @@ class RegisterDistributorForm(FlaskForm):
     mb = StringField('MB', validators=[DataRequired(), Length(max=20)])
     authorized_person = StringField('Ovlašćeno lice', validators=[DataRequired(), Length(max=100)])
     website = URLField('Vebsajt', validators=[Optional(), URL(), Length(max=200)])
+    
+    # Logo field
+    logo = FileField('Logotip', validators=[
+        Optional(),
+        FileAllowed(['jpg', 'png', 'jpeg'], 'Dozvoljene su samo slike u JPG, JPEG ili PNG formatu!')
+    ])
     
     # Social media links
     youtube = URLField('YouTube', validators=[Optional(), URL(), Length(max=200)])
@@ -54,6 +61,12 @@ class EditDistributorForm(FlaskForm):
     mb = StringField('MB', validators=[DataRequired(), Length(max=20)])
     authorized_person = StringField('Ovlašćeno lice', validators=[DataRequired(), Length(max=100)])
     website = URLField('Vebsajt', validators=[Optional(), URL(), Length(max=200)])
+    
+    # Logo field
+    logo = FileField('Logotip', validators=[
+        Optional(),
+        FileAllowed(['jpg', 'png', 'jpeg'], 'Dozvoljene su samo slike u JPG, JPEG ili PNG formatu!')
+    ])
     
     # Social media links
     youtube = URLField('YouTube', validators=[Optional(), URL(), Length(max=200)])

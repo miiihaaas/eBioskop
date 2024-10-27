@@ -4,19 +4,27 @@
     <h1 class="mb-4">Box Office</h1>
     
     <!-- Filter -->
-    <div class="card mb-4">
+    <div class="card mb-4 sticky">
         <div class="card-body">
             <h5 class="card-title">Filter</h5>
             <form class="row g-3" method="GET" action="">
                 <div class="col-md-6">
                     <label for="week" class="form-label">Bioskopska nedelja</label>
-                    <input type="week" class="form-control" id="week" name="week" value="{{ request.args.get('week', '') }}">
+                    <select class="form-select" id="week" name="week">
+                        {% for w in range(1, 53) %}
+                            <option value="{{ w }}" {% if w == current_week %}selected{% endif %}>
+                                Nedelja {{ w }}
+                            </option>
+                        {% endfor %}
+                    </select>
                 </div>
                 <div class="col-md-6">
                     <label for="year" class="form-label">Godina</label>
                     <select class="form-select" id="year" name="year">
                         {% for year in years %}
-                            <option value="{{ year }}" {% if year|string == request.args.get('year', current_year)|string %}selected{% endif %}>{{ year }}</option>
+                            <option value="{{ year }}" {% if year == current_year %}selected{% endif %}>
+                                {{ year }}
+                            </option>
                         {% endfor %}
                     </select>
                 </div>
@@ -29,29 +37,30 @@
 
     <!-- Tabela -->
     <div class="table-responsive">
+        movies data: {{ movies_data }}
         <table class="table table-striped table-hover">
             <thead>
                 <tr>
-                    <th>#</th>
-                    <th>Promena</th>
-                    <th>Naziv filma</th>
-                    <th>Svetski dist.</th>
-                    <th>Lokalni dist.</th>
-                    <th>Ned. prik.</th>
-                    <th>Br. bioskopa</th>
-                    <th>Ned. B.O.</th>
-                    <th>Ned. prodaja</th>
-                    <th>% promena</th>
-                    <th>Preth. B.O.</th>
-                    <th>Preth. prodaja</th>
-                    <th>Ukupni B.O.</th>
-                    <th>Ukupna prodaja</th>
+                    <th>RB</th>
+                    <th></th>
+                    <th>FILM</th>
+                    <th>DISTR.</th>
+                    <th>LOCAL DISTR.</th>
+                    <th>We No.</th>
+                    <th>NO.</th>
+                    <th>WE B.O.</th>
+                    <th>WE ADMISS.</th>
+                    <th>% INC/DEC</th>
+                    <th>LAST WE B.O.</th>
+                    <th>LAST WE ADMISS.</th>
+                    <th>CUM. B.O.</th>
+                    <th>CUM ADMISS</th>
                 </tr>
             </thead>
             <tbody>
                 {% for movie in movies %}
                 <tr>
-                    <td>{{ loop.index }}</td>
+                    <td>{{ movie.position }}</td>
                     <td>
                         {% if movie.change == 'NEW' %}
                             <span class="badge bg-success">NOVI</span>
@@ -63,31 +72,31 @@
                             <span class="badge bg-secondary">-</span>
                         {% endif %}
                     </td>
-                    <td>{{ movie.title }}</td>
-                    <td>{{ movie.world_distributor }}</td>
-                    <td>{{ movie.local_distributor }}</td>
+                    <td>{{ movie.movie.local_title }}</td>
+                    <td>{{ movie.movie.company }}</td>
+                    <td>{{ movie.movie.distributor.company_name }}</td>
                     <td>{{ movie.weeks_shown }}</td>
                     <td>{{ movie.cinema_count }}</td>
-                    <td>{{ movie.weekly_bo }}</td>
-                    <td>{{ movie.weekly_sales }}</td>
-                    <td>{{ movie.change_percentage }}</td>
-                    <td>{{ movie.previous_bo }}</td>
-                    <td>{{ movie.previous_sales }}</td>
-                    <td>{{ movie.total_bo }}</td>
-                    <td>{{ movie.total_sales }}</td>
+                    <td>{{ "{:,.2f}"|format(movie.weekly_earnings) }}</td>
+                    <td>{{ "{:,}"|format(movie.weekly_admissions) }}</td>
+                    <td>{{ "{:+.2f}%"|format(movie.change_percentage) if movie.change_percentage else "N/A" }}</td>
+                    <td>{{ "{:,.2f}"|format(movie.previous_earnings) if movie.previous_earnings else "N/A" }}</td>
+                    <td>{{ "{:,}"|format(movie.previous_admissions) if movie.previous_admissions else "N/A" }}</td>
+                    <td>{{ "{:,.2f}"|format(movie.total_earnings) }}</td>
+                    <td>{{ "{:,}"|format(movie.total_admissions) }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
             <tfoot>
-                <tr>
+                <tr class="table-info">
                     <td colspan="7" class="text-end"><strong>Ukupno:</strong></td>
-                    <td><strong>{{ totals.weekly_bo }}</strong></td>
-                    <td><strong>{{ totals.weekly_sales }}</strong></td>
+                    <td><strong>{{ "{:,.2f}".format(totals['weekly_bo']) }}</strong></td>
+                    <td><strong>{{ "{:,}".format(totals['weekly_sales']) }}</strong></td>
                     <td></td>
-                    <td><strong>{{ totals.previous_bo }}</strong></td>
-                    <td><strong>{{ totals.previous_sales }}</strong></td>
-                    <td><strong>{{ totals.total_bo }}</strong></td>
-                    <td><strong>{{ totals.total_sales }}</strong></td>
+                    <td><strong>{{ "{:,.2f}".format(totals['previous_bo']) }}</strong></td>
+                    <td><strong>{{ "{:,}".format(totals['previous_sales']) }}</strong></td>
+                    <td><strong>{{ "{:,.2f}".format(totals['total_bo']) }}</strong></td>
+                    <td><strong>{{ "{:,}".format(totals['total_sales']) }}</strong></td>
                 </tr>
             </tfoot>
         </table>

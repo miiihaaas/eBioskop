@@ -1,102 +1,185 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<div class="container mt-5">
+<div class="container py-4">
     <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header bg-primary text-white">
-                    <h2 class="mb-0">Registracija MKPS člana</h2>
-                </div>
-                <div class="card-body">
+        <div class="col-lg-8">
+            <!-- Page Header -->
+            <div class="page-header mb-4">
+                {% if route_name == 'cinemas.create_mkps_member' %}
+                <h1 class="page-title">Registracija MKPS člana</h1>
+                <p class="text-muted mb-0">Unesite informacije o novom članu MKPS-a</p>
+                {% elif route_name == 'cinemas.edit_mkps_member' %}
+                <h1 class="page-title">Uredi MKPS člana</h1>
+                <p class="text-muted mb-0">Izmenite informacije o odabranom članu MKPS-a</p>
+                {% endif %}
+            </div>
+
+            <!-- Main Form Card -->
+            <div class="cinema-card">
+                <div class="card-body p-4">
                     <form method="POST" action="">
                         {{ form.hidden_tag() }}
                         
-                        <div class="row mb-3">
-                            <div class="col-md-6 mb-3">
-                                {{ form.name.label(class="form-label") }}
-                                {{ form.name(class="form-control", placeholder="Ime") }}
-                                {% for error in form.name.errors %}
-                                    <div class="text-danger"><small>{{ error }}</small></div>
-                                {% endfor %}
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                {{ form.surname.label(class="form-label") }}
-                                {{ form.surname(class="form-control", placeholder="Prezime") }}
-                                {% for error in form.surname.errors %}
-                                    <div class="text-danger"><small>{{ error }}</small></div>
-                                {% endfor %}
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            {{ form.address.label(class="form-label") }}
-                            {{ form.address(class="form-control", placeholder="Adresa") }}
-                            {% for error in form.address.errors %}
-                                <div class="text-danger"><small>{{ error }}</small></div>
-                            {% endfor %}
-                        </div>
-
-                        <div class="row mb-3">
-                            <div class="col-md-6 mb-3">
-                                {{ form.city.label(class="form-label") }}
-                                {{ form.city(class="form-control", placeholder="Grad") }}
-                                {% for error in form.city.errors %}
-                                    <div class="text-danger"><small>{{ error }}</small></div>
-                                {% endfor %}
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                {{ form.cinema_id.label(class="form-label") }}
-                                {{ form.cinema_id(class="form-select") }}
-                                {% for error in form.cinema_id.errors %}
-                                    <div class="text-danger"><small>{{ error }}</small></div>
-                                {% endfor %}
+                        <!-- Lični podaci -->
+                        <div class="cinema-details-card mb-4">
+                            <h5 class="text-primary mb-3">
+                                <i class="fas fa-user me-2"></i>Lični podaci
+                            </h5>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        {{ form.name.label(class="form-label") }}
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light border-0">
+                                                <i class="fas fa-user-circle text-muted"></i>
+                                            </span>
+                                            {{ form.name(class="form-control", placeholder="Ime") }}
+                                        </div>
+                                        {% for error in form.name.errors %}
+                                            <div class="text-danger"><small>{{ error }}</small></div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        {{ form.surname.label(class="form-label") }}
+                                        {{ form.surname(class="form-control", placeholder="Prezime") }}
+                                        {% for error in form.surname.errors %}
+                                            <div class="text-danger"><small>{{ error }}</small></div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="mb-3" id="cinema_not_mkps_field" style="display: none;">
-                            {{ form.cinema_not_mkps.label(class="form-label") }}
-                            {{ form.cinema_not_mkps(class="form-control", placeholder="Naziv bioskopa koji nije član MKPS") }}
-                            {% for error in form.cinema_not_mkps.errors %}
-                                <div class="text-danger"><small>{{ error }}</small></div>
-                            {% endfor %}
+                        <!-- Adresa i lokacija -->
+                        <div class="cinema-details-card mb-4">
+                            <h5 class="text-primary mb-3">
+                                <i class="fas fa-map-marker-alt me-2"></i>Adresa i lokacija
+                            </h5>
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        {{ form.address.label(class="form-label") }}
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light border-0">
+                                                <i class="fas fa-home text-muted"></i>
+                                            </span>
+                                            {{ form.address(class="form-control", placeholder="Adresa") }}
+                                        </div>
+                                        {% for error in form.address.errors %}
+                                            <div class="text-danger"><small>{{ error }}</small></div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        {{ form.city.label(class="form-label") }}
+                                        {{ form.city(class="form-control", placeholder="Grad") }}
+                                        {% for error in form.city.errors %}
+                                            <div class="text-danger"><small>{{ error }}</small></div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        {{ form.cinema_id.label(class="form-label") }}
+                                        {{ form.cinema_id(class="form-select") }}
+                                        {% for error in form.cinema_id.errors %}
+                                            <div class="text-danger"><small>{{ error }}</small></div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="mb-3">
-                            {{ form.job_position.label(class="form-label") }}
-                            {{ form.job_position(class="form-control", placeholder="Radno mesto") }}
-                            {% for error in form.job_position.errors %}
-                                <div class="text-danger"><small>{{ error }}</small></div>
-                            {% endfor %}
-                        </div>
-
-                        <div class="row mb-3">
-                            <div class="col-md-6 mb-3">
-                                {{ form.emails.label(class="form-label") }}
-                                {{ form.emails(class="form-control", placeholder="Unesite do 2 email adrese, odvojene zarezom") }}
-                                {% for error in form.emails.errors %}
+                        <!-- Informacije o zaposlenju -->
+                        <div class="cinema-details-card mb-4">
+                            <h5 class="text-primary mb-3">
+                                <i class="fas fa-briefcase me-2"></i>Informacije o zaposlenju
+                            </h5>
+                            <div class="form-group mb-3" id="cinema_not_mkps_field" style="display: none;">
+                                {{ form.cinema_not_mkps.label(class="form-label") }}
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-0">
+                                        <i class="fas fa-building text-muted"></i>
+                                    </span>
+                                    {{ form.cinema_not_mkps(class="form-control", placeholder="Naziv bioskopa koji nije član MKPS") }}
+                                </div>
+                                {% for error in form.cinema_not_mkps.errors %}
                                     <div class="text-danger"><small>{{ error }}</small></div>
                                 {% endfor %}
                             </div>
-                            <div class="col-md-6 mb-3">
-                                {{ form.phones.label(class="form-label") }}
-                                {{ form.phones(class="form-control", placeholder="Unesite do 2 broja telefona, odvojena zarezom") }}
-                                {% for error in form.phones.errors %}
+
+                            <div class="form-group">
+                                {{ form.job_position.label(class="form-label") }}
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-0">
+                                        <i class="fas fa-id-badge text-muted"></i>
+                                    </span>
+                                    {{ form.job_position(class="form-control", placeholder="Radno mesto") }}
+                                </div>
+                                {% for error in form.job_position.errors %}
                                     <div class="text-danger"><small>{{ error }}</small></div>
                                 {% endfor %}
                             </div>
                         </div>
 
-                        <div class="mb-3">
-                            {{ form.status.label(class="form-label") }}
-                            {{ form.status(class="form-select") }}
-                            {% for error in form.status.errors %}
-                                <div class="text-danger"><small>{{ error }}</small></div>
-                            {% endfor %}
+                        <!-- Kontakt informacije -->
+                        <div class="cinema-details-card mb-4">
+                            <h5 class="text-primary mb-3">
+                                <i class="fas fa-address-card me-2"></i>Kontakt informacije
+                            </h5>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        {{ form.emails.label(class="form-label") }}
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light border-0">
+                                                <i class="fas fa-envelope text-muted"></i>
+                                            </span>
+                                            {{ form.emails(class="form-control", placeholder="Email adrese (max. 2)") }}
+                                        </div>
+                                        {% for error in form.emails.errors %}
+                                            <div class="text-danger"><small>{{ error }}</small></div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        {{ form.phones.label(class="form-label") }}
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light border-0">
+                                                <i class="fas fa-phone text-muted"></i>
+                                            </span>
+                                            {{ form.phones(class="form-control", placeholder="Telefoni (max. 2)") }}
+                                        </div>
+                                        {% for error in form.phones.errors %}
+                                            <div class="text-danger"><small>{{ error }}</small></div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="d-grid">
-                            {{ form.submit(class="btn btn-primary btn-lg") }}
+                        <!-- Status -->
+                        <div class="cinema-details-card mb-4">
+                            <h5 class="text-primary mb-3">
+                                <i class="fas fa-user-tag me-2"></i>Status člana
+                            </h5>
+                            <div class="form-group">
+                                {{ form.status.label(class="form-label") }}
+                                {{ form.status(class="form-select") }}
+                                {% for error in form.status.errors %}
+                                    <div class="text-danger"><small>{{ error }}</small></div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="d-grid gap-2">
+                            {{ form.submit(class="btn btn-primary btn-lg action-btn") }}
                         </div>
                     </form>
                 </div>
@@ -121,7 +204,7 @@
         }
     
         cinemaSelect.addEventListener('change', toggleCinemaNotMkpsField);
-        toggleCinemaNotMkpsField(); // Call on page load
+        toggleCinemaNotMkpsField();
     });
 </script>
 {% endblock %}

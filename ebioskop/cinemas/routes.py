@@ -1,8 +1,12 @@
+from datetime import datetime
+import pdfkit
+from flask import make_response
 from flask import Blueprint, json, jsonify, render_template, request, url_for, flash, redirect
-from flask_login import current_user
+from flask_login import current_user, login_required
 from ebioskop import app, db
 from ebioskop.cinemas.forms import EditCinemaForm, EditCinemaHallForm, EditCinemaPropertiesForm, EditCinemaRepresentativeForm, EditMemberMKPSForm, RegisterCinemaForm, RegisterCinemaHallForm, RegisterCinemaPropertiesForm, RegisterCinemaRepresentativeForm, RegisterMemberMKPSForm
 from ebioskop.cinemas.functions import save_picture
+from ebioskop.cinemas.utils.pdf_generator import generate_cinema_pdf
 from ebioskop.models import Cinema, CinemaHall, CinemaProperties, CinemaRepresentative, MemberMKPS, Municipality, User
 import os
 from werkzeug.utils import secure_filename
@@ -14,9 +18,9 @@ cinemas = Blueprint('cinemas', __name__)
 
 @cinemas.route('/cinemas_list', methods=['GET'])
 def cinemas_list():
-    if not current_user.is_authenticated or current_user.user_type not in ['admin', 'user']:
-        flash('Nemate pravo da pristupite ovoj stranici.', 'warning')
-        return redirect(url_for('main.home'))
+    # if not current_user.is_authenticated or current_user.user_type not in ['admin', 'user']:
+    #     flash('Nemate pravo da pristupite ovoj stranici.', 'warning')
+    #     return redirect(url_for('main.home'))
     route_name = request.endpoint
 
     # # Proveravamo da li je korisnik autentifikovan i da li je admin
@@ -33,8 +37,20 @@ def cinemas_list():
 @cinemas.route('/cinema_details/<int:cinema_id>', methods=['GET'])
 def cinema_details(cinema_id):
     cinema = Cinema.query.get_or_404(cinema_id)
-    cinema_properties = cinema.properties
-    halls = cinema_properties.halls if cinema_properties else []
+    properties_list = cinema.properties if isinstance(cinema.properties, list) else [cinema.properties]
+    
+    all_images = []
+    total_halls = 0
+    total_seats = 0
+    for properties in properties_list:
+        if properties:
+            if properties.photo_1:
+                all_images.append(properties.photo_1)
+            if properties.photo_2:
+                all_images.append(properties.photo_2)
+            halls = properties.halls
+            total_halls += len(halls)
+            total_seats += sum(hall.hall_capacity for hall in halls)
 
     data = {
         'name': cinema.name,
@@ -46,8 +62,7 @@ def cinema_details(cinema_id):
         'social_links': cinema.social_links,
         'halls_count': len(halls),
         'total_seats': sum(hall.hall_capacity for hall in halls),
-        # 'year_founded': halls.year_built if cinema_properties else None,
-        'image': cinema_properties.photo_1 if cinema_properties and cinema_properties.photo_1 else None
+        'images': all_images
     }
 
     return jsonify(data)
@@ -83,16 +98,44 @@ def create_cinema():
             is_member_mkps=form.is_member_mkps.data,
             is_member_ec=form.is_member_ec.data
         )
+        try:
+            # Dodavanje u bazu podataka
+            db.session.add(new_cinema)
+            db.session.flush()
+            
+            # Handling logo upload
+            if form.logo.data:
+                try:
+                    # Kreiranje direktorijuma za logoe ako ne postoji
+                    logo_path = os.path.join(current_app.root_path, 'static/img/cinema_logos')
+                    if not os.path.exists(logo_path):
+                        os.makedirs(logo_path)
+                    
+                    # Čuvanje fajla sa bezbednim imenom
+                    filename = secure_filename(form.logo.data.filename)
+                    # Dodavanje timestamp-a u ime fajla da bi bilo jedinstveno
+                    ext = os.path.splitext(filename)[1].lower()
+                    logo_filename = f"cinema_{new_cinema.id:03d}{ext}"
+                    form.logo.data.save(os.path.join(logo_path, logo_filename))
+                except Exception as e:
+                    # Ako dođe do greške pri uploadu, postavlja se default logo
+                    logo_filename = 'default_logo.jpg'
+                    flash('Došlo je do greške prilikom uploada loga. Postavljen je podrazumevani logo.', 'warning')
+            else:
+                logo_filename = 'default_logo.jpg'
 
-        # Dodavanje u bazu podataka
-        db.session.add(new_cinema)
-        db.session.commit()
+            # Dodavanje prikazivača u bazu podataka
+            new_cinema.logo = logo_filename
+            db.session.commit()
 
-        # Poruka o uspešnom dodavanju prikazivača
-        flash(f'prikazivač "{new_cinema.name}" je uspešno dodat!', 'success')
-        
-        # Preusmeravanje na listu prikazivača ili početnu stranicu
-        return redirect(url_for('cinemas.cinemas_list'))
+            # Poruka o uspešnom dodavanju prikazivača
+            flash(f'prikazivač "{new_cinema.name}" je uspešno dodat!', 'success')
+            
+            # Preusmeravanje na listu prikazivača ili početnu stranicu
+            return redirect(url_for('cinemas.cinemas_list'))
+        except Exception as e:
+            db.session.rollback()
+            flash('Došlo je do greške. Molimo pokušajte ponovo.', 'danger')
     
     return render_template('cinema.html', title='Novi prikazivač', form=form, route_name=route_name)
 
@@ -118,28 +161,59 @@ def edit_cinema(cinema_id):
 
     edited_cinema = Cinema.query.get_or_404(cinema_id)
     if form.validate_on_submit():
-        # Kreiranje objekta Cinema sa podacima iz forme
-        edited_cinema.name = form.name.data
-        edited_cinema.country = form.country.data
-        edited_cinema.address = form.address.data
-        edited_cinema.postal_code = form.postal_code.data
-        edited_cinema.city = form.city.data
-        edited_cinema.municipality = form.municipality.data
-        edited_cinema.email = form.email.data
-        edited_cinema.phone = form.phone.data
-        edited_cinema.legal_form = form.legal_form.data
-        edited_cinema.pib = form.pib.data
-        edited_cinema.mb = form.mb.data
-        edited_cinema.website = form.website.data
-        edited_cinema.social_links = form.social_links.data
-        edited_cinema.is_member_mkps = form.is_member_mkps.data
-        edited_cinema.is_member_ec = form.is_member_ec.data
-        db.session.commit()
-        flash(f'prikazivač "{edited_cinema.name}" je uspešno izmenjen!', 'success')
-        if current_user.user_type == 'admin':
-            return redirect(url_for('cinemas.cinemas_list'))
-        else:
-            return redirect(url_for('main.home', cinema_id=cinema_id))
+        try:
+            # Ažuriranje osnovnih podataka
+            edited_cinema.name = form.name.data
+            edited_cinema.country = form.country.data
+            edited_cinema.address = form.address.data
+            edited_cinema.postal_code = form.postal_code.data
+            edited_cinema.city = form.city.data
+            edited_cinema.municipality = form.municipality.data
+            edited_cinema.email = form.email.data
+            edited_cinema.phone = form.phone.data
+            edited_cinema.legal_form = form.legal_form.data
+            edited_cinema.pib = form.pib.data
+            edited_cinema.mb = form.mb.data
+            edited_cinema.website = form.website.data
+            edited_cinema.social_links = form.social_links.data
+            edited_cinema.is_member_mkps = form.is_member_mkps.data
+            edited_cinema.is_member_ec = form.is_member_ec.data
+            
+            # Handling logo upload ako je novi fajl uploadovan
+            if form.logo.data:
+                try:
+                    # Kreiranje direktorijuma za logoe ako ne postoji
+                    logo_path = os.path.join(current_app.root_path, 'static/img/cinema')
+                    if not os.path.exists(logo_path):
+                        os.makedirs(logo_path)
+                    
+                    # Brisanje starog loga ako postoji i nije default
+                    if edited_cinema.logo and edited_cinema.logo != 'default_logo.jpg':
+                        old_logo_path = os.path.join(logo_path, edited_cinema.logo)
+                        if os.path.exists(old_logo_path):
+                            os.remove(old_logo_path)
+                    
+                    # Čuvanje novog loga
+                    filename = secure_filename(form.logo.data.filename)
+                    ext = os.path.splitext(filename)[1].lower()
+                    logo_filename = f"cinema_{cinema_id:03d}{ext}"
+                    
+                    form.logo.data.save(os.path.join(logo_path, logo_filename))
+                    edited_cinema.logo = logo_filename
+                    
+                except Exception as e:
+                    # Ako dođe do greške pri uploadu, zadržavamo postojeći logo
+                    flash('Došlo je do greške prilikom uploada loga. Logo nije promenjen.', 'warning')
+            db.session.commit()
+            flash(f'prikazivač "{edited_cinema.name}" je uspešno izmenjen!', 'success')
+            if current_user.user_type == 'admin':
+                return redirect(url_for('cinemas.cinemas_list'))
+            else:
+                return redirect(url_for('main.home', cinema_id=cinema_id))
+        except Exception as e:
+            db.session.rollback()
+            flash('Došlo je do greške prilikom čuvanja podataka. Pokušajte ponovo.', 'danger')
+            
     if request.method == 'GET':
         form.name.data = edited_cinema.name
         form.country.data = edited_cinema.country
@@ -650,3 +724,63 @@ def edit_mkps_member(member_id):
         return redirect(url_for('cinemas.mkps_members_list'))
 
     return render_template('mkps_member.html', title='Create MKPS Member', form=form, route_name=route_name)
+
+
+@cinemas.route('/cinema_profiles', methods=['GET'])
+@login_required
+def cinema_profiles():
+    route_name = request.endpoint
+    
+    # Dohvatamo sve bioskope iz baze
+    cinemas = Cinema.query.all()
+    
+    # Za svaki bioskop proveravamo da li ima digitalizovanu salu
+    cinema_data = []
+    for cinema in cinemas:
+        has_digital_hall = False
+        if cinema.properties and cinema.properties.halls:
+            for hall in cinema.properties.halls:
+                if hall.is_digitalized:
+                    has_digital_hall = True
+                    break
+        
+        # Kreiramo rečnik sa potrebnim podacima
+        cinema_info = {
+            'id': cinema.id,
+            'name': cinema.name,
+            'city': cinema.city,
+            'is_mkps_member': cinema.is_member_mkps,
+            'is_ec_member': cinema.is_member_ec,
+            'has_e_ticket_system': cinema.properties.has_e_ticket_system if cinema.properties else False,
+            'is_digitalized': has_digital_hall
+        }
+        cinema_data.append(cinema_info)
+
+    return render_template('cinema_profiles.html', 
+                         cinemas=cinema_data,
+                         route_name=route_name)
+
+@cinemas.route('/download_cinema_profile/<int:cinema_id>')
+@login_required
+def download_cinema_profile(cinema_id):
+    try:
+        cinema = Cinema.query.get_or_404(cinema_id)
+        
+        # Generišemo PDF
+        pdf_content = generate_cinema_pdf(cinema)
+        
+        # Kreiramo ime fajla (zamenjujemo problematične karaktere)
+        safe_name = "".join(x for x in cinema.name if x.isalnum() or x in (' ', '-', '_')).strip()
+        filename = f"bioskop_{safe_name}_{datetime.now().strftime('%Y%m%d')}.pdf"
+        
+        # Kreiramo response
+        response = make_response(pdf_content)
+        response.headers['Content-Type'] = 'application/pdf'
+        response.headers['Content-Disposition'] = f'attachment; filename="{filename}"'
+        
+        return response
+        
+    except Exception as e:
+        current_app.logger.error(f"Greška pri generisanju PDF-a: {str(e)}")
+        flash('Došlo je do greške pri generisanju PDF-a.', 'danger')
+        return redirect(url_for('cinemas.cinema_profiles'))

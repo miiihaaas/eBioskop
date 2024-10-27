@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Lična karta bioskopa - {{ cinema.name }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .section {
+            margin: 20px 0;
+        }
+        .section-title {
+            background-color: #f8f9fa;
+            padding: 10px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .info-item {
+            margin: 5px 0;
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .label {
+            font-weight: bold;
+            display: inline-block;
+            width: 200px;
+        }
+    </style>
+</head>
+<body>
+    <h1>{{ cinema.name }}</h1>
+    
+    <!-- Podaci o pravnom licu -->
+    <div class="section">
+        <div class="section-title">Podaci o pravnom licu</div>
+        <div class="info-item">
+            <span class="label">Naziv:</span> {{ cinema.name }}
+        </div>
+        <div class="info-item">
+            <span class="label">Adresa:</span> {{ cinema.address }}
+        </div>
+        <div class="info-item">
+            <span class="label">Mesto:</span> {{ cinema.city }}
+        </div>
+        <div class="info-item">
+            <span class="label">Opština:</span> {{ cinema.municipality }}
+        </div>
+        <div class="info-item">
+            <span class="label">PIB:</span> {{ cinema.pib }}
+        </div>
+        <div class="info-item">
+            <span class="label">Matični broj:</span> {{ cinema.mb }}
+        </div>
+    </div>
+    
+    <!-- Podaci o zastupnicima -->
+    <div class="section">
+        <div class="section-title">Podaci o zastupnicima</div>
+        {% for representative in cinema.representatives %}
+        <div class="info-item">
+            <span class="label">Ime i prezime:</span> {{ representative.first_name }} {{ representative.last_name }}
+        </div>
+        <div class="info-item">
+            <span class="label">Pozicija:</span> {{ representative.position }}
+        </div>
+        <div class="info-item">
+            <span class="label">Email:</span> {{ representative.email }}
+        </div>
+        <div class="info-item">
+            <span class="label">Telefon:</span> {{ representative.phone }}
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Podaci o bioskopu -->
+    {% if cinema.properties %}
+    <div class="section">
+        <div class="section-title">Podaci o bioskopu</div>
+        <div class="info-item">
+            <span class="label">Lokacija:</span> {{ cinema.properties.location }}
+        </div>
+        <div class="info-item">
+            <span class="label">Broj stanovnika (grad):</span> {{ cinema.properties.city_population }}
+        </div>
+        <div class="info-item">
+            <span class="label">Broj stanovnika (sa okolinom):</span> {{ cinema.properties.surrounding_population }}
+        </div>
+        <div class="info-item">
+            <span class="label">E-karte:</span> {{ "DA" if cinema.properties.has_e_ticket_system else "NE" }}
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Podaci o salama -->
+    {% if cinema.properties and cinema.properties.halls %}
+    <div class="section">
+        <div class="section-title">Podaci o salama</div>
+        {% for hall in cinema.properties.halls %}
+        <div class="info-item">
+            <span class="label">Naziv sale:</span> {{ hall.hall_name }}
+        </div>
+        <div class="info-item">
+            <span class="label">Kapacitet:</span> {{ hall.hall_capacity }}
+        </div>
+        <div class="info-item">
+            <span class="label">Godina izgradnje:</span> {{ hall.year_built }}
+        </div>
+        <div class="info-item">
+            <span class="label">Dimenzije:</span> {{ hall.dimensions }}
+        </div>
+        <div class="info-item">
+            <span class="label">Digitalizovana:</span> {{ "DA" if hall.is_digitalized else "NE" }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+</body>
+</html>

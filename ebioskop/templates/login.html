@@ -3,19 +3,26 @@
 <main role="main" class="container">
     <div class="row justify-content-center align-items-center min-vh-100">
         <div class="col-md-6">
-            <div class="card shadow-lg">
-                <div class="card-body p-5">
+            <div class="card shadow">
+                <!-- Koristimo postojeće card stilove -->
+                <div class="card-body p-4">
                     <div class="text-center mb-4">
-                        <img src="{{ url_for('static', filename='img/logo.png') }}" class="login-logo mb-3" alt="Logo">
+                        <img src="{{ url_for('static', filename='img/logo.png') }}" 
+                             class="login-logo mb-3" 
+                             alt="Logo">
                         <h1 class="h3 mb-3 font-weight-normal">Prijava</h1>
                         <p class="text-muted">Molimo unesite vaše podatke</p>
                     </div>
                     <form method="POST" action="">
                         {{ form.hidden_tag() }}
-                        <div class="form-group mb-3">
+                        <!-- Email polje -->
+                        <div class="mb-3">
                             <div class="input-group">
-                                <span class="input-group-text"><i class="fa-regular fa-envelope"></i></span>
-                                {{ form.email(class="form-control form-control-lg" + (" is-invalid" if form.email.errors else ""), placeholder="E-mail adresa") }}
+                                <span class="input-group-text bg-light">
+                                    <i class="fa-regular fa-envelope"></i>
+                                </span>
+                                {{ form.email(class="form-control" + (" is-invalid" if form.email.errors else ""),
+                                            placeholder="E-mail adresa") }}
                             </div>
                             {% if form.email.errors %}
                                 <div class="invalid-feedback d-block">
@@ -25,10 +32,14 @@
                                 </div>
                             {% endif %}
                         </div>
-                        <div class="form-group mb-3">
+                        <!-- Password polje -->
+                        <div class="mb-3">
                             <div class="input-group">
-                                <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
-                                {{ form.password(class="form-control form-control-lg" + (" is-invalid" if form.password.errors else ""), placeholder="Lozinka") }}
+                                <span class="input-group-text bg-light">
+                                    <i class="fa-solid fa-lock"></i>
+                                </span>
+                                {{ form.password(class="form-control" + (" is-invalid" if form.password.errors else ""),
+                                               placeholder="Lozinka") }}
                             </div>
                             {% if form.password.errors %}
                                 <div class="invalid-feedback d-block">
@@ -38,17 +49,20 @@
                                 </div>
                             {% endif %}
                         </div>
-                        <div class="form-group mb-3 d-flex justify-content-between align-items-center">
+                        <!-- Remember me i Forgot password -->
+                        <div class="d-flex justify-content-between align-items-center mb-4">
                             <div class="form-check">
                                 {{ form.remember(class="form-check-input") }}
                                 {{ form.remember.label(class="form-check-label") }}
                             </div>
-                            <small>
-                                <a href="{{url_for('users.reset_request')}}" class="text-primary">Zaboravili ste lozinku?</a>
-                            </small>
+                            <a href="{{url_for('users.reset_request')}}" 
+                               class="text-primary text-decoration-none">
+                                Zaboravili ste lozinku?
+                            </a>
                         </div>
+                        <!-- Submit dugme -->
                         <div class="form-group">
-                            {{ form.submit(class="btn btn-primary btn-lg w-100") }}
+                            {{ form.submit(class="btn btn-primary w-100") }}
                         </div>
                     </form>
                 </div>

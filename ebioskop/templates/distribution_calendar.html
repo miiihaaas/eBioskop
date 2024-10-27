@@ -1,42 +1,59 @@
 {% extends "layout.html" %}
 {% block content %}
 <div class="container mt-4">
-    <div class="sticky bg-light p-3 mb-4 rounded shadow-sm">
-        <h1 class="text-center mb-4">Kalendar distribucije</h1>
-        <form action="{{ url_for('calendars.distribution_calendar') }}" method="get" class="d-flex justify-content-center align-items-center">
-            <label for="start_date" class="me-2">Datum:</label>
-            <input type="date" id="start_date" name="start_date" value="{{ start_date }}" class="form-control me-2" style="max-width: 200px;">
-            <button type="submit" class="btn btn-primary">Filter</button>
+    <!-- Sticky header sa filterom -->
+    <div class="sticky bg-white p-4 mb-4 rounded shadow-sm">
+        <h1 class="text-center mb-4 text-2xl font-bold text-gray-800">Kalendar distribucije</h1>
+        <form action="{{ url_for('calendars.distribution_calendar') }}" method="get" 
+              class="d-flex justify-content-center align-items-center gap-3">
+            <label for="start_date" class="font-semibold text-gray-700">Datum:</label>
+            <input type="date" id="start_date" name="start_date" value="{{ start_date }}" 
+                   class="form-control border-0 bg-gray-100 focus:ring-2 focus:ring-blue-500" 
+                   style="max-width: 200px;">
+            <button type="submit" class="btn btn-primary px-4 py-2 rounded-lg shadow-sm hover:shadow-md 
+                    transition-all duration-300">Filter</button>
         </form>
     </div>
 
+    <!-- Lista datuma sa filmovima -->
     {% for date, movies in movie_groups.items() %}
-        <div class="card mb-4">
-            <div class="card-header {% if date < today %}bg-secondary text-white{% elif date == today %}bg-primary text-white{% else %}bg-light{% endif %}">
-                {% if date < today %}
-                    <i class="fas fa-history me-2"></i>
-                {% elif date == today %}
-                    <i class="fas fa-star me-2"></i>
-                {% else %}
-                    <i class="fas fa-calendar me-2"></i>
-                {% endif %}
-                {{ date.strftime('%Y-%m-%d') }}
+        <div class="card mb-5 shadow-sm hover:shadow-md transition-all duration-300">
+            <div class="card-header p-4 {% if date < today %}bg-gray-600 text-white{% elif date == today %}bg-blue-600 text-white{% else %}bg-gray-100{% endif %}">
+                <div class="d-flex align-items-center">
+                    {% if date < today %}
+                        <i class="fas fa-history me-3 text-xl"></i>
+                    {% elif date == today %}
+                        <i class="fas fa-star me-3 text-xl"></i>
+                    {% else %}
+                        <i class="fas fa-calendar me-3 text-xl"></i>
+                    {% endif %}
+                    <h2 class="mb-0 text-2xl font-bold">{{ date.strftime('%d.%m.%Y') }}</h2>
+                </div>
             </div>
-            <div class="card-body">
-                <div class="row">
+            <div class="card-body p-4">
+                <div class="row g-4">
                     {% for movie in movies %}
-                        <div class="col-md-4 col-lg-3 mb-3">
-                            <div class="movie-card" data-distributor-id="{{ movie.distributor_id }}">
-                                <div class="movie-content">
-                                    <div class="movie-poster">
-                                        <img src="{{ movie.poster }}" class="img-fluid rounded" alt="{{ movie.local_title }} poster">
-                                        <div class="movie-title">{{ movie.local_title }}</div>
+                        <div class="col-md-4 col-lg-3">
+                            <div class="movie-card rounded overflow-hidden shadow-sm" 
+                                 data-distributor-id="{{ movie.distributor_id }}">
+                                <div class="movie-content h-full">
+                                    <div class="movie-poster position-relative" style="width: 75%; margin: 0 auto;">
+                                        <img src="{{ movie.poster }}" 
+                                             class="w-full rounded-t" 
+                                             style="aspect-ratio: 2/3; object-fit: cover;"
+                                             alt="{{ movie.local_title }} poster">
+                                        <div class="movie-title p-2 text-sm font-semibold bg-black bg-opacity-75 text-white" 
+                                             style="position: absolute; bottom: 0; left: 0; right: 0;">
+                                             {{ movie.local_title }}
+                                        </div>
                                     </div>
-                                    <div class="movie-details">
-                                        <h5>{{ movie.original_title }}</h5>
-                                        <p>Distributer: {{ movie.distributor.company_name }}</p>
-                                        <p>Trajanje: {{ movie.duration }} min</p>
-                                        <p>Žanr: {{ movie.genres }}</p>
+                                    <div class="movie-details bg-white p-3">
+                                        <h5 class="font-bold text-gray-800 mb-2">{{ movie.original_title }}</h5>
+                                        <div class="text-sm text-gray-600">
+                                            <p class="mb-1"><i class="fas fa-building me-2"></i>{{ movie.distributor.company_name }}</p>
+                                            <p class="mb-1"><i class="fas fa-clock me-2"></i>{{ movie.duration }} min</p>
+                                            <p class="mb-1"><i class="fas fa-film me-2"></i>{{ movie.genres|join(', ') }}</p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -52,17 +69,20 @@
 {% block scripts %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Generisanje boje na osnovu ID distributera
         function generateColor(id) {
             const hue = (id * 137.5) % 360;
             return `hsl(${hue}, 70%, 50%)`;
         }
 
+        // Primena boje i event listener-a za svaku karticu
         var movieCards = document.querySelectorAll('.movie-card');
         movieCards.forEach(function(card) {
             var distributorId = card.dataset.distributorId;
             var color = generateColor(distributorId);
             card.style.setProperty('--distributor-color', color);
 
+            // Toggle za ekspanziju kartice
             card.addEventListener('click', function() {
                 this.classList.toggle('expanded');
             });

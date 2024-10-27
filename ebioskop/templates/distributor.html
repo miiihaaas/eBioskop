@@ -1,253 +1,426 @@
 {% extends "layout.html" %}
 {% block content %}
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card shadow-sm">
-                <!-- Tabela distributer managera -->
-                <div class="card">
-                    {% if distributor %}
-                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                        <h3 class="mb-0">Menadžeri distributera</h3>
-                        <a href="{{ url_for('users.register_distributor_manager', distributor_id=distributor.id) }}" class="btn btn-light">
-                            <i class="fas fa-plus me-2"></i>Dodaj novog menadžera
-                        </a>
-                    </div>
-                    <div class="card-body">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Ime</th>
-                                    <th>Prezime</th>
-                                    <th>Email</th>
-                                    <th>Akcije</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for manager in users %}
-                                <tr>
-                                    <td>{{ manager.user_name }}</td>
-                                    <td>{{ manager.user_surname }}</td>
-                                    <td>{{ manager.user_mail }}</td>
-                                    <td>
-                                        <a href="{{ url_for('users.edit_distributor_manager', user_id=manager.id) }}" class="btn btn-sm btn-outline-primary">Izmeni</a>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                    {% endif %}
-                </div>
-                <div class="card">
-                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                        {% if route_name == 'distributor.create_distributor' %}
-                        <h1 class="card-title text-center mb-4">Kreiranje novog distributera</h1>
-                        {% elif route_name == 'distributor.edit_distributor' %}
-                        <h1 class="card-title text-center mb-4">Uređivanje distributera</h1>
-                        {% endif %}
-                        
-                    </div>
-                    <div class="card-body">
-                        <!-- Flash Messages -->
-                        {% with messages = get_flashed_messages(with_categories=true) %}
-                            {% if messages %}
-                                <div class="alert alert-dismissible fade show" role="alert">
-                                    {% for category, message in messages %}
-                                        <div class="{{ category }}">{{ message }}</div>
-                                    {% endfor %}
-                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+<div class="container py-4">
+    <!-- Page Header -->
+    <div class="page-header mb-4">
+        <h1 class="page-title">
+            {% if route_name == 'distributor.create_distributor' %}
+                Kreiranje novog distributera
+            {% elif route_name == 'distributor.edit_distributor' %}
+                Uređivanje distributera
+            {% endif %}
+        </h1>
+        <p class="text-muted mb-0">Upravljanje informacijama o distributeru i menadžerima</p>
+    </div>
+
+    <!-- Menadžeri distributera -->
+    {% if distributor %}
+    <div class="cinema-card mb-4">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center p-3">
+            <h3 class="m-0 h5"><i class="fas fa-users me-2"></i>Menadžeri distributera</h3>
+            <a href="{{ url_for('users.register_distributor_manager', distributor_id=distributor.id) }}" 
+               class="btn btn-add btn-light">
+                <i class="fas fa-user-plus me-2"></i>Dodaj novog menadžera
+            </a>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="cinema-table table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th class="ps-4">Ime i prezime</th>
+                            <th>Email</th>
+                            <th class="text-end pe-4">Akcije</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for manager in users %}
+                        <tr class="cinema-row">
+                            <td class="ps-4">
+                                <div class="cinema-info">
+                                    <span class="cinema-name">{{ manager.user_name }} {{ manager.user_surname }}</span>
                                 </div>
-                            {% endif %}
-                        {% endwith %}
-                        <!-- Distributor Form -->
-                        <form method="POST" action="">
-                            {{ form.hidden_tag() }}
-                            
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    {{ form.company_name.label(class="form-label") }}
-                                    {{ form.company_name(class="form-control") }}
-                                    {% if form.company_name.errors %}
-                                        <div class="text-danger">{{ form.company_name.errors[0] }}</div>
-                                    {% endif %}
+                            </td>
+                            <td>
+                                <div class="contact-item">
+                                    <i class="fas fa-envelope text-muted me-2"></i>
+                                    {{ manager.user_mail }}
                                 </div>
-                                
-                                <div class="col-md-6">
-                                    {{ form.country.label(class="form-label") }}
-                                    {{ form.country(class="form-control") }}
-                                    {% if form.country.errors %}
-                                        <div class="text-danger">{{ form.country.errors[0] }}</div>
-                                    {% endif %}
-                                </div>
-                                
-                                <div class="col-md-8">
-                                    {{ form.address.label(class="form-label") }}
-                                    {{ form.address(class="form-control") }}
-                                    {% if form.address.errors %}
-                                        <div class="text-danger">{{ form.address.errors[0] }}</div>
-                                    {% endif %}
-                                </div>
-                                
-                                <div class="col-md-4">
-                                    {{ form.postal_code.label(class="form-label") }}
-                                    {{ form.postal_code(class="form-control") }}
-                                    {% if form.postal_code.errors %}
-                                        <div class="text-danger">{{ form.postal_code.errors[0] }}</div>
-                                    {% endif %}
-                                </div>
-                                
-                                <div class="col-md-6">
-                                    {{ form.city.label(class="form-label") }}
-                                    {{ form.city(class="form-control") }}
-                                    {% if form.city.errors %}
-                                        <div class="text-danger">{{ form.city.errors[0] }}</div>
-                                    {% endif %}
-                                </div>
-                                
-                                <div class="col-md-6">
-                                    {{ form.email.label(class="form-label") }}
-                                    {{ form.email(class="form-control") }}
-                                    {% if form.email.errors %}
-                                        <div class="text-danger">{{ form.email.errors[0] }}</div>
-                                    {% endif %}
-                                </div>
-                                
-                                <div class="col-md-6">
-                                    {{ form.phone.label(class="form-label") }}
-                                    {{ form.phone(class="form-control") }}
-                                    {% if form.phone.errors %}
-                                        <div class="text-danger">{{ form.phone.errors[0] }}</div>
-                                    {% endif %}
-                                </div>
-                                
-                                <div class="col-md-3">
-                                    {{ form.pib.label(class="form-label") }}
-                                    {{ form.pib(class="form-control") }}
-                                    {% if form.pib.errors %}
-                                        <div class="text-danger">{{ form.pib.errors[0] }}</div>
-                                    {% endif %}
-                                </div>
-                                
-                                <div class="col-md-3">
-                                    {{ form.mb.label(class="form-label") }}
-                                    {{ form.mb(class="form-control") }}
-                                    {% if form.mb.errors %}
-                                        <div class="text-danger">{{ form.mb.errors[0] }}</div>
-                                    {% endif %}
-                                </div>
-                                
-                                <div class="col-md-6">
-                                    {{ form.authorized_person.label(class="form-label") }}
-                                    {{ form.authorized_person(class="form-control") }}
-                                    {% if form.authorized_person.errors %}
-                                        <div class="text-danger">{{ form.authorized_person.errors[0] }}</div>
-                                    {% endif %}
-                                </div>
-                                
-                                <div class="col-md-6">
-                                    {{ form.website.label(class="form-label") }}
-                                    {{ form.website(class="form-control") }}
-                                    {% if form.website.errors %}
-                                        <div class="text-danger">{{ form.website.errors[0] }}</div>
-                                    {% endif %}
-                                </div>
-                                
-                                <!-- New social media fields -->
-                                <div class="col-md-6">
-                                    {{ form.youtube.label(class="form-label") }}
-                                    {{ form.youtube(class="form-control") }}
-                                    {% if form.youtube.errors %}
-                                        <div class="text-danger">{{ form.youtube.errors[0] }}</div>
-                                    {% endif %}
-                                </div>
-                                
-                                <div class="col-md-6">
-                                    {{ form.facebook.label(class="form-label") }}
-                                    {{ form.facebook(class="form-control") }}
-                                    {% if form.facebook.errors %}
-                                        <div class="text-danger">{{ form.facebook.errors[0] }}</div>
-                                    {% endif %}
-                                </div>
-                                
-                                <div class="col-md-6">
-                                    {{ form.instagram.label(class="form-label") }}
-                                    {{ form.instagram(class="form-control") }}
-                                    {% if form.instagram.errors %}
-                                        <div class="text-danger">{{ form.instagram.errors[0] }}</div>
-                                    {% endif %}
-                                </div>
-                                
-                                <div class="col-md-6">
-                                    {{ form.tiktok.label(class="form-label") }}
-                                    {{ form.tiktok(class="form-control") }}
-                                    {% if form.tiktok.errors %}
-                                        <div class="text-danger">{{ form.tiktok.errors[0] }}</div>
-                                    {% endif %}
-                                </div>
-                                
-                                <!-- Updated representatives field -->
-                                <div class="col-12">
-                                    {{ form.representatives.label(class="form-label") }}
-                                    {% if current_user.user_type == 'admin' %}
-                                        {{ form.representatives(class="form-select", multiple="multiple", id="representatives-select") }}
-                                    {% else %}
-                                        <input type="text" class="form-control" id="representatives-display" readonly value="{{ ', '.join(form.representatives.data) if form.representatives.data else '' }}">
-                                        {% for value in form.representatives.data %}
-                                            <input type="hidden" name="representatives" value="{{ value }}">
-                                        {% endfor %}
-                                    {% endif %}
-                                    {% if form.representatives.errors %}
-                                        <div class="text-danger">{{ form.representatives.errors[0] }}</div>
-                                    {% endif %}
-                                </div>
-                                
-                                <div class="col-12 text-center mt-4">
-                                    {{ form.submit(class="btn btn-primary px-5") }}
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+                            </td>
+                            <td class="text-end pe-4">
+                                <a href="{{ url_for('users.edit_distributor_manager', user_id=manager.id) }}" 
+                                   class="btn action-btn btn-outline-primary btn-sm">
+                                    <i class="fas fa-edit me-1"></i>Izmeni
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Forma za distributera -->
+    <div class="cinema-card">
+        <div class="card-body">
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="alert alert-dismissible fade show" role="alert">
+                        {% for category, message in messages %}
+                            <div class="{{ category }}">{{ message }}</div>
+                        {% endfor %}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="" enctype="multipart/form-data">
+                {{ form.hidden_tag() }}
+
+                <!-- Logo i osnovne informacije -->
+                <div class="cinema-details-card mb-4">
+                    <h5 class="text-primary mb-3">
+                        <i class="fas fa-building me-2"></i>Osnovne informacije
+                    </h5>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                {{ form.logo.label(class="form-label") }}
+                                {% if distributor and distributor.logo %}
+                                    <div class="gallery-image mb-2" style="max-width: 200px;">
+                                        <img src="{{ url_for('static', filename='img/distributor/' + distributor.logo) }}" 
+                                             alt="Logo distributera"
+                                             class="w-100">
+                                    </div>
+                                {% endif %}
+                                {{ form.logo(class="form-control") }}
+                                {% if form.logo.errors %}
+                                    <div class="text-danger"><small>{{ form.logo.errors[0] }}</small></div>
+                                {% endif %}
+                                <small class="text-muted">Dozvoljeni formati: JPG, JPEG, PNG. Preporučena veličina: 200x200px</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                {{ form.company_name.label(class="form-label") }}
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-0">
+                                        <i class="fas fa-signature text-muted"></i>
+                                    </span>
+                                    {{ form.company_name(class="form-control") }}
+                                </div>
+                                {% if form.company_name.errors %}
+                                    <div class="text-danger"><small>{{ form.company_name.errors[0] }}</small></div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Adresa i lokacija -->
+                <div class="cinema-details-card mb-4">
+                    <h5 class="text-primary mb-3">
+                        <i class="fas fa-map-marker-alt me-2"></i>Adresa i lokacija
+                    </h5>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                {{ form.country.label(class="form-label") }}
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-0">
+                                        <i class="fas fa-globe text-muted"></i>
+                                    </span>
+                                    {{ form.country(class="form-control") }}
+                                </div>
+                                {% if form.country.errors %}
+                                    <div class="text-danger"><small>{{ form.country.errors[0] }}</small></div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                {{ form.city.label(class="form-label") }}
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-0">
+                                        <i class="fas fa-city text-muted"></i>
+                                    </span>
+                                    {{ form.city(class="form-control") }}
+                                </div>
+                                {% if form.city.errors %}
+                                    <div class="text-danger"><small>{{ form.city.errors[0] }}</small></div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                {{ form.address.label(class="form-label") }}
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-0">
+                                        <i class="fas fa-map-pin text-muted"></i>
+                                    </span>
+                                    {{ form.address(class="form-control") }}
+                                </div>
+                                {% if form.address.errors %}
+                                    <div class="text-danger"><small>{{ form.address.errors[0] }}</small></div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                {{ form.postal_code.label(class="form-label") }}
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-0">
+                                        <i class="fas fa-map text-muted"></i>
+                                    </span>
+                                    {{ form.postal_code(class="form-control") }}
+                                </div>
+                                {% if form.postal_code.errors %}
+                                    <div class="text-danger"><small>{{ form.postal_code.errors[0] }}</small></div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Kontakt informacije -->
+                <div class="cinema-details-card mb-4">
+                    <h5 class="text-primary mb-3">
+                        <i class="fas fa-address-card me-2"></i>Kontakt informacije
+                    </h5>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                {{ form.email.label(class="form-label") }}
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-0">
+                                        <i class="fas fa-envelope text-muted"></i>
+                                    </span>
+                                    {{ form.email(class="form-control") }}
+                                </div>
+                                {% if form.email.errors %}
+                                    <div class="text-danger"><small>{{ form.email.errors[0] }}</small></div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                {{ form.phone.label(class="form-label") }}
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-0">
+                                        <i class="fas fa-phone text-muted"></i>
+                                    </span>
+                                    {{ form.phone(class="form-control") }}
+                                </div>
+                                {% if form.phone.errors %}
+                                    <div class="text-danger"><small>{{ form.phone.errors[0] }}</small></div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                {{ form.authorized_person.label(class="form-label") }}
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-0">
+                                        <i class="fas fa-user-tie text-muted"></i>
+                                    </span>
+                                    {{ form.authorized_person(class="form-control") }}
+                                </div>
+                                {% if form.authorized_person.errors %}
+                                    <div class="text-danger"><small>{{ form.authorized_person.errors[0] }}</small></div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PIB i MB -->
+                <div class="cinema-details-card mb-4">
+                    <h5 class="text-primary mb-3">
+                        <i class="fas fa-id-card me-2"></i>Identifikacioni brojevi
+                    </h5>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                {{ form.pib.label(class="form-label") }}
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-0">
+                                        <i class="fas fa-hashtag text-muted"></i>
+                                    </span>
+                                    {{ form.pib(class="form-control") }}
+                                </div>
+                                {% if form.pib.errors %}
+                                    <div class="text-danger"><small>{{ form.pib.errors[0] }}</small></div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                {{ form.mb.label(class="form-label") }}
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-0">
+                                        <i class="fas fa-fingerprint text-muted"></i>
+                                    </span>
+                                    {{ form.mb(class="form-control") }}
+                                </div>
+                                {% if form.mb.errors %}
+                                    <div class="text-danger"><small>{{ form.mb.errors[0] }}</small></div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Web i društvene mreže -->
+                <div class="cinema-details-card mb-4">
+                    <h5 class="text-primary mb-3">
+                        <i class="fas fa-globe me-2"></i>Web i društvene mreže
+                    </h5>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                {{ form.website.label(class="form-label") }}
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-0">
+                                        <i class="fas fa-link text-muted"></i>
+                                    </span>
+                                    {{ form.website(class="form-control") }}
+                                </div>
+                                {% if form.website.errors %}
+                                    <div class="text-danger"><small>{{ form.website.errors[0] }}</small></div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                {{ form.youtube.label(class="form-label") }}
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-0">
+                                        <i class="fab fa-youtube text-muted"></i>
+                                    </span>
+                                    {{ form.youtube(class="form-control") }}
+                                </div>
+                                {% if form.youtube.errors %}
+                                    <div class="text-danger"><small>{{ form.youtube.errors[0] }}</small></div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                {{ form.facebook.label(class="form-label") }}
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-0">
+                                        <i class="fab fa-facebook text-muted"></i>
+                                    </span>
+                                    {{ form.facebook(class="form-control") }}
+                                </div>
+                                {% if form.facebook.errors %}
+                                    <div class="text-danger"><small>{{ form.facebook.errors[0] }}</small></div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                {{ form.instagram.label(class="form-label") }}
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-0">
+                                        <i class="fab fa-instagram text-muted"></i>
+                                    </span>
+                                    {{ form.instagram(class="form-control") }}
+                                </div>
+                                {% if form.instagram.errors %}
+                                    <div class="text-danger"><small>{{ form.instagram.errors[0] }}</small></div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                {{ form.tiktok.label(class="form-label") }}
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-0">
+                                        <i class="fab fa-tiktok text-muted"></i>
+                                    </span>
+                                    {{ form.tiktok(class="form-control") }}
+                                </div>
+                                {% if form.tiktok.errors %}
+                                    <div class="text-danger"><small>{{ form.tiktok.errors[0] }}</small></div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Zastupnici -->
+                <div class="cinema-details-card mb-4">
+                    <h5 class="text-primary mb-3">
+                        <i class="fas fa-handshake me-2"></i>Zastupnici
+                    </h5>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group">
+                                {{ form.representatives.label(class="form-label") }}
+                                {% if current_user.user_type == 'admin' %}
+                                    {{ form.representatives(class="form-select", multiple="multiple", id="representatives-select") }}
+                                {% else %}
+                                    <input type="text" class="form-control" id="representatives-display" readonly 
+                                           value="{{ ', '.join(form.representatives.data) if form.representatives.data else '' }}">
+                                    {% for value in form.representatives.data %}
+                                        <input type="hidden" name="representatives" value="{{ value }}">
+                                    {% endfor %}
+                                {% endif %}
+                                {% if form.representatives.errors %}
+                                    <div class="text-danger"><small>{{ form.representatives.errors[0] }}</small></div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit dugme -->
+                <div class="d-grid gap-2">
+                    {{ form.submit(class="btn btn-primary btn-lg action-btn") }}
+                </div>
+            </form>
         </div>
     </div>
 </div>
 
-<script>
-    var USER_TYPE = "{{ current_user.user_type }}";
-</script>
-
-
 {% endblock %}
+
 {% block scripts %}
 {{ super() }}
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
-    $(document).ready(function() {
-        $('#representatives').select2({
-            placeholder: 'Izaberite zastupnike',
-            allowClear: true
-        });
-    });
-</script>
-<script>
-    $(document).ready(function() {
-        var isAdmin = (USER_TYPE === 'admin');
+    var USER_TYPE = "{{ current_user.user_type }}";
     
-        if (isAdmin) {
+    $(document).ready(function() {
+        if (USER_TYPE === 'admin') {
             $('#representatives-select').select2({
                 placeholder: 'Izaberite zastupnike',
                 allowClear: true
             });
         }
-    
-        $('form').on('submit', function(e) {
-            if (!isAdmin) {
-                // Za korisnike koji nisu admin, ažurirajte skriveni input sa trenutnom vrednošću
-                var currentValue = $('#representatives-display').val();
-                $('#representatives-hidden').val(currentValue);
+
+        // Preview uploaded image
+        $('#logo').change(function() {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    if ($('.preview-image').length) {
+                        $('.preview-image').attr('src', e.target.result);
+                    } else {
+                        $('<img>')
+                            .attr('src', e.target.result)
+                            .attr('class', 'img-thumbnail preview-image mb-2')
+                            .css({'max-width': '200px', 'max-height': '200px'})
+                            .insertAfter('#logo');
+                    }
+                }
+                reader.readAsDataURL(file);
             }
         });
     });

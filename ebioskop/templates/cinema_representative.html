@@ -1,33 +1,71 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<div class="container mt-5">
+<div class="container py-4">
     <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header bg-primary text-white">
+        <div class="col-lg-8">
+            <!-- Page Header -->
+            <div class="page-header mb-4">
+                <h1 class="page-title">
                     {% if route_name == 'cinemas.edit_cinema_representative' %}
-                        <h2 class="mb-0">Izmena podataka o predstavniku</h2>
+                        Izmena podataka o predstavniku
                     {% elif route_name == 'cinemas.create_cinema_representative' %}
-                        <h2 class="mb-0">Registracija predstavnika bioskopa</h2>
+                        Registracija predstavnika bioskopa
                     {% endif %}
-                </div>
-                <div class="card-body">
+                </h1>
+                <p class="text-muted mb-0">
+                    {% if route_name == 'cinemas.edit_cinema_representative' %}
+                        Ažuriranje informacija postojećeg predstavnika
+                    {% else %}
+                        Unos podataka novog predstavnika bioskopa
+                    {% endif %}
+                </p>
+            </div>
+
+            <!-- Main Form Card -->
+            <div class="cinema-card">
+                <div class="card-body p-4">
                     <form method="POST" action="" enctype="multipart/form-data">
                         {{ form.hidden_tag() }}
                         
-                        <div class="row mb-3">
-                            {% if representative and representative.photo %}
+                        {% if representative and representative.photo %}
+                        <div class="cinema-details-card mb-4">
+                            <h5 class="text-primary mb-3">
+                                <i class="fas fa-image me-2"></i>Trenutna fotografija
+                            </h5>
+                            <div class="row align-items-center">
                                 <div class="col-md-4">
-                                    <img src="{{ url_for('static', filename='img/cinema_representative/' + representative.photo) }}" 
-                                         alt="Slika predstavnika" 
-                                         class="img-thumbnail" 
-                                         style="max-width: 100%; height: auto;">
+                                    <div class="gallery-image">
+                                        <img src="{{ url_for('static', filename='img/cinema_representative/' + representative.photo) }}" 
+                                             alt="Slika predstavnika" 
+                                             class="img-fluid rounded">
+                                    </div>
                                 </div>
                                 <div class="col-md-8">
-                                    <div class="mb-3">
+                                    <p class="text-muted mb-0">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        Možete zadržati postojeću fotografiju ili otpremiti novu ispod
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <!-- Lični podaci -->
+                        <div class="cinema-details-card mb-4">
+                            <h5 class="text-primary mb-3">
+                                <i class="fas fa-user me-2"></i>Lični podaci
+                            </h5>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="form-group">
                                         {{ form.first_name.label(class="form-label") }}
-                                        {{ form.first_name(class="form-control", placeholder="Ime") }}
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light border-0">
+                                                <i class="fas fa-user-circle text-muted"></i>
+                                            </span>
+                                            {{ form.first_name(class="form-control", placeholder="Ime") }}
+                                        </div>
                                         {% if form.first_name.errors %}
                                             <div class="text-danger">
                                                 {% for error in form.first_name.errors %}
@@ -36,9 +74,16 @@
                                             </div>
                                         {% endif %}
                                     </div>
-                                    <div class="mb-3">
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
                                         {{ form.last_name.label(class="form-label") }}
-                                        {{ form.last_name(class="form-control", placeholder="Prezime") }}
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light border-0">
+                                                <i class="fas fa-user-circle text-muted"></i>
+                                            </span>
+                                            {{ form.last_name(class="form-control", placeholder="Prezime") }}
+                                        </div>
                                         {% if form.last_name.errors %}
                                             <div class="text-danger">
                                                 {% for error in form.last_name.errors %}
@@ -47,9 +92,16 @@
                                             </div>
                                         {% endif %}
                                     </div>
-                                    <div class="mb-3">
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-group">
                                         {{ form.position.label(class="form-label") }}
-                                        {{ form.position(class="form-select") }}
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light border-0">
+                                                <i class="fas fa-briefcase text-muted"></i>
+                                            </span>
+                                            {{ form.position(class="form-select") }}
+                                        </div>
                                         {% if form.position.errors %}
                                             <div class="text-danger">
                                                 {% for error in form.position.errors %}
@@ -59,81 +111,75 @@
                                         {% endif %}
                                     </div>
                                 </div>
-                            {% else %}
-                                <div class="col-md-4 mb-3">
-                                    {{ form.first_name.label(class="form-label") }}
-                                    {{ form.first_name(class="form-control", placeholder="Ime") }}
-                                    {% if form.first_name.errors %}
-                                        <div class="text-danger">
-                                            {% for error in form.first_name.errors %}
-                                                <small>{{ error }}</small>
-                                            {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Kontakt informacije -->
+                        <div class="cinema-details-card mb-4">
+                            <h5 class="text-primary mb-3">
+                                <i class="fas fa-address-card me-2"></i>Kontakt informacije
+                            </h5>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        {{ form.email.label(class="form-label") }}
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light border-0">
+                                                <i class="fas fa-envelope text-muted"></i>
+                                            </span>
+                                            {{ form.email(class="form-control", placeholder="Imejl") }}
                                         </div>
-                                    {% endif %}
+                                        {% if form.email.errors %}
+                                            <div class="text-danger">
+                                                {% for error in form.email.errors %}
+                                                    <small>{{ error }}</small>
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
                                 </div>
-                                <div class="col-md-4 mb-3">
-                                    {{ form.last_name.label(class="form-label") }}
-                                    {{ form.last_name(class="form-control", placeholder="Prezime") }}
-                                    {% if form.last_name.errors %}
-                                        <div class="text-danger">
-                                            {% for error in form.last_name.errors %}
-                                                <small>{{ error }}</small>
-                                            {% endfor %}
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        {{ form.phone.label(class="form-label") }}
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light border-0">
+                                                <i class="fas fa-phone text-muted"></i>
+                                            </span>
+                                            {{ form.phone(class="form-control", placeholder="Telefon") }}
                                         </div>
-                                    {% endif %}
+                                        {% if form.phone.errors %}
+                                            <div class="text-danger">
+                                                {% for error in form.phone.errors %}
+                                                    <small>{{ error }}</small>
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
                                 </div>
-                                <div class="col-md-4 mb-3">
-                                    {{ form.position.label(class="form-label") }}
-                                    {{ form.position(class="form-select") }}
-                                    {% if form.position.errors %}
-                                        <div class="text-danger">
-                                            {% for error in form.position.errors %}
-                                                <small>{{ error }}</small>
-                                            {% endfor %}
-                                        </div>
-                                    {% endif %}
-                                </div>
-                            {% endif %}
+                            </div>
                         </div>
 
-                        <div class="mb-3">
-                            {{ form.email.label(class="form-label") }}
-                            {{ form.email(class="form-control", placeholder="Imejl") }}
-                            {% if form.email.errors %}
-                                <div class="text-danger">
-                                    {% for error in form.email.errors %}
-                                        <small>{{ error }}</small>
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
+                        <!-- Fotografija -->
+                        <div class="cinema-details-card mb-4">
+                            <h5 class="text-primary mb-3">
+                                <i class="fas fa-camera me-2"></i>Fotografija
+                            </h5>
+                            <div class="form-group">
+                                {{ form.photo.label(class="form-label") }}
+                                {{ form.photo(class="form-control") }}
+                                {% if form.photo.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.photo.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
                         </div>
 
-                        <div class="mb-3">
-                            {{ form.phone.label(class="form-label") }}
-                            {{ form.phone(class="form-control", placeholder="Telefon") }}
-                            {% if form.phone.errors %}
-                                <div class="text-danger">
-                                    {% for error in form.phone.errors %}
-                                        <small>{{ error }}</small>
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                        </div>
-
-                        <div class="mb-3">
-                            {{ form.photo.label(class="form-label") }}
-                            {{ form.photo(class="form-control") }}
-                            {% if form.photo.errors %}
-                                <div class="text-danger">
-                                    {% for error in form.photo.errors %}
-                                        <small>{{ error }}</small>
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                        </div>
-
-                        <div class="d-grid">
-                            {{form.submit(class="btn btn-primary btn-lg")}}
+                        <!-- Submit Button -->
+                        <div class="d-grid gap-2">
+                            {{ form.submit(class="btn btn-primary btn-lg action-btn") }}
                         </div>
                     </form>
                 </div>

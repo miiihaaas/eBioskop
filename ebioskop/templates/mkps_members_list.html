@@ -2,60 +2,89 @@
 
 {% block content %}
 <div class="container-fluid py-4">
-    <div class="row mb-4 align-items-center">
-        <div class="col">
-            <h1 class="h2 mb-0">Lista članova MKPS</h1>
+    <!-- Page Header -->
+    <div class="page-header d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="page-title">Lista članova MKPS</h1>
+            <p class="text-muted mb-0">Pregled i upravljanje članovima MKPS-a</p>
         </div>
-        <div class="col-auto">
-            <a href="{{ url_for('cinemas.create_mkps_member') }}" class="btn btn-primary">
-                <i class="fas fa-user-plus me-2"></i>Dodaj novog MKPS člana
+        <div>
+            <a href="{{ url_for('cinemas.create_mkps_member') }}" class="btn btn-add btn-primary">
+                <i class="fas fa-user-plus me-2"></i>Dodaj novog člana
             </a>
         </div>
     </div>
 
-    <div class="card shadow">
-        <div class="card-body">
+    <!-- Main Card -->
+    <div class="cinema-card">
+        <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead class="table-light">
+                <table class="cinema-table table table-hover mb-0">
+                    <thead>
                         <tr>
-                            <th>ID</th>
-                            <th>Ime i prezime</th>
-                            <th>Kontakt</th>
+                            <th class="ps-4">ID</th>
+                            <th>Član</th>
+                            <th>Kontakt informacije</th>
                             <th>Prikazivač</th>
                             <th>Pozicija</th>
                             <th>Status</th>
-                            <th>Akcije</th>
+                            <th class="text-end pe-4">Akcije</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for member in members %}
-                        <tr>
-                            <td>{{ member.id }}</td>
-                            <td>
-                                <strong>{{ member.name }} {{ member.surname }}</strong>
-                                <br>
-                                <small class="text-muted">{{ member.address }}, {{ member.city }}</small>
+                        <tr class="cinema-row">
+                            <td class="ps-4">
+                                <span class="id-badge">{{ member.id }}</span>
                             </td>
                             <td>
-                                <i class="fas fa-envelope me-1"></i> {{ member.get_emails() | join(', ') }}<br>
-                                <i class="fas fa-phone me-1"></i> {{ member.get_phones() | join(', ') }}
+                                <div class="d-flex flex-column">
+                                    <span class="cinema-name">{{ member.name }} {{ member.surname }}</span>
+                                    <small class="text-muted">{{ member.address }}, {{ member.city }}</small>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="contact-info">
+                                    <div class="contact-item">
+                                        <i class="fas fa-envelope text-muted me-2"></i>
+                                        {{ member.get_emails() | join(', ') }}
+                                    </div>
+                                    <div class="contact-item">
+                                        <i class="fas fa-phone text-muted me-2"></i>
+                                        {{ member.get_phones() | join(', ') }}
+                                    </div>
+                                </div>
                             </td>
                             <td>
                                 {% if member.cinema %}
-                                    <span class="badge bg-success">MKPS</span> {{ member.cinema.name }}
+                                    <div class="membership-info">
+                                        <div class="membership-item">
+                                            <span class="membership-badge badge-success">MKPS</span>
+                                            <span>{{ member.cinema.name }}</span>
+                                        </div>
+                                    </div>
                                 {% elif member.cinema_not_mkps %}
-                                    <span class="badge bg-warning">NOT MKPS</span> {{ member.cinema_not_mkps }}
+                                    <div class="membership-info">
+                                        <div class="membership-item">
+                                            <span class="membership-badge badge-secondary">NOT MKPS</span>
+                                            <span>{{ member.cinema_not_mkps }}</span>
+                                        </div>
+                                    </div>
                                 {% else %}
-                                    <span class="badge bg-secondary">N/A</span>
+                                    <span class="membership-badge badge-secondary">N/A</span>
                                 {% endif %}
                             </td>
-                            <td>{{ member.job_position }}</td>
                             <td>
-                                <span class="badge bg-info">{{ member.status }}</span>
+                                <span class="job-position">{{ member.job_position }}</span>
                             </td>
                             <td>
-                                <a href="{{ url_for('cinemas.edit_mkps_member', member_id=member.id) }}" class="btn btn-outline-primary btn-sm">
+                                <span class="membership-badge badge-{% if member.status == 'aktivan' %}success{% elif member.status == 'počasni' %}info{% else %}secondary{% endif %}">
+                                    {{ member.status }}
+                                </span>
+                            </td>
+                            <td class="text-end pe-4">
+                                <a href="{{ url_for('cinemas.edit_mkps_member', member_id=member.id) }}" 
+                                   class="btn action-btn btn-outline-primary btn-sm">
                                     <i class="fas fa-edit me-1"></i>Uredi
                                 </a>
                             </td>
@@ -67,20 +96,4 @@
         </div>
     </div>
 </div>
-{% endblock %}
-
-{% block extra_css %}
-<style>
-    .table th {
-        font-weight: 600;
-        text-transform: uppercase;
-        font-size: 0.8rem;
-    }
-    .table td {
-        vertical-align: middle;
-    }
-    .badge {
-        font-weight: 500;
-    }
-</style>
 {% endblock %}

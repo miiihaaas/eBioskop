@@ -1,98 +1,183 @@
 {% extends "layout.html" %}
 {% block content %}
-<div class="container mt-5">
+<div class="container py-4">
     <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white">
-                    <h2 class="mb-0">{{ 'Uređivanje' if user else 'Registracija' }} menadžera bioskopa</h2>
-                </div>
-                <div class="card-body">
+        <div class="col-lg-8">
+            <!-- Page Header -->
+            <div class="page-header mb-4">
+                <h1 class="page-title">{{ 'Uređivanje' if user else 'Registracija' }} menadžera bioskopa</h1>
+                <p class="text-muted mb-0">{{ 'Izmena podataka postojećeg' if user else 'Unos podataka novog' }} menadžera</p>
+            </div>
+
+            <!-- Main Form Card -->
+            <div class="cinema-card">
+                <div class="card-body p-4">
                     <form method="POST" action="" enctype="multipart/form-data">
                         {{ form.hidden_tag() }}
                         
                         {% if user and user.photo %}
-                        <div class="row mb-4">
-                            <div class="col-md-4">
-                                <img src="{{ url_for('static', filename='img/users/' + user.photo) }}" alt="{{ user.user_name }} {{ user.user_surname }}" class="img-fluid rounded" style="max-width: 100%; max-height: 200px; object-fit: cover;">
-                            </div>
-                            <div class="col-md-8">
-                                <div class="mb-3">
-                                    {{ form.user_name.label(class="form-label") }}
-                                    {{ form.user_name(class="form-control", placeholder="Unesite ime") }}
-                                    {% for error in form.user_name.errors %}
-                                        <span class="text-danger">{{ error }}</span>
-                                    {% endfor %}
+                        <!-- Postojeća fotografija -->
+                        <div class="cinema-details-card mb-4">
+                            <h5 class="text-primary mb-3">
+                                <i class="fas fa-image me-2"></i>Trenutna fotografija
+                            </h5>
+                            <div class="row g-4 align-items-center">
+                                <div class="col-md-4">
+                                    <div class="gallery-image">
+                                        <img src="{{ url_for('static', filename='img/users/' + user.photo) }}" 
+                                             alt="{{ user.user_name }} {{ user.user_surname }}" 
+                                             class="img-fluid rounded">
+                                    </div>
                                 </div>
-                                <div class="mb-3">
-                                    {{ form.user_surname.label(class="form-label") }}
-                                    {{ form.user_surname(class="form-control", placeholder="Unesite prezime") }}
-                                    {% for error in form.user_surname.errors %}
-                                        <span class="text-danger">{{ error }}</span>
-                                    {% endfor %}
-                                </div>
-                                <div class="mb-3">
-                                    {{ form.user_mail.label(class="form-label") }}
-                                    {{ form.user_mail(class="form-control", placeholder="ime.prezime@example.com") }}
-                                    {% for error in form.user_mail.errors %}
-                                        <span class="text-danger">{{ error }}</span>
-                                    {% endfor %}
+                                <div class="col-md-8">
+                                    <div class="info-section">
+                                        <div class="form-group mb-3">
+                                            {{ form.user_name.label(class="form-label") }}
+                                            <div class="input-group">
+                                                <span class="input-group-text bg-light border-0">
+                                                    <i class="fas fa-user-circle text-muted"></i>
+                                                </span>
+                                                {{ form.user_name(class="form-control", placeholder="Unesite ime") }}
+                                            </div>
+                                            {% for error in form.user_name.errors %}
+                                                <div class="text-danger"><small>{{ error }}</small></div>
+                                            {% endfor %}
+                                        </div>
+                                        <div class="form-group mb-3">
+                                            {{ form.user_surname.label(class="form-label") }}
+                                            <div class="input-group">
+                                                <span class="input-group-text bg-light border-0">
+                                                    <i class="fas fa-user-circle text-muted"></i>
+                                                </span>
+                                                {{ form.user_surname(class="form-control", placeholder="Unesite prezime") }}
+                                            </div>
+                                            {% for error in form.user_surname.errors %}
+                                                <div class="text-danger"><small>{{ error }}</small></div>
+                                            {% endfor %}
+                                        </div>
+                                        <div class="form-group">
+                                            {{ form.user_mail.label(class="form-label") }}
+                                            <div class="input-group">
+                                                <span class="input-group-text bg-light border-0">
+                                                    <i class="fas fa-envelope text-muted"></i>
+                                                </span>
+                                                {{ form.user_mail(class="form-control", placeholder="ime.prezime@example.com") }}
+                                            </div>
+                                            {% for error in form.user_mail.errors %}
+                                                <div class="text-danger"><small>{{ error }}</small></div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                         {% else %}
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                {{ form.user_name.label(class="form-label") }}
-                                {{ form.user_name(class="form-control", placeholder="Unesite ime") }}
-                                {% for error in form.user_name.errors %}
-                                    <span class="text-danger">{{ error }}</span>
-                                {% endfor %}
+                        <!-- Lični podaci -->
+                        <div class="cinema-details-card mb-4">
+                            <h5 class="text-primary mb-3">
+                                <i class="fas fa-user me-2"></i>Lični podaci
+                            </h5>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        {{ form.user_name.label(class="form-label") }}
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light border-0">
+                                                <i class="fas fa-user-circle text-muted"></i>
+                                            </span>
+                                            {{ form.user_name(class="form-control", placeholder="Unesite ime") }}
+                                        </div>
+                                        {% for error in form.user_name.errors %}
+                                            <div class="text-danger"><small>{{ error }}</small></div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        {{ form.user_surname.label(class="form-label") }}
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light border-0">
+                                                <i class="fas fa-user-circle text-muted"></i>
+                                            </span>
+                                            {{ form.user_surname(class="form-control", placeholder="Unesite prezime") }}
+                                        </div>
+                                        {% for error in form.user_surname.errors %}
+                                            <div class="text-danger"><small>{{ error }}</small></div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        {{ form.user_mail.label(class="form-label") }}
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light border-0">
+                                                <i class="fas fa-envelope text-muted"></i>
+                                            </span>
+                                            {{ form.user_mail(class="form-control", placeholder="ime.prezime@example.com") }}
+                                        </div>
+                                        {% for error in form.user_mail.errors %}
+                                            <div class="text-danger"><small>{{ error }}</small></div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
                             </div>
-                            <div class="col-md-6">
-                                {{ form.user_surname.label(class="form-label") }}
-                                {{ form.user_surname(class="form-control", placeholder="Unesite prezime") }}
-                                {% for error in form.user_surname.errors %}
-                                    <span class="text-danger">{{ error }}</span>
-                                {% endfor %}
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            {{ form.user_mail.label(class="form-label") }}
-                            {{ form.user_mail(class="form-control", placeholder="ime.prezime@example.com") }}
-                            {% for error in form.user_mail.errors %}
-                                <span class="text-danger">{{ error }}</span>
-                            {% endfor %}
                         </div>
                         {% endif %}
 
-                        <div class="mb-3">
-                            {{ form.position.label(class="form-label") }}
-                            {{ form.position(class="form-select") }}
-                            {% for error in form.position.errors %}
-                                <span class="text-danger">{{ error }}</span>
-                            {% endfor %}
+                        <!-- Pozicija i kontakt -->
+                        <div class="cinema-details-card mb-4">
+                            <h5 class="text-primary mb-3">
+                                <i class="fas fa-briefcase me-2"></i>Pozicija i kontakt
+                            </h5>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        {{ form.position.label(class="form-label") }}
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light border-0">
+                                                <i class="fas fa-id-badge text-muted"></i>
+                                            </span>
+                                            {{ form.position(class="form-select") }}
+                                        </div>
+                                        {% for error in form.position.errors %}
+                                            <div class="text-danger"><small>{{ error }}</small></div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        {{ form.phone.label(class="form-label") }}
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light border-0">
+                                                <i class="fas fa-phone text-muted"></i>
+                                            </span>
+                                            {{ form.phone(class="form-control", placeholder="+381 xx xxx xxxx") }}
+                                        </div>
+                                        {% for error in form.phone.errors %}
+                                            <div class="text-danger"><small>{{ error }}</small></div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="mb-3">
-                            {{ form.phone.label(class="form-label") }}
-                            {{ form.phone(class="form-control", placeholder="+381 xx xxx xxxx") }}
-                            {% for error in form.phone.errors %}
-                                <span class="text-danger">{{ error }}</span>
-                            {% endfor %}
+                        <!-- Fotografija -->
+                        <div class="cinema-details-card mb-4">
+                            <h5 class="text-primary mb-3">
+                                <i class="fas fa-camera me-2"></i>Fotografija
+                            </h5>
+                            <div class="form-group">
+                                {{ form.photo.label(class="form-label") }}
+                                {{ form.photo(class="form-control") }}
+                                {% for error in form.photo.errors %}
+                                    <div class="text-danger"><small>{{ error }}</small></div>
+                                {% endfor %}
+                            </div>
                         </div>
 
-                        <div class="mb-3">
-                            {{ form.photo.label(class="form-label") }}
-                            {{ form.photo(class="form-control") }}
-                            {% for error in form.photo.errors %}
-                                <span class="text-danger">{{ error }}</span>
-                            {% endfor %}
-                        </div>
-
+                        <!-- Submit Button -->
                         <div class="d-grid gap-2">
-                            {{ form.submit(class="btn btn-primary btn-lg") }}
+                            {{ form.submit(class="btn btn-primary btn-lg action-btn") }}
                         </div>
                     </form>
                 </div>

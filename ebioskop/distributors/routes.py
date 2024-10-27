@@ -1,9 +1,11 @@
+import os
 from datetime import datetime, timedelta
-from flask import Blueprint, render_template, request, url_for, flash, redirect
+from flask import Blueprint, render_template, request, url_for, flash, redirect, current_app
 from flask_login import current_user
 from ebioskop import app, db
 from ebioskop.models import Cinema, CinemaHall, CinemaProperties, Distributor, DistributorRepresentative, Movie, Projection, Representative, User
 from ebioskop.distributors.forms import EditDistributorForm, RegisterDistributorForm
+from werkzeug.utils import secure_filename
 
 
 distributors = Blueprint('distributor', __name__)
@@ -38,23 +40,49 @@ def create_distributor():
             tiktok=form.tiktok.data
         )
         
-        # Dodavanje distributera u sesiju
+        # Dodavanje distributera u sesiju da dobijemo ID
         db.session.add(distributor)
+        db.session.flush()  # Ovo će dodeliti ID distributeru
+        
+        # Obrada logotipa ako je uploadovan
+        if form.logo.data:
+            # Kreiranje direktorijuma ako ne postoji
+            logo_path = os.path.join(current_app.root_path, 'static', 'img', 'distributor')
+            os.makedirs(logo_path, exist_ok=True)
+            
+            # Čuvanje fajla sa generisanim imenom
+            filename = f'distributor_{distributor.id:03d}'
+            file_extension = os.path.splitext(form.logo.data.filename)[1]
+            logo_filename = secure_filename(filename + file_extension)
+            
+            # Čuvanje fajla
+            form.logo.data.save(os.path.join(logo_path, logo_filename))
+            
+            # Čuvanje imena fajla u bazi
+            distributor.logo = logo_filename
         
         # Povezivanje sa izabranim zastupnicima
         for rep_name in form.representatives.data:
             representative = Representative.query.filter_by(name=rep_name).first()
             if representative:
-                distributor_representative = DistributorRepresentative(distributor=distributor, representative=representative)
+                distributor_representative = DistributorRepresentative(
+                    distributor=distributor, 
+                    representative=representative
+                )
                 db.session.add(distributor_representative)
         
-        # Čuvanje promena u bazi
+        # Čuvanje svih promena u bazi
         db.session.commit()
         
         flash(f'Distributor {form.company_name.data} je uspešno kreiran!', 'success')
         return redirect(url_for('distributor.distributors_list'))
     
     return render_template('distributor.html', title='Kreiranje novog distributera', form=form, route_name=route_name)
+
+
+import os
+from flask import current_app
+from werkzeug.utils import secure_filename
 
 @distributors.route('/edit_distributor/<int:distributor_id>', methods=['GET', 'POST'])
 def edit_distributor(distributor_id):
@@ -85,6 +113,29 @@ def edit_distributor(distributor_id):
         distributor.facebook = form.facebook.data
         distributor.instagram = form.instagram.data
         distributor.tiktok = form.tiktok.data
+
+        # Obrada logotipa ako je uploadovan novi
+        if form.logo.data:
+            # Kreiranje direktorijuma ako ne postoji
+            logo_path = os.path.join(current_app.root_path, 'static', 'img', 'distributor')
+            os.makedirs(logo_path, exist_ok=True)
+            
+            # Brisanje starog logotipa ako postoji
+            if distributor.logo and distributor.logo != 'default_logo.jpg':
+                old_logo_path = os.path.join(logo_path, distributor.logo)
+                if os.path.exists(old_logo_path):
+                    os.remove(old_logo_path)
+            
+            # Čuvanje novog logotipa
+            filename = f'distributor_{distributor_id:03d}'
+            file_extension = os.path.splitext(form.logo.data.filename)[1]
+            logo_filename = secure_filename(filename + file_extension)
+            
+            # Čuvanje fajla
+            form.logo.data.save(os.path.join(logo_path, logo_filename))
+            
+            # Ažuriranje imena fajla u bazi
+            distributor.logo = logo_filename
 
         # Ažuriranje zastupnika
         existing_representatives = set(rep.name for rep in distributor.representatives)
@@ -142,9 +193,9 @@ def edit_distributor(distributor_id):
 
 @distributors.route('/distributors_list')
 def distributors_list():
-    if current_user.user_type not in ['admin', 'user']:
-        flash('Nemate pravo da pristupite ovoj stranici.', 'warning')
-        return redirect(url_for('main.home'))
+#     if current_user.user_type not in ['admin', 'user']:
+#         flash('Nemate pravo da pristupite ovoj stranici.', 'warning')
+#         return redirect(url_for('main.home'))
     route_name = request.endpoint
     distributors = Distributor.query.all()
     return render_template('distributors_list.html', distributors=distributors, route_name=route_name)

@@ -1,50 +1,46 @@
 <!doctype html>
-<html lang="en">
+<html lang="sr">
     <head>
-        <!-- Required meta tags -->
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
         <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.png') }}">
-
+        
         <!-- Bootstrap CSS -->
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-        <!--<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">-->
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet">
         <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/dataTables.bootstrap5.css">
         
+        <!-- Font -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-        <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&amp;display=swap" rel="stylesheet">
-        <!-- <script src="https://kit.fontawesome.com/6acaa27a4b.js" crossorigin="anonymous"></script> -->
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
-
-        <!-- selet2 -->
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+        
+        <!-- Icons -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+        
+        <!-- Select2 -->
         <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+        
+        <!-- Custom CSS -->
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='mikicustom.css') }}">
 
-        {% if title %}
-        <title>eBioskop - {{ title }}</title>
-        {% else %}
-        <title>eBioskop</title>
-        {% endif %}
-
-
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <title>{% if title %}eBioskop - {{ title }}{% else %}eBioskop{% endif %}</title>
     </head>
     <body class="{{ route_name }}">
+        <!-- Header -->
         <header class="site-header">
-            <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+            <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky">
                 <div class="container-fluid">
                     <a class="navbar-brand" href="{{ url_for('main.home') }}">
                         <img src="{{ url_for('static', filename='img/logo.webp') }}" alt="eBioskop" height="30" class="d-inline-block align-top">
                         eBioskop
                     </a>
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                         <span class="navbar-toggler-icon"></span>
                     </button>
+                    
                     <div class="collapse navbar-collapse" id="navbarNav">
-                        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <ul class="navbar-nav me-auto">
                             {% if current_user.user_type == 'distributor' %}
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ url_for('distributor.edit_distributor', distributor_id=current_user.distributor_id) }}">O pravnom licu</a>
@@ -56,7 +52,7 @@
                                 <a class="nav-link" href="{{ url_for('calendars.distribution_calendar') }}">Kalendar distribucije</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ url_for('distributor.exhibitors') }}">Prikazivači</a>
+                                <a class="nav-link" href="{{ url_for('distributor.exhibitors') }}">Projekcije</a>
                             </li>
                             {% elif current_user.user_type == 'cinema_ceo' %}
                             <li class="nav-item">
@@ -91,13 +87,16 @@
                                 <a class="nav-link" href="{{ url_for('cinemas.mkps_members_list') }}">MKPS članovi</a>
                             </li>
                             <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('users.privileged_users') }}">Korisnici sa proširenim pravima pristupa</a>
+                            </li>
+                            <li class="nav-item">
                                 <a class="nav-link" href="{{ url_for('movies.movies_list') }}">Lista filmova</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ url_for('calendars.distribution_calendar')}}">Kalendar</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ url_for('projections.projections_list' )}}">Detalji projekcije</a>
+                                <a class="nav-link" href="{{ url_for('projections.cinema_projections_list' )}}">Projekcije</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="">Sve opcije...</a>
@@ -134,9 +133,17 @@
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ url_for('distributor.distributors_list') }}">Distributeri</a>
                             </li>
+                            {% if current_user.user_type == 'user' %}
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ url_for('main.box_office') }}">Box office</a>
+                                <a class="nav-link" href="{{ url_for('cinemas.cinema_profiles') }}">Lične karte bioskopa</a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('projections.cinema_projections_list' )}}">Projekcije</a>
+                            </li>
+                            {% endif %}
+                            <!-- <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('main.box_office') }}">Box office</a>
+                            </li> -->
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ url_for('main.faq') }}">FAQ</a>
                             </li>
@@ -144,24 +151,26 @@
                                 <a class="nav-link" href="{{ url_for('main.contact') }}">Kontakt</a>
                             </li>
                             {% endif %}
-                            <!-- Dodajte druge stavke menija po potrebi -->
+                            
                         </ul>
+                        
                         <ul class="navbar-nav">
                             {% if current_user.is_authenticated %}
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="fas fa-user-circle me-1"></i>{{ current_user.user_name }} | {{ current_user.user_type }}
+                            <li class="nav-item d-flex align-items-center">
+                                <span class="nav-link text-dark">
+                                    <i class="fas fa-user-circle me-2"></i>
+                                    {{ current_user.user_name }} | 
+                                    <small class="text-muted">{{ current_user.user_type }}</small>
+                                </span>
+                                <a class="btn btn-outline-primary btn-sm ms-3" href="{{ url_for('users.logout') }}">
+                                    <i class="fas fa-sign-out-alt me-1"></i>Odjava
                                 </a>
-                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                    <li><a class="dropdown-item" href="#">Profil</a></li>
-                                    <li><a class="dropdown-item" href="#">Podešavanja</a></li>
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li><a class="dropdown-item" href="{{ url_for('users.logout') }}">Odjava</a></li>
-                                </ul>
                             </li>
                             {% else %}
                             <li class="nav-item">
-                                <a class="nav-link btn btn-outline-primary" href="{{ url_for('users.login') }}">Prijava</a>
+                                <a class="btn btn-outline-primary" href="{{ url_for('users.login') }}">
+                                    <i class="fas fa-sign-in-alt me-1"></i>Prijava
+                                </a>
                             </li>
                             {% endif %}
                         </ul>
@@ -169,51 +178,46 @@
                 </div>
             </nav>
         </header>
-        
-
-        <div class="wrapper d-flex align-items-stretch">
-        <main role="main" class="container">
-            <div class="row">
-            <div class="col-md-12">
-                <legend class="">{{ legend }}</legend>
-                {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, message in messages %}
-                    <div class="alert alert-{{ category }}">
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                <div class="container mt-2">
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
                         {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
-                    {% endfor %}
-                {% endif %}
-                {% endwith %}
-                {% block content %}{% endblock %}
-            </div>
-            </div>
-        </main>
-        
+                </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Main Content -->
+        <div class="wrapper">
+            <main role="main" class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        {% if legend %}
+                        <div class="page-header">
+                            <h1 class="page-title mb-4">{{ legend }}</h1>
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Main Content Block -->
+                        {% block content %}{% endblock %}
+                    </div>
+                </div>
+            </main>
         </div>
 
-        <!-- Optional JavaScript -->
-        <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-
-        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-        <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
-        <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/dataTables.bootstrap5.js"></script>
+        <!-- Scripts -->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-
-        <!-- <script type="text/javascript" charset="utf8" src="file:///D:/Mihas/Programming/ython/Projects/PutniNalozi/putninalozi/js/jquery.dataTables.js"></script> -->
-
-        <!-- "file:///D:/Mihas/Programming/ython/Projects/PutniNalozi/putninalozi/js/jquery.dataTables.js" -->
-
-        <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/dataTables.bootstrap5.js"></script>
-        
-        <!-- Select2 JS -->
+        <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
+        <script src="https://cdn.datatables.net/1.10.25/js/dataTables.bootstrap5.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-        
-        {% block scripts %}{% endblock %}
 
+        {% block scripts %}{% endblock %}
     </body>
 </html>

@@ -2,75 +2,138 @@
 
 {% block content %}
 <div class="container-fluid py-4">
-    <div class="row mb-4 align-items-center">
-        <div class="col">
-            <h1 class="h2 mb-0">Lista prikazivača</h1>
-        </div>
-        <div class="col-auto">
-            {% if current_user.user_type == 'admin' %}
-            <a href="{{ url_for('cinemas.create_cinema') }}" class="btn btn-primary">
-                <i class="fas fa-plus-circle me-2"></i>Dodaj novog prikazivača
-            </a>
-            {% endif %}
+    <div class="page-header mb-4">
+        <div class="row align-items-center">
+            <div class="col">
+                <h1 class="page-title">
+                    <i class="fas fa-film me-2 text-primary"></i>
+                    Lista prikazivača
+                </h1>
+                <p class="text-muted">Pregled svih registrovanih bioskopa</p>
+            </div>
+            <div class="col-auto">
+                {% if current_user.user_type == 'admin' %}
+                <a href="{{ url_for('cinemas.create_cinema') }}" class="btn btn-primary btn-add">
+                    <i class="fas fa-plus-circle me-2"></i>
+                    Dodaj novog prikazivača
+                </a>
+                {% endif %}
+            </div>
         </div>
     </div>
 
     {% if cinemas %}
-    <div class="card shadow">
-        <div class="card-body">
+    <div class="card cinema-card">
+        <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-hover table-striped">
-                    <thead class="table-light">
+                <table class="table table-hover cinema-table">
+                    <thead>
                         <tr>
-                            <th>ID</th>
-                            <th>Naziv</th>
-                            <th>Lokacija</th>
-                            <th>Kontakt</th>
-                            <th>Pravne informacije</th>
-                            <th>Članstva</th>
-                            <th>Akcije</th>
+                            <th class="th-id">ID</th>
+                            <th class="th-name">Naziv</th>
+                            <th class="th-location">Lokacija</th>
+                            <th class="th-contact">Kontakt</th>
+                            <th class="th-legal">Pravne informacije</th>
+                            <th class="th-membership">Članstva</th>
+                            <th class="th-actions">Akcije</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for cinema in cinemas %}
-                        <tr>
-                            <td>{{ cinema.id }}</td>
-                            <td>
-                                <strong>{{ cinema.name }}</strong>
-                                {% if cinema.website %}
-                                <br><a href="{{ cinema.website }}" target="_blank" class="small text-muted">{{ cinema.website }}</a>
-                                {% endif %}
+                        <tr class="cinema-row">
+                            <td class="id-cell">
+                                <span class="id-badge">{{ cinema.id }}</span>
                             </td>
-                            <td>
-                                {{ cinema.contry }}<br>
-                                <small class="text-muted">{{ cinema.address }}</small>
+                            <td class="name-cell">
+                                <div class="cinema-info">
+                                    <div class="cinema-logo me-3">
+                                        <img src="{{ url_for('static', filename='img/cinema/' + cinema.logo ) }}" 
+                                             alt="Logo" 
+                                             class="cinema-logo-img">
+                                    </div>
+                                    <div>
+                                        <strong class="cinema-name">{{ cinema.name }}</strong>
+                                        {% if cinema.website %}
+                                        <a href="{{ cinema.website }}" 
+                                           target="_blank" 
+                                           class="website-link">
+                                            <i class="fas fa-globe me-1"></i>
+                                            {{ cinema.website }}
+                                        </a>
+                                        {% endif %}
+                                    </div>
+                                </div>
                             </td>
-                            <td>
-                                <!-- <i class="fas fa-envelope me-1"></i> {{ ', '.join(cinema.email) }}<br> -->
-                                <i class="fas fa-envelope me-1"></i> {{ cinema.email }}<br>
-                                <i class="fas fa-phone me-1"></i> {{ cinema.phone }}
+                            <td class="location-cell">
+                                <div class="location-info">
+                                    <div class="country">
+                                        <i class="fas fa-map-marker-alt text-danger me-2"></i>
+                                        {{ cinema.city }}
+                                    </div>
+                                    <div class="address text-muted">
+                                        <i class="fas fa-location-arrow me-2"></i>
+                                        {{ cinema.address }}
+                                    </div>
+                                </div>
                             </td>
-                            <td>
-                                <span class="badge bg-info">{{ cinema.legal_form }}</span><br>
-                                <small>PIB: {{ cinema.pib }}</small><br>
-                                <small>MB: {{ cinema.mb }}</small>
+                            <td class="contact-cell">
+                                <div class="contact-info">
+                                    <div class="contact-item">
+                                        <i class="fas fa-envelope text-primary me-2"></i>
+                                        {{ cinema.email }}
+                                    </div>
+                                    <div class="contact-item">
+                                        <i class="fas fa-phone text-success me-2"></i>
+                                        {{ cinema.phone }}
+                                    </div>
+                                </div>
                             </td>
-                            <td>
-                                MKPS: <span class="badge {% if cinema.is_member_mkps %}bg-success{% else %}bg-secondary{% endif %}">
-                                    {{ 'Da' if cinema.is_member_mkps else 'Ne' }}
-                                </span><br>
-                                EC: <span class="badge {% if cinema.is_member_ec %}bg-success{% else %}bg-secondary{% endif %}">
-                                    {{ 'Da' if cinema.is_member_ec else 'Ne' }}
-                                </span>
+                            <td class="legal-cell">
+                                <div class="legal-info">
+                                    <span class="legal-form-badge">
+                                        <i class="fas fa-building me-1"></i>
+                                        {{ cinema.legal_form }}
+                                    </span>
+                                    <div class="id-numbers">
+                                        <div class="id-item">
+                                            <span class="id-label">PIB:</span>
+                                            <span class="id-value">{{ cinema.pib }}</span>
+                                        </div>
+                                        <div class="id-item">
+                                            <span class="id-label">MB:</span>
+                                            <span class="id-value">{{ cinema.mb }}</span>
+                                        </div>
+                                    </div>
+                                </div>
                             </td>
-                            <td>
+                            <td class="membership-cell">
+                                <div class="membership-info">
+                                    <div class="membership-item">
+                                        <span class="membership-label">MKPS:</span>
+                                        <span class="membership-badge {% if cinema.is_member_mkps %}badge-success{% else %}badge-secondary{% endif %}">
+                                            {{ 'Da' if cinema.is_member_mkps else 'Ne' }}
+                                        </span>
+                                    </div>
+                                    <div class="membership-item">
+                                        <span class="membership-label">EC:</span>
+                                        <span class="membership-badge {% if cinema.is_member_ec %}badge-success{% else %}badge-secondary{% endif %}">
+                                            {{ 'Da' if cinema.is_member_ec else 'Ne' }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="actions-cell">
                                 {% if current_user.user_type == 'admin' %}
-                                <a href="{{ url_for('cinemas.edit_cinema', cinema_id=cinema.id) }}" class="btn btn-sm btn-outline-primary">
-                                    <i class="fas fa-edit me-1"></i>Izmeni
+                                <a href="{{ url_for('cinemas.edit_cinema', cinema_id=cinema.id) }}" 
+                                   class="btn btn-outline-primary btn-sm action-btn">
+                                    <i class="fas fa-edit me-1"></i>
+                                    Izmeni
                                 </a>
                                 {% else %}
-                                <button class="btn btn-sm btn-outline-primary view-details" data-cinema-id="{{ cinema.id }}">
-                                    <i class="fas fa-info-circle me-1"></i>Opširnije
+                                <button class="btn btn-outline-info btn-sm action-btn view-details" 
+                                        data-cinema-id="{{ cinema.id }}">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Opširnije
                                 </button>
                                 {% endif %}
                             </td>
@@ -82,21 +145,35 @@
         </div>
     </div>
     {% else %}
-    <div class="alert alert-info" role="alert">
-        <i class="fas fa-info-circle me-2"></i>Nema bioskopa za prikazivanje.
+    <div class="alert alert-info m-4" role="alert">
+        <div class="d-flex align-items-center">
+            <i class="fas fa-info-circle fs-4 me-3"></i>
+            <div>
+                <h5 class="alert-heading mb-1">Nema podataka</h5>
+                <p class="mb-0">Trenutno nema registrovanih bioskopa u bazi podataka.</p>
+            </div>
+        </div>
     </div>
     {% endif %}
 </div>
 <!-- Modal za prikaz detalja o bioskopu -->
+<!-- Modifikovani HTML za modal -->
 <div class="modal fade" id="cinemaDetailsModal" tabindex="-1" aria-labelledby="cinemaDetailsModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-lg cinema-details-modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="cinemaDetailsModalLabel">Detalji o bioskopu</h5>
+                <h5 class="modal-title" id="cinemaDetailsModalLabel">
+                    <i class="fas fa-film me-2"></i>Detalji o bioskopu
+                </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body" id="cinemaDetailsContent">
-                <!-- Ovde će se dinamički učitati podaci o bioskopu -->
+                <!-- Dinamički sadržaj -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-2"></i>Zatvori
+                </button>
             </div>
         </div>
     </div>
@@ -104,40 +181,114 @@
 {% endblock %}
 {% block scripts %}
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const viewDetailsButtons = document.querySelectorAll('.view-details');
-    const modal = new bootstrap.Modal(document.getElementById('cinemaDetailsModal'));
-    const modalContent = document.getElementById('cinemaDetailsContent');
-
-    viewDetailsButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const cinemaId = this.getAttribute('data-cinema-id');
-            fetch(`/cinema_details/${cinemaId}`)
-                .then(response => response.json())
-                .then(data => {
-                    modalContent.innerHTML = `
-                        <p><strong>Naziv:</strong> ${data.name}</p>
-                        <p><strong>Adresa:</strong> ${data.address}</p>
-                        <p><strong>Mesto:</strong> ${data.city}</p>
-                        <p><strong>Telefon:</strong> ${data.phone}</p>
-                        <p><strong>Mejl:</strong> ${data.email}</p>
-                        <p><strong>Veb sajt:</strong> <a href="${data.website}" target="_blank">${data.website}</a></p>
-                        <p><strong>Linkovi ka društvenim mrežama:</strong></p>
-                        <ul>
-                            ${Object.entries(data.social_links).map(([key, value]) => 
-                                `<li>${key}: <a href="${value}" target="_blank">${value}</a></li>`
-                            ).join('')}
-                        </ul>
-                        <p><strong>Broj sala:</strong> ${data.halls_count}</p>
-                        <p><strong>Ukupan broj mesta:</strong> ${data.total_seats}</p>
-                        <p><strong>Godina osnivanja:</strong> ${data.year_founded}</p>
-                        <img src="${data.image || '/static/images/default_cinema.jpg'}" alt="${data.name}" class="img-fluid mt-3">
-                    `;
-                    modal.show();
-                })
-                .catch(error => console.error('Error:', error));
+    document.addEventListener('DOMContentLoaded', function() {
+        const viewDetailsButtons = document.querySelectorAll('.view-details');
+        const modal = new bootstrap.Modal(document.getElementById('cinemaDetailsModal'));
+        const modalContent = document.getElementById('cinemaDetailsContent');
+    
+        viewDetailsButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const cinemaId = this.getAttribute('data-cinema-id');
+                fetch(`/cinema_details/${cinemaId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        let socialLinksHtml = '';
+                        if (data.social_links && typeof data.social_links === 'object') {
+                            socialLinksHtml = `
+                                <div class="social-links">
+                                    <h6><i class="fas fa-share-alt"></i> Društvene mreže</h6>
+                                    <ul>
+                                        ${Object.entries(data.social_links).map(([key, value]) => 
+                                            value ? `<li><i class="fab fa-${key.toLowerCase()}"></i><a href="${value}" target="_blank" class="text-decoration-none">${value}</a></li>` : ''
+                                        ).join('')}
+                                    </ul>
+                                </div>
+                            `;
+                        }
+    
+                        let imagesHtml = '';
+                        if (data.images && data.images.length > 0) {
+                            imagesHtml = `
+                                <div class="image-gallery">
+                                    <h6 class="gallery-title"><i class="fas fa-images me-2"></i>Galerija slika</h6>
+                                    <div class="row g-4">
+                                        ${data.images.map(image => `
+                                            <div class="col-md-6">
+                                                <div class="gallery-image">
+                                                    <img src="static/img/cinema_properties/${image}" alt="Slika bioskopa" class="img-fluid">
+                                                </div>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                            `;
+                        }
+    
+                        modalContent.innerHTML = `
+                            <div class="cinema-details-card">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="info-item">
+                                            <i class="fas fa-film"></i>
+                                            <span class="info-label">Naziv:</span>
+                                            <span>${data.name}</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <i class="fas fa-map-marker-alt"></i>
+                                            <span class="info-label">Adresa:</span>
+                                            <span>${data.address}</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <i class="fas fa-city"></i>
+                                            <span class="info-label">Mesto:</span>
+                                            <span>${data.city}</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <i class="fas fa-phone"></i>
+                                            <span class="info-label">Telefon:</span>
+                                            <span>${data.phone}</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <i class="fas fa-envelope"></i>
+                                            <span class="info-label">Mejl:</span>
+                                            <span>${data.email}</span>
+                                        </div>
+                                        ${data.website ? `
+                                            <div class="info-item">
+                                                <i class="fas fa-globe"></i>
+                                                <span class="info-label">Veb sajt:</span>
+                                                <a href="${data.website}" target="_blank" class="text-decoration-none">${data.website}</a>
+                                            </div>
+                                        ` : ''}
+                                        <div class="info-item">
+                                            <i class="fas fa-door-open"></i>
+                                            <span class="info-label">Broj sala:</span>
+                                            <span>${data.halls_count}</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <i class="fas fa-chair"></i>
+                                            <span class="info-label">Ukupno mesta:</span>
+                                            <span>${data.total_seats}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                ${socialLinksHtml}
+                            </div>
+                            ${imagesHtml}
+                        `;
+                        modal.show();
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        modalContent.innerHTML = `
+                            <div class="alert alert-danger">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                Došlo je do greške prilikom učitavanja podataka.
+                            </div>
+                        `;
+                    });
+            });
         });
     });
-});
 </script>
 {% endblock %}

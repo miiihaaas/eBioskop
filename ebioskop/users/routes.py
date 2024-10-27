@@ -1,13 +1,14 @@
 import os
+import secrets
 from ebioskop import bcrypt
 from flask import Blueprint, app, current_app, flash, redirect, render_template, request, url_for
-from flask_login import current_user, login_user, logout_user
+from flask_login import current_user, login_required, login_user, logout_user
 from flask_mail import Message
 from werkzeug.security import generate_password_hash
 from ebioskop import mail, db
 from ebioskop.models import User
-from ebioskop.users.forms import EditCinemaManagerForm, EditDistributorManagerForm, LoginForm, RegisterCinemaManagerForm, RegisterDistributorManagerForm, RequestResetForm, ResetPasswordForm
-
+from ebioskop.users.forms import EditCinemaManagerForm, EditDistributorManagerForm, EditPrivilegedUserForm, LoginForm, PrivilegedUserForm, RegisterCinemaManagerForm, RegisterDistributorManagerForm, RequestResetForm, ResetPasswordForm
+from PIL import Image
 
 users = Blueprint('users', __name__)
 
@@ -215,3 +216,109 @@ def edit_distributor_manager(user_id):
         return redirect(url_for('distributor.edit_distributor', distributor_id=user.distributor_id))
 
     return render_template('distributor_manager.html', form=form, route_name=route_name, user=user)
+
+
+@users.route("/privileged_users", methods=['GET', 'POST'])
+def privileged_users():
+    if current_user.user_type != "admin":
+        flash('Nemate pravo pristupa ovoj strani.', 'danger')
+        return redirect(url_for('main.home'))
+    route_name = request.endpoint
+    users = User.query.filter_by(user_type="user").all()
+    return render_template('privileged_users.html', users=users, route_name=route_name)
+
+
+def save_picture(form_picture):
+    """Funkcija za čuvanje profilne slike"""
+    random_hex = secrets.token_hex(8)
+    _, f_ext = os.path.splitext(form_picture.filename)
+    picture_fn = random_hex + f_ext
+    picture_path = os.path.join(current_app.root_path, 'static/profile_pics', picture_fn)
+
+    # Resize slike
+    output_size = (125, 125)
+    i = Image.open(form_picture)
+    i.thumbnail(output_size)
+    i.save(picture_path)
+
+    return picture_fn
+
+@users.route("/add_privileged_user", methods=['GET', 'POST'])
+@login_required
+def add_privileged_user():
+    if current_user.user_type != "admin":
+        flash('Nemate pravo pristupa ovoj strani.', 'danger')
+        return redirect(url_for('main.home'))
+    
+    form = PrivilegedUserForm()
+    if form.validate_on_submit():
+        # Automatski generisanje hash-a za password 'test'
+        default_password = bcrypt.generate_password_hash('test').decode('utf-8')
+        
+        user = User(
+            user_name=form.user_name.data,
+            user_surname=form.user_surname.data,
+            user_mail=form.user_mail.data,
+            user_password=default_password,
+            phone=form.phone.data,
+            user_type='user'  # Tip korisnika je uvek 'user' za privilegovane korisnike
+        )
+        
+        if form.photo.data:
+            picture_file = save_picture(form.photo.data)
+            user.photo = picture_file
+        
+        db.session.add(user)
+        db.session.commit()
+        
+        flash('Uspešno ste kreirali novog korisnika! Početna lozinka je: test', 'success')
+        return redirect(url_for('users.privileged_users'))
+    
+    return render_template('privileged_user.html', 
+                         title='Novi privilegovani korisnik',
+                         form=form,
+                         legend='Novi privilegovani korisnik')
+
+@users.route("/edit_privileged_user/<int:user_id>", methods=['GET', 'POST'])
+@login_required
+def edit_privileged_user(user_id):
+    if current_user.user_type != "admin":
+        flash('Nemate pravo pristupa ovoj strani.', 'danger')
+        return redirect(url_for('main.home'))
+    
+    user = User.query.get_or_404(user_id)
+    if user.user_type != 'user':
+        flash('Možete editovati samo privilegovane korisnike.', 'danger')
+        return redirect(url_for('users.privileged_users'))
+    
+    form = EditPrivilegedUserForm(original_email=user.user_mail)
+    
+    if form.validate_on_submit():
+        user.user_name = form.user_name.data
+        user.user_surname = form.user_surname.data
+        user.user_mail = form.user_mail.data
+        user.phone = form.phone.data
+        
+        if form.photo.data:
+            picture_file = save_picture(form.photo.data)
+            # Brisanje stare fotografije ako postoji
+            if user.photo:
+                old_picture_path = os.path.join(current_app.root_path, 'static/profile_pics', user.photo)
+                if os.path.exists(old_picture_path):
+                    os.remove(old_picture_path)
+            user.photo = picture_file
+        
+        db.session.commit()
+        flash('Podaci o korisniku su uspešno ažurirani!', 'success')
+        return redirect(url_for('users.privileged_users'))
+    
+    elif request.method == 'GET':
+        form.user_name.data = user.user_name
+        form.user_surname.data = user.user_surname
+        form.user_mail.data = user.user_mail
+        form.phone.data = user.phone
+    
+    return render_template('privileged_user.html',
+                         title='Izmena privilegovanog korisnika',
+                         form=form,
+                         legend='Izmena privilegovanog korisnika')

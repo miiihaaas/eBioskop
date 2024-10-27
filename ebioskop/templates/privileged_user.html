@@ -1,0 +1,94 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title text-center mb-4">{{ legend }}</h2>
+                    <form method="POST" enctype="multipart/form-data">
+                        {{ form.hidden_tag() }}
+                        <div class="row">
+                            <!-- Ime -->
+                            <div class="col-md-6 mb-3">
+                                <div class="form-group">
+                                    {{ form.user_name.label(class="form-label") }}
+                                    {% if form.user_name.errors %}
+                                        {{ form.user_name(class="form-control is-invalid") }}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.user_name.errors %}
+                                                <span>{{ error }}</span>
+                                            {% endfor %}
+                                        </div>
+                                    {% else %}
+                                        {{ form.user_name(class="form-control") }}
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <!-- Prezime -->
+                            <div class="col-md-6 mb-3">
+                                <div class="form-group">
+                                    {{ form.user_surname.label(class="form-label") }}
+                                    {% if form.user_surname.errors %}
+                                        {{ form.user_surname(class="form-control is-invalid") }}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.user_surname.errors %}
+                                                <span>{{ error }}</span>
+                                            {% endfor %}
+                                        </div>
+                                    {% else %}
+                                        {{ form.user_surname(class="form-control") }}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Email -->
+                        <div class="mb-3">
+                            <div class="form-group">
+                                {{ form.user_mail.label(class="form-label") }}
+                                {% if form.user_mail.errors %}
+                                    {{ form.user_mail(class="form-control is-invalid") }}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.user_mail.errors %}
+                                            <span>{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    {{ form.user_mail(class="form-control") }}
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Telefon -->
+                        <div class="mb-3">
+                            <div class="form-group">
+                                {{ form.phone.label(class="form-label") }}
+                                {{ form.phone(class="form-control") }}
+                            </div>
+                        </div>
+                        
+                        <!-- Profilna slika -->
+                        <div class="mb-4">
+                            <div class="form-group">
+                                {{ form.photo.label(class="form-label") }}
+                                {{ form.photo(class="form-control") }}
+                                {% if form.photo.errors %}
+                                    {% for error in form.photo.errors %}
+                                        <span class="text-danger">{{ error }}</span>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            {{ form.submit(class="btn btn-primary") }}
+                            <a href="{{ url_for('users.privileged_users') }}" class="btn btn-outline-secondary">Odustani</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

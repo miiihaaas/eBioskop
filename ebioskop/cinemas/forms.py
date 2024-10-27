@@ -20,6 +20,7 @@ class RegisterCinemaForm(FlaskForm):
     pib = StringField('PIB', validators=[DataRequired(), Length(max=20)])
     mb = StringField('MB', validators=[DataRequired(), Length(max=20)])
     website = URLField('Vebsajt', validators=[Optional(), URL(), Length(max=200)])
+    logo = FileField('Logotip', validators=[Optional(), FileAllowed(['jpg', 'png', 'jpeg'])])
     
     # Polje za unos društvenih mreža
     social_links = TextAreaField('Linkovi društvenih mreža', validators=[Optional(), Length(max=500)])  # Unos u JSON formatu
@@ -39,15 +40,18 @@ class EditCinemaForm(FlaskForm):
     postal_code = StringField('Poštanski broj', validators=[DataRequired(), Length(max=20)])
     city = StringField('Mesto', validators=[DataRequired(), Length(max=100)])
     municipality = SelectField('Opština', validators=[DataRequired(), Length(max=100)])
-    email = StringField('Imejl', validators=[DataRequired(), Length(max=500), Regexp(r'^(\S+@\S+\.\S+)(,\s*\S+@\S+\.\S+)*$', message="Unesite validne email adrese odvojene zarezom")])
+    email = StringField('Imejl', validators=[DataRequired(), Length(max=500), Regexp(r'^(\S+@\S+\.\S+)(,\s*\S+@\S+\.\S+)*$', message="Unesite validne email adrese odvojene zarezom")])  # Provera unosa više mejlova odvojenih zarezom
     phone = StringField('Telefon', validators=[DataRequired(), Length(max=20)])
     legal_form = SelectField('Oblik pravnog lica', choices=[('javna ustanova', 'Javna ustanova'), ('kompanija', 'Kompanija')], validators=[DataRequired()])
     pib = StringField('PIB', validators=[DataRequired(), Length(max=20)])
     mb = StringField('MB', validators=[DataRequired(), Length(max=20)])
-    website = URLField('Vebsajt', validators=[Optional(), URL(), Length(max=200)])
+    website = URLField('Vebsajt', validators    =[Optional(), URL(), Length(max=200)])
+    logo = FileField('Logotip', validators=[Optional(), FileAllowed(['jpg', 'png', 'jpeg'])])
     
+    # Polje za unos društvenih mreža
     social_links = TextAreaField('Linkovi društvenih mreža', validators=[Optional(), Length(max=500)])  # Unos u JSON formatu
     
+    # Da li je član MKPS i EC
     is_member_mkps = BooleanField('Da li je član MKPS?', default=False)
     is_member_ec = BooleanField('Da li je član EC?', default=False)
     
@@ -86,8 +90,8 @@ class RegisterCinemaPropertiesForm(FlaskForm):
     location = SelectField('Lokacija', choices=[('centar grada', 'Centar grada'), ('širi centar grada', 'Širi centar grada'), ('periferija', 'Periferija')], validators=[DataRequired(message="Lokacija je obavezna.")])
     city_population = IntegerField('Broj stanovnika grada', validators=[DataRequired(message="Broj stanovnika grada je obavezan."), positive_number_check])
     surrounding_population = IntegerField('Broj stanovnika grada sa okolinom', validators=[DataRequired(message="Broj stanovnika grada sa okolinom je obavezan."), positive_number_check])
-    has_e_ticket_system = BooleanField('Da li postoji sistem elektronske prodaje karata?')
-    e_ticket_system = StringField('Koji sistem elektronske prodaje karata?', validators=[Optional()])
+    has_e_ticket_system = BooleanField('Označiti ukoliko postoji sistem elektronske prodaje karata')
+    e_ticket_system = StringField('Sistem za online prodaju karata', validators=[Optional()])
     promotion_methods = TextAreaField('Na koji način vršite promociju bioskopa i reklamiranje filmskog programa?', validators=[DataRequired(message="Metode promocije su obavezne."), Length(max=500)])
     programming_methods = TextAreaField('Na koji način vršite programiranje u vašem bioskopu?', validators=[DataRequired(message="Metode programiranja su obavezne."), Length(max=500)])
     is_distributor = BooleanField('Označiti ako je prikazivač istovremeno i distributer')
@@ -100,8 +104,8 @@ class EditCinemaPropertiesForm(FlaskForm):
     location = SelectField('Lokacija', choices=[('centar grada', 'Centar grada'), ('širi centar grada', 'Širi centar grada'), ('periferija', 'Periferija')], validators=[DataRequired(message="Lokacija je obavezna.")])
     city_population = IntegerField('Broj stanovnika grada', validators=[DataRequired(message="Broj stanovnika grada je obavezan."), positive_number_check])
     surrounding_population = IntegerField('Broj stanovnika grada sa okolinom', validators=[DataRequired(message="Broj stanovnika grada sa okolinom je obavezan."), positive_number_check])
-    has_e_ticket_system = BooleanField('Da li postoji sistem elektronske prodaje karata?')
-    e_ticket_system = StringField('Koji sistem elektronske prodaje karata?', validators=[Optional()])
+    has_e_ticket_system = BooleanField('Označiti ukoliko postoji sistem elektronske prodaje karata?')
+    e_ticket_system = StringField('Sistem za online prodaju karata', validators=[Optional()])
     promotion_methods = TextAreaField('Na koji način vršite promociju bioskopa i reklamiranje filmskog programa?', validators=[DataRequired(message="Metode promocije su obavezne."), Length(max=500)])
     programming_methods = TextAreaField('Na koji način vršite programiranje u vašem bioskopu?', validators=[DataRequired(message="Metode programiranja su obavezne."), Length(max=500)])
     is_distributor = BooleanField('Označiti ako je prikazivač istovremeno i distributer')
