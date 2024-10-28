@@ -11,6 +11,7 @@ venvBioskop/
 ebioskop/static/img/cinema_properties
 ebioskop/static/img/cinema_representative
 ebioskop/static/img/users
+ebioskop/lokalna_dokumenta
 
 # Distribution / packaging
 .Python
