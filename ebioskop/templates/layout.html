@@ -31,16 +31,16 @@
             <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky">
                 <div class="container-fluid">
                     <a class="navbar-brand" href="{{ url_for('main.home') }}">
-                        <img src="{{ url_for('static', filename='img/logo.webp') }}" alt="eBioskop" height="30" class="d-inline-block align-top">
-                        eBioskop
+                        <img src="{{ url_for('static', filename='img/logo.png') }}" alt="eBioskop" class="d-inline-block align-top logo-img">
+                        <!--eBioskop-->
                     </a>
                     
                     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                         <span class="navbar-toggler-icon"></span>
                     </button>
                     
-                    <div class="collapse navbar-collapse" id="navbarNav">
-                        <ul class="navbar-nav me-auto">
+                    <div class="collapse navbar-collapse flexcolumn" id="navbarNav">
+                        <ul class="navbar-nav me-auto menu-part">
                             {% if current_user.user_type == 'distributor' %}
                             <li class="nav-item">
                                 <a class="nav-link {{ 'active' if request.endpoint in ['distributor.distributors_list', 'distributor.edit_distributor', 'users.edit_distributor_manager', 'users.register_distributor_manager'] }}" href="{{ url_for('distributor.edit_distributor', distributor_id=current_user.distributor_id) }}">O pravnom licu</a>
@@ -155,21 +155,21 @@
                             
                         </ul>
                         
-                        <ul class="navbar-nav">
+                        <ul class="navbar-na user-part">
                             {% if current_user.is_authenticated %}
                             <li class="nav-item d-flex align-items-center">
-                                <span class="nav-link text-dark">
+                                <span class="nav-link text-light">
                                     <i class="fas fa-user-circle me-2"></i>
                                     {{ current_user.user_name }} | 
                                     <small class="text-muted">{{ current_user.user_type }}</small>
                                 </span>
-                                <a class="btn btn-outline-primary btn-sm ms-3" href="{{ url_for('users.logout') }}">
+                                <a class="btn logbutton btn-sm ms-3" href="{{ url_for('users.logout') }}">
                                     <i class="fas fa-sign-out-alt me-1"></i>Odjava
                                 </a>
                             </li>
                             {% else %}
                             <li class="nav-item">
-                                <a class="btn btn-outline-primary" href="{{ url_for('users.login') }}">
+                                <a class="btn logbutton" href="{{ url_for('users.login') }}">
                                     <i class="fas fa-sign-in-alt me-1"></i>Prijava
                                 </a>
                             </li>
