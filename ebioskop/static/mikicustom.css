@@ -1,899 +1,268 @@
 /* Navbar stilovi */
-.navbar {
-    padding: 0.5rem 1rem;
-    transition: all 0.3s ease-in-out;
-}
-
-.navbar-brand {
-    font-weight: 600;
-    color: #007bff;
-}
-
-.navbar-brand img {
-    margin-right: 0.5rem;
-}
-
-.nav-link {
-    color: #495057;
-    font-weight: 500;
-    padding: 0.5rem 1rem;
-    transition: color 0.3s ease-in-out;
-}
-
-.nav-link:hover, .nav-link:focus {
-    color: #007bff;
-}
-
-.navbar-nav .dropdown-menu {
-    border: none;
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-}
-
-.dropdown-item {
-    padding: 0.5rem 1.5rem;
-    transition: background-color 0.3s ease-in-out;
-}
-
-.dropdown-item:hover, .dropdown-item:focus {
-    background-color: #f8f9fa;
-}
+.navbar { padding: .5rem 1rem; transition: all .3s ease-in-out; }
+.navbar-brand { font-weight: 600; color: #007bff; }
+.navbar-brand img { margin-right: .5rem; }
+.nav-link { font-weight: 500; padding: .5rem 1rem; transition: color .3s ease-in-out; }
+.nav-link:hover, .nav-link:focus { color: #007bff; }
+.navbar-nav .dropdown-menu { border: none; box-shadow: 0 .5rem 1rem rgba(0,0,0,.15); }
+.dropdown-item{ padding :.5rem 1.5rem; transition: background-color .3s ease-in-out; }
+.dropdown-item:hover, .dropdown-item:focus{ background-color: #f8f9fa; }
+.navbar-light .navbar-nav .nav-link { color: rgb(255 255 255 / 50%); }
 
 /* Poboljšani stilovi za dugmad */
-.btn {
-    border-radius: 0.25rem;
-    padding: 0.375rem 0.75rem;
-    transition: all 0.3s ease-in-out;
-}
-
-.btn-outline-primary {
-    color: #007bff;
-    border-color: #007bff;
-}
-
-.btn-outline-primary:hover {
-    color: #fff;
-    background-color: #007bff;
-    border-color: #007bff;
-}
+.btn{ border-radius: .25rem; padding: .375rem .75rem; transition: all .3s ease-in-out; }
+.btn-outline-primary { color: #c7363d; border-color: #c7363d; }
+.btn-outline-primary:hover { color: #fff; background-color: #c7363d; border-color: #c7363d; }
 
 /* Opšti stilovi */
-body {
-    font-family: 'Montserrat', sans-serif;
-    color: #333;
-    background-color: #f8f9fa;
-}
-
-.container-fluid {
-    padding-left: 2rem;
-    padding-right: 2rem;
-}
+body { font-family: 'Montserrat', sans-serif; color: #333; background-color: #f8f9fa; }
+a.website-link { color: #c7363d !important; }
+.container-fluid { padding-left: 2rem; padding-right: 2rem; }
+.srpska-crvena-txt { color: #c7363d; }
+.srpska-plava-txt { color: #0d4077; }
+.srpska-crvena-bg { background-color: #c7363d; }
+.srpska-plava-bg { background-color: #0d4077; }
+.bg-primary { background-color: #c7363d !important; }
+.text-primary { color: #c7363d !important; }
+.btn-primary { background-color: #0d4077; border-color: #0d4077; }
+.btn-primary:hover { background-color: #2867ab; border-color: #2867ab; }
+table { border-radius: 6px; overflow: hidden; }
+table tbody { background-color: #ececec; }
+table tbody tr { background-color: #fff; }
 
 /* Poboljšani stilovi za main content */
-main.container {
-    padding-top: 2rem;
-    padding-bottom: 2rem;
-}
+main.container { padding-top: 2rem; padding-bottom: 2rem; }
 
 /* Stilovi za flash poruke */
-.alert {
-    border-radius: 0.25rem;
-    border: none;
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-}
+.alert { border-radius: .25rem; border: none; box-shadow: 0 .125rem .25rem rgba(0,0,0,.075); }
 
 /* Postojeća pravila koja ostaju nepromenjena */
-.card {
-    border: none;
-    transition: all 0.3s;
-}
-.card:hover {
-    transform: translateY(-5px);
-}
-.btn-primary {
-    border-radius: 0;
-    padding: 10px 20px;
-    transition: all 0.3s;
-}
-.btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
-.login-logo {
-    max-width: 150px;
-    height: auto;
-}
+.card { border: none; transition: .3s; overflow: hidden; }
+.card:hover { /*transform: translateY(-5px);*/ }
+.btn-primary { border-radius: 0; padding: 10px 20px; transition: .3s; }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,.1); }
+.login-logo { max-width: 150px; height: auto; }
 
 /* Modifikovana i nova pravila za form-control */
-.form-control {
-    border: none;
-    border-radius: 0;
-    padding: 10px 12px;
-    background-color: #f8f9fa;
-    transition: all 0.3s ease;
-}
-
-.form-control:focus {
-    outline: 2px solid #007bff; /* Boja outline-a, možete prilagoditi prema vašoj paleti boja */
-    outline-offset: -2px;
-    box-shadow: none;
-    background-color: #fff;
-}
+.form-control { border: none; border-radius: 0; padding: 10px 12px; background-color: #f8f9fa; transition: all .3s ease; border: 1px solid #ddd; border-radius: 7px; }
+.form-control:focus { outline: 2px solid #007bff; outline-offset: -2px; box-shadow: none; background-color: #fff; }
+.input-group-text { border-radius: 7px; }
 
 /* Dodatno pravilo za hover efekat */
-.form-control:hover {
-    background-color: #e9ecef;
-}
+.form-control:hover{ background-color: #e9ecef; }
 
 /* Uklanjamo nepotrebna pravila */
-.input-group-text {
-    background-color: #f8f9fa;
-}
+.input-group-text { background-color: #f8f9fa; border: 1px solid #ddd !important; }
 
 /* Opciono: Ako želite da select elementi imaju isti izgled */
-.form-select {
-    border: none;
-    border-radius: 0;
-    padding: 10px 12px;
-    background-color: #f8f9fa;
-    transition: all 0.3s ease;
-}
+.form-select { border: none; border-radius: 0; padding: 10px 12px; background-color: #f8f9fa; transition: all .3s ease; }
+.form-select:focus { outline: 2px solid #007bff; outline-offset: -2px; box-shadow: none; background-color: #fff; }
+.form-select:hover { background-color: #e9ecef; }
+.sticky { position: sticky; top: 0; /*background-color: #0d4077 !important;*/ background: linear-gradient(90deg, #0d4077 0%, #1a4e85 40%, #1a4e85 60%, #0d4077 100%); 
+    padding: 10px 0; z-index: 100; margin-bottom: -5000px; padding-bottom: 5000px; }
+.sticky h1, .sticky form label { color: #ffff; }
+.past-date { opacity: .5; }
 
-.form-select:focus {
-    outline: 2px solid #007bff;
-    outline-offset: -2px;
-    box-shadow: none;
-    background-color: #fff;
-}
+/* 
+.movie{margin:5px 0;padding:5px;border-radius:5px;background-color:var(--distributor-color)}
+.movie-card{border-left:5px solid var(--distributor-color);transition:all .3s ease}
+.movie-card:hover{transform:translateY(-5px);box-shadow:0 4px 15px rgba(0,0,0,.1)!important}
+.accordion-button.past-date{color:#6c757d;background-color:#f8f9fa}
+.accordion-button.past-date::after{opacity:.5}.accordion-button:not(.collapsed){color:#0c63e4;background-color:#e7f1ff}
+.accordion-button.past-date:not(.collapsed){color:#495057;background-color:#e9ecef}
+*/
 
-.form-select:hover {
-    background-color: #e9ecef;
-}
-
-.sticky {
-    position: sticky;
-    top: 0;
-    background-color: white;
-    padding: 10px 0;
-    z-index: 100;
-}
-
-.past-date {
-    opacity: 0.5;
-}
-
-/* .movie {
-    margin: 5px 0;
-    padding: 5px;
-    border-radius: 5px;
-    background-color: var(--distributor-color);
-}
-
-.movie-card {
-    border-left: 5px solid var(--distributor-color);
-    transition: all 0.3s ease;
-}
-
-.movie-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
-}
-.accordion-button.past-date {
-    color: #6c757d;
-    background-color: #f8f9fa;
-}
-.accordion-button.past-date::after {
-    opacity: 0.5;
-}
-.accordion-button:not(.collapsed) {
-    color: #0c63e4;
-    background-color: #e7f1ff;
-}
-.accordion-button.past-date:not(.collapsed) {
-    color: #495057;
-    background-color: #e9ecef;
-} */
-
-.movie-card {
-    cursor: pointer;
-    transition: all 0.3s ease;
-    border-left: 5px solid var(--distributor-color);
-    height: 100%;
-    overflow: hidden;
-}
-
-.movie-content {
-    position: relative;
-    height: 100%;
-}
-
-.movie-poster {
-    position: relative;
-    height: 100%;
-    transition: all 0.3s ease;
-}
-
-.movie-poster img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.movie-title {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: rgba(0,0,0,0.7);
-    color: white;
-    padding: 5px;
-    text-align: center;
-}
-
-.movie-details {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background: white;
-    padding: 10px;
-    transition: all 0.3s ease;
-}
-
-.movie-card.expanded .movie-poster {
-    height: 40%;
-}
-
-.movie-card.expanded .movie-details {
-    top: 40%;
-}
-
-.cinema-details-modal .modal-header {
-    background: #f8f9fa;
-    border-bottom: 2px solid #e9ecef;
-}
-
-.cinema-details-modal .modal-title {
-    color: #2c3e50;
-    font-weight: 600;
-}
-
-.cinema-details-card {
-    background: #ffffff;
-    border-radius: 8px;
-    padding: 20px;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-}
-
-.info-item {
-    padding: 8px 0;
-    border-bottom: 1px solid #eee;
-    display: flex;
-    align-items: center;
-}
-
-.info-item:last-child {
-    border-bottom: none;
-}
-
-.info-item i {
-    width: 24px;
-    color: #6c757d;
-    margin-right: 10px;
-}
-
-.info-label {
-    font-weight: 600;
-    color: #495057;
-    min-width: 120px;
-}
-
-.social-links {
-    background: #f8f9fa;
-    border-radius: 6px;
-    padding: 15px;
-    margin-top: 15px;
-}
-
-.social-links ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.social-links li {
-    margin-bottom: 8px;
-}
-
-.social-links i {
-    width: 24px;
-    text-align: center;
-    margin-right: 10px;
-    color: #6c757d;
-}
-
-.image-gallery {
-    margin-top: 20px;
-}
-
-.image-gallery .gallery-title {
-    color: #2c3e50;
-    margin-bottom: 15px;
-    font-weight: 600;
-}
-
-.gallery-image {
-    border-radius: 8px;
-    overflow: hidden;
-    margin-bottom: 20px;
-    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
-    transition: transform 0.3s ease;
-}
-
-.gallery-image:hover {
-    transform: translateY(-5px);
-}
-
-.gallery-image img {
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
-}
+.movie-card { cursor: pointer; transition: .3s ease; border-left: 5px solid var(--distributor-color); height: 100%; overflow: hidden; }
+.movie-content{position:relative;height:100%}
+.movie-poster{position:relative;height:100%;transition:.3s ease}
+.movie-poster img{width:100%;height:100%;object-fit:cover}
+.movie-title{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.7);color:#fff;padding:5px;text-align:center}
+.movie-details{position:absolute;top:100%;left:0;right:0;background:#fff;padding:10px;transition:.3s ease}
+.movie-card.expanded .movie-poster{height:40%}
+.movie-card.expanded .movie-details{top:40%}
+.cinema-details-modal .modal-header{background:#f8f9fa;border-bottom:2px solid #e9ecef}
+.cinema-details-modal .modal-title{color:#2c3e50;font-weight:600}
+.cinema-details-card{background:#fff;border-radius:8px;padding:20px;margin-bottom:20px;box-shadow:0 2px 4px rgba(0,0,0,0.05)}
+.info-item{padding:8px 0;border-bottom:1px solid #eee;display:flex;align-items:center}
+.info-item:last-child{border-bottom:none}
+.info-item i{width:24px;color:#6c757d;margin-right:10px}
+.info-label{font-weight:600;color:#495057;min-width:120px}
+.social-links{background:#f8f9fa;border-radius:6px;padding:15px;margin-top:15px}
+.social-links ul{list-style:none;padding:0;margin:0}
+.social-links li{margin-bottom:8px}
+.social-links i{width:24px;text-align:center;margin-right:10px;color:#6c757d}
+.image-gallery{margin-top:20px}
+.image-gallery .gallery-title{color:#2c3e50;margin-bottom:15px;font-weight:600}
+.gallery-image{border-radius:8px;overflow:hidden;margin-bottom:20px;box-shadow:0 3px 6px rgba(0,0,0,0.1);transition:transform .3s ease}
+.gallery-image:hover{transform:translateY(-5px)}
+.gallery-image img{width:100%;height:200px;object-fit:cover}
 
 /* Stilovi za modal distributera */
-.distributor-details-modal .modal-header {
-    background: #f8f9fa;
-    border-bottom: 2px solid #e9ecef;
-    padding: 1.5rem;
-}
-
-.distributor-details-modal .modal-title {
-    color: #2c3e50;
-    font-size: 1.25rem;
-}
-
-.distributor-details-modal .modal-body {
-    padding: 2rem;
-}
-
-.distributor-details-card {
-    background: #ffffff;
-    border-radius: 8px;
-    padding: 1.5rem;
-}
-
-.distributor-logo-wrapper {
-    background: white;
-    padding: 1rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-}
-
-.distributor-name {
-    color: #2c3e50;
-    font-weight: 600;
-    font-size: 1.75rem;
-    border-bottom: 2px solid #e9ecef;
-    padding-bottom: 0.5rem;
-}
-
-.info-section {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-.info-item {
-    display: flex;
-    align-items: center;
-    padding: 0.5rem 0;
-}
-
-.info-item i {
-    width: 24px;
-    color: #6c757d;
-    margin-right: 1rem;
-}
-
-.info-label {
-    font-weight: 600;
-    color: #495057;
-    min-width: 100px;
-    margin-right: 0.5rem;
-}
-
-.social-links {
-    background: #f8f9fa;
-    border-radius: 6px;
-    padding: 1rem;
-}
-
-.social-links h6 {
-    color: #495057;
-    font-weight: 600;
-}
-
-.social-link {
-    color: #6c757d;
-    font-size: 1.5rem;
-    transition: all 0.3s ease;
-}
-
-.social-link:hover {
-    color: #007bff;
-    transform: translateY(-2px);
-}
+.distributor-details-modal .modal-header{background:#f8f9fa;border-bottom:2px solid #e9ecef;padding:1.5rem}
+.distributor-details-modal .modal-title{color:#2c3e50;font-size:1.25rem}
+.distributor-details-modal .modal-body{padding:2rem}
+.distributor-details-card{background:#ffffff;border-radius:8px;padding:1.5rem}
+.distributor-logo-wrapper{background:white;padding:1rem;border-radius:8px;box-shadow:0 2px 4px rgba(0,0,0,0.05)}
+.distributor-name{color:#2c3e50;font-weight:600;font-size:1.75rem;border-bottom:2px solid #e9ecef;padding-bottom:0.5rem}
+.info-section{display:flex;flex-direction:column;gap:1rem}
+.info-item{display:flex;align-items:center;padding:0.5rem 0}
+.info-item i{width:24px;color:#6c757d;margin-right:1rem}
+.info-label{font-weight:600;color:#495057;min-width:100px;margin-right:0.5rem}
+.social-links{background:#f8f9fa;border-radius:6px;padding:1rem}
+.social-links h6{color:#495057;font-weight:600}
+.social-link{color:#6c757d;font-size:1.5rem;transition:all 0.3s ease}
+.social-link:hover{color:#007bff;transform:translateY(-2px)}
 
 /* Specifične boje za društvene mreže */
-.social-link .fa-facebook:hover {
-    color: #1877f2;
-}
-
-.social-link .fa-instagram:hover {
-    color: #e4405f;
-}
-
-.social-link .fa-youtube:hover {
-    color: #ff0000;
-}
-
-.social-link .fa-tiktok:hover {
-    color: #000000;
-}
+.social-link .fa-facebook:hover{color:#1877f2}
+.social-link .fa-instagram:hover{color:#e4405f}
+.social-link .fa-youtube:hover{color:#ff0000}
+.social-link .fa-tiktok:hover{color:#000}
 
 /* Stilovi za zaglavlje stranice */
-.page-header {
-    margin-bottom: 2rem;
-}
-
-.page-title {
-    font-size: 1.75rem;
-    font-weight: 600;
-    color: #2c3e50;
-    margin: 0;
-}
+.page-header{margin-bottom:2rem}
+.page-title{font-size:1.75rem;font-weight:600;color:#2c3e50;margin:0}
 
 /* Stilovi za karticu sa tabelom */
-.distributor-card {
-    border: none;
-    border-radius: 10px;
-    box-shadow: 0 0 20px rgba(0,0,0,0.05);
-    transition: all 0.3s ease;
-}
-
-.distributor-card:hover {
-    box-shadow: 0 0 30px rgba(0,0,0,0.1);
-}
+.distributor-card{border:none;border-radius:10px;box-shadow:0 0 20px rgba(0,0,0,.05);transition:.3s ease}
+.distributor-card:hover{box-shadow:0 0 30px rgba(0,0,0,.1)}
 
 /* Stilovi za tabelu */
-.distributor-table {
-    margin: 0;
-}
-
-.distributor-table thead {
-    background-color: #f8f9fa;
-}
-
-.distributor-table th {
-    padding: 1rem;
-    font-weight: 600;
-    color: #495057;
-    border-bottom: 2px solid #e9ecef;
-    white-space: nowrap;
-}
-
-.distributor-table td {
-    padding: 1rem;
-    vertical-align: middle;
-}
+.distributor-table{margin:0;overflow: hidden;}
+.distributor-table thead{background-color:#f8f9fa}
+.distributor-table th{padding:1rem;font-weight:600;color:#495057;border-bottom:2px solid #e9ecef;white-space:nowrap}
+.distributor-table td{padding:1rem;vertical-align:middle}
 
 /* Stilovi za redove tabele */
-.distributor-row {
-    transition: all 0.2s ease;
-}
-
-.distributor-row:hover {
-    background-color: #f8f9fa;
-    transform: translateX(5px);
-}
+.distributor-row{transition:.2s ease}
+.distributor-row:hover{ transform:translateX(5px)}
 
 /* Stilovi za logo kompanije */
-.company-logo {
-    width: 40px;
-    height: 40px;
-    border-radius: 8px;
-    overflow: hidden;
-    background: #f8f9fa;
-}
-
-.company-logo-img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-}
-
-.company-name {
-    color: #2c3e50;
-    font-weight: 600;
-}
+.company-logo{width:40px;height:40px;border-radius:8px;overflow:hidden;background:#f8f9fa}
+.company-logo-img{width:100%;height:100%;object-fit:contain}
+.company-name{color:#2c3e50;font-weight:600}
 
 /* Stilovi za kontakt informacije */
-.contact-info {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
-.contact-item {
-    display: flex;
-    align-items: center;
-    font-size: 0.9rem;
-}
+.contact-info{display:flex;flex-direction:column;gap:0.5rem}
+.contact-item{display:flex;align-items:center;font-size:0.9rem}
 
 /* Stilovi za adresu */
-.address-info {
-    line-height: 1.4;
-}
-
-.postal-info {
-    font-size: 0.85rem;
-    margin-top: 0.25rem;
-}
+.address-info{line-height:1.4}
+.postal-info{font-size:.85rem;margin-top:.25rem}
 
 /* Stilovi za dugmad */
-.btn-add {
-    padding: 0.5rem 1.25rem;
-    font-weight: 500;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-}
-
-.btn-add:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
-
-.action-btn {
-    border-radius: 6px;
-    transition: all 0.2s ease;
-}
-
-.action-btn:hover {
-    transform: translateY(-2px);
-}
+.btn-add{padding:.5rem 1.25rem;font-weight:500;border-radius:8px;transition:all .3s ease}
+.btn-add:hover{transform:translateY(0px);box-shadow:0 4px 8px rgba(0,0,0,.1)}
+.action-btn{border-radius:6px;transition:all .2s ease}
+.action-btn:hover{transform:translateY(0px)}
 
 /* Alert stilovi */
-.alert {
-    border: none;
-    border-radius: 10px;
-}
-
-.alert-info {
-    background-color: #e1f5fe;
-    color: #0288d1;
-}
-
-/* Responzivni stilovi */
-@media (max-width: 768px) {
-    .company-logo {
-        width: 32px;
-        height: 32px;
-    }
-    
-    .contact-item {
-        font-size: 0.85rem;
-    }
-    
-    .distributor-table td,
-    .distributor-table th {
-        padding: 0.75rem;
-    }
-}
+.alert{border:none;border-radius:10px}
+.alert-info{background-color:#e1f5fe;color:#0288d1}
 
 /* Stilovi za karticu sa tabelom */
-.cinema-card {
-    border: none;
-    border-radius: 10px;
-    box-shadow: 0 0 20px rgba(0,0,0,0.05);
-    transition: all 0.3s ease;
-}
-
-.cinema-card:hover {
-    box-shadow: 0 0 30px rgba(0,0,0,0.1);
-}
+.cinema-card{border:none;border-radius:10px;box-shadow:0 0 20px rgba(0,0,0,.05);transition:.3s ease}
+.cinema-card:hover{box-shadow:0 0 30px rgba(0,0,0,.1)}
 
 /* Stilovi za tabelu */
-.cinema-table {
-    margin: 0;
-}
-
-.cinema-table thead {
-    background-color: #f8f9fa;
-}
-
-.cinema-table th {
-    padding: 1rem;
-    font-weight: 600;
-    color: #495057;
-    border-bottom: 2px solid #e9ecef;
-    white-space: nowrap;
-}
-
-.cinema-table td {
-    padding: 1rem;
-    vertical-align: middle;
-}
+.cinema-table{margin:0;overflow: hidden;}
+.cinema-table thead{background-color:#f8f9fa}
+.cinema-table th{padding:1rem;font-weight:600;color:#495057;border-bottom:2px solid #e9ecef;white-space:nowrap}
+.cinema-table td{padding:1rem;vertical-align:middle}
 
 /* Stilovi za redove */
-.cinema-row {
-    transition: all 0.2s ease;
-}
-
-.cinema-row:hover {
-    background-color: #f8f9fa;
-    transform: translateX(5px);
-}
+.cinema-row{ transition: .2s ease; }
+.cinema-row:hover{ transform: translateX(5px); }
 
 /* ID badge */
-.id-badge {
-    background-color: #e9ecef;
-    padding: 0.25rem 0.5rem;
-    border-radius: 4px;
-    font-weight: 500;
-    font-size: 0.875rem;
-}
+.id-badge{background-color:#e9ecef;padding:.25rem .5rem;border-radius:4px;font-weight:500;font-size:.875rem}
 
 /* Cinema info */
-.cinema-info {
-    display: flex;
-    align-items: center;
-}
-
-.cinema-logo {
-    width: 40px;
-    height: 40px;
-    border-radius: 8px;
-    overflow: hidden;
-    background: #f8f9fa;
-}
-
-.cinema-logo-img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-}
-
-.cinema-name {
-    display: block;
-    color: #2c3e50;
-    font-weight: 600;
-    margin-bottom: 0.25rem;
-}
-
-.website-link {
-    display: block;
-    font-size: 0.875rem;
-    color: #6c757d;
-    text-decoration: none;
-    transition: color 0.2s ease;
-}
-
-.website-link:hover {
-    color: #007bff;
-}
+.cinema-info{display:flex;align-items:center}
+.cinema-logo{width:40px;height:40px;border-radius:8px;overflow:hidden;background:#f8f9fa}
+.cinema-logo-img{width:100%;height:100%;object-fit:contain}
+.cinema-name{display:block;color:#2c3e50;font-weight:600;margin-bottom:.25rem}
+.website-link{display:block;font-size:.875rem;color:#6c757d;text-decoration:none;transition:color .2s ease}
+.website-link:hover{color:#007bff}
 
 /* Location info */
-.location-info {
-    line-height: 1.4;
-}
-
-.location-info .country {
-    font-weight: 500;
-    margin-bottom: 0.25rem;
-}
-
-.location-info .address {
-    font-size: 0.875rem;
-}
+.location-info{line-height:1.4}
+.location-info .country{font-weight:500;margin-bottom:.25rem}
+.location-info .address{font-size:.875rem}
 
 /* Contact info */
-.contact-info {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
-.contact-item {
-    display: flex;
-    align-items: center;
-    font-size: 0.875rem;
-}
+.contact-info{display:flex;flex-direction:column;gap:.5rem}
+.contact-item{display:flex;align-items:center;font-size:.875rem}
 
 /* Legal info */
-.legal-info {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
-.legal-form-badge {
-    display: inline-flex;
-    align-items: center;
-    background-color: #e1f5fe;
-    color: #0288d1;
-    padding: 0.25rem 0.75rem;
-    border-radius: 4px;
-    font-size: 0.875rem;
-    font-weight: 500;
-}
-
-.id-numbers {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-    font-size: 0.875rem;
-}
-
-.id-item {
-    display: flex;
-    gap: 0.5rem;
-}
-
-.id-label {
-    color: #6c757d;
-    font-weight: 500;
-}
+.legal-info{display:flex;flex-direction:column;gap:.5rem}
+.legal-form-badge{display:inline-flex;align-items:center;background-color:#e1f5fe;color:#0288d1;padding:.25rem .75rem;border-radius:4px;font-size:.875rem;font-weight:500}
+.id-numbers{display:flex;flex-direction:column;gap:.25rem;font-size:.875rem}
+.id-item{display:flex;gap:.5rem}
+.id-label{color:#6c757d;font-weight:500}
 
 /* Membership info */
-.membership-info {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
-.membership-item {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.membership-label {
-    font-weight: 500;
-    color: #495057;
-    min-width: 3.5rem;
-}
-
-.membership-badge {
-    padding: 0.25rem 0.5rem;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    font-weight: 600;
-}
-
-.badge-success {
-    background-color: #e8f5e9;
-    color: #2e7d32;
-}
-
-.badge-secondary {
-    background-color: #f5f5f5;
-    color: #757575;
-}
+.membership-info{display:flex;flex-direction:column;gap:.5rem}
+.membership-item{display:flex;align-items:center;gap:.5rem}
+.membership-label{font-weight:500;color:#495057;min-width:3.5rem}
+.membership-badge{padding:.25rem .5rem;border-radius:4px;font-size:.75rem;font-weight:600}
+.badge-success{background-color:#e8f5e9;color:#2e7d32}
+.badge-secondary{background-color:#f5f5f5;color:#757575}
 
 /* Action buttons */
-.action-btn {
-    border-radius: 6px;
-    transition: all 0.2s ease;
-}
-
-.action-btn:hover {
-    transform: translateY(-2px);
-}
-
-/* Responsive adjustments */
-@media (max-width: 992px) {
-    .cinema-logo {
-        width: 32px;
-        height: 32px;
-    }
-    
-    .contact-item,
-    .website-link,
-    .id-numbers {
-        font-size: 0.8rem;
-    }
-}
+.action-btn{border-radius:6px;transition:.2s ease}
+.action-btn:hover{transform:translateY(0x)}
 
 /* Add button */
-.btn-add {
-    padding: 0.5rem 1.25rem;
-    font-weight: 500;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-}
-
-.btn-add:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
-
-.cinema-table thead th {
-    font-weight: 600;
-    text-transform: uppercase;
-    font-size: 0.85rem;
-    letter-spacing: 0.5px;
-}
-
-.cinema-table .btn {
-    padding: 0.375rem 0.5rem;
-    transition: transform 0.15s ease-in-out;
-}
-
-.cinema-table .btn:hover {
-    transform: translateY(-1px);
-}
-
-.badge {
-    font-weight: 500;
-    font-size: 0.75rem;
-}
-
-.nav-link.active {
-    color: #007bff !important;  /* plava boja za aktivni link */
-    font-weight: 600;  /* podebljani font */
-    position: relative;  /* za donju liniju */
-}
-
-.nav-link.active::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 1rem;  /* usklađeno sa paddingom linka */
-    right: 1rem;
-    height: 2px;
-    background-color: #007bff;  /* plava linija ispod aktivnog linka */
-}
-
-.nav-link {
-    color: #495057;
-    font-weight: 500;
-    padding: 0.5rem 1rem;
-    position: relative;
-    transition: all 0.3s ease;  /* glatka tranzicija za sve promene */
-}
-
-.nav-link::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 1rem;
-    right: 1rem;
-    height: 2px;
-    background-color: #007bff;
-    transform: scaleX(0);  /* inicijalno sakrivena linija */
-    transition: transform 0.3s ease;  /* tranzicija za liniju */
-}
-
-.nav-link:hover {
-    color: #007bff;  /* plava boja na hover */
-    transform: translateY(-1px);  /* blago podizanje linka */
-}
-
-.nav-link:hover::after {
-    transform: scaleX(1);  /* prikazivanje linije na hover */
-}
+.btn-add{padding:.5rem 1.25rem;font-weight:500;border-radius:8px;transition:all .3s ease}
+.btn-add:hover{transform:translateY(-2px);box-shadow:0 4px 8px rgba(0,0,0,.1)}
+.cinema-table thead th{font-weight:600;text-transform:uppercase;font-size:.85rem;letter-spacing:.5px}
+.cinema-table .btn{padding:.375rem .5rem;transition:transform .15s ease-in-out}
+.cinema-table .btn:hover{transform:translateY(0px)}
+.badge{font-weight:500;font-size:.75rem}
+.nav-link.active{color:#007bff!important;font-weight:600;position:relative}
+.nav-link.active::after{content:'';position:absolute;bottom:0;left:1rem;right:1rem;height:2px;background-color:#007bff}
+.nav-link{color:#495057;font-weight:500;padding:.5rem 1rem;position:relative;transition:all .3s ease}
+.nav-link::after{content:'';position:absolute;bottom:0;left:1rem;right:1rem;height:2px;background-color:#007bff;transform:scaleX(0);transition:transform .3s ease}
+.nav-link:hover{color:#fff !important; /*transform:translateY(-1px);*/}
+/*.nav-link:hover::after{transform:scaleX(1)}*/
 
 /* Aktivni link */
-.nav-link.active {
-    color: #007bff !important;
-    font-weight: 600;
-}
-
-.nav-link.active::after {
-    transform: scaleX(1);  /* linija je uvek vidljiva za aktivni link */
-}
+.nav-link.active{color:#fff!important;font-weight:600}
+.nav-link.active::after{transform:scaleX(1)}
 
 /* Dodatni efekat za aktivni link na hover */
-.nav-link.active:hover {
-    color: #0056b3 !important;  /* tamnija plava na hover preko aktivnog linka */
+.nav-link.active:hover{color:#fff!important}
+
+/* Uspravan menu dodatak */
+body { display: flex; }
+header { min-width: 200px; width: 200px; min-height: 100vh; overflow: hidden; }
+header nav{ height: -webkit-fill-available; }
+header nav .container-fluid { flex-direction: column; align-self: flex-start; padding: 40px 0 20px 0; }
+.logo-img { max-width: 160px; }
+.logbutton { color: rgba(255, 255, 255, 0.5); transition: all .2s ease; }
+.logbutton:hover { color: #fff; }
+.wrapper { width: -webkit-fill-available; }
+.menu-part { display: flex; flex-direction: column !important; order: 2; border-top: 1px solid #0d4077; width: -webkit-fill-available; }
+.user-part { order: 1; width: -webkit-fill-available; padding: 10px; }
+.user-part li { flex-direction: column; }
+.user-part .nav-link { padding: 20px 0; width: -webkit-fill-available; }
+.flexcolumn { flex-direction: column !important; width: 100%; }
+.menu-part .nav-link.active::after{ background-color: transparent !important; }
+.menu-part .nav-link::after{ background-color: transparent !important; }
+.menu-part .nav-link.active { background-color: rgb(255 255 255 / 8%); border-top: 1px solid rgba(255, 255, 255, 0.2); border-bottom: 1px solid rgba(255, 255, 255, 0.2); }
+.menu-part .nav-link { border-bottom: 1px solid #0d4077; padding: 15px 0; font-weight: 400; }
+
+/* Responsive */
+@media (max-width: 768px) {
+    .company-logo{width:32px;height:32px}
+    .contact-item{font-size:.85rem}
+    .distributor-table td,.distributor-table th{padding:.75rem}
+}
+@media (max-width: 992px) {
+    .cinema-logo{width:32px;height:32px}
+    .contact-item,.website-link,.id-numbers{font-size:.8rem}
+}
+@media (min-width: 1400px) {
+    .container, .container-lg, .container-md, .container-sm, .container-xl, .container-xxl { max-width: 100%; }
 }
