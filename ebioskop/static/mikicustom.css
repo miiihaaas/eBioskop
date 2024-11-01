@@ -60,6 +60,7 @@ main.container { padding-top: 2rem; padding-bottom: 2rem; }
 .form-select:hover { background-color: #e9ecef; }
 .sticky { position: sticky; top: 0; /*background-color: #0d4077 !important;*/ background: linear-gradient(90deg, #0d4077 0%, #1a4e85 40%, #1a4e85 60%, #0d4077 100%); 
     padding: 10px 0; z-index: 100; margin-bottom: -5000px; padding-bottom: 5000px; }
+.sticky h1, .sticky form label { color: #ffff; }
 .past-date { opacity: .5; }
 
 /* 
