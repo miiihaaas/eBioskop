@@ -1,3 +1,5 @@
+import sys
+sys.stdout.reconfigure(encoding='utf-8')
 import os, logging
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
