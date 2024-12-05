@@ -1,15 +1,17 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from flask import Blueprint
 from flask import render_template, redirect, url_for, flash, request
 from flask_login import current_user
 from flask_mail import Message, Mail
 from sqlalchemy import desc, func
-from ebioskop import app, db
-from ebioskop.models import CinemaHall, Movie, Projection
-
+from ebioskop import app, db, cache
+from ebioskop.main.functions import get_cinema_week, get_empty_totals, validate_week_param, validate_year_param, update_box_office_data, format_box_office_data, calculate_totals
+from ebioskop.models import CinemaHall, Movie, Projection, BoxOfficeWeekly, Distributor
+import os
+import json
+import logging
 
 main = Blueprint('main', __name__)
-
 
 @main.route("/")
 @main.route("/home")
@@ -24,175 +26,108 @@ def faq():
     return render_template('faq.html', route_name=route_name)
 
 
-def get_cinema_week(date=None):
-    """Vraća broj bioskopske nedelje za dati datum (četvrtak-sreda)"""
-    if date is None:
-        date = datetime.now()
-    days_since_thursday = (date.weekday() - 3) % 7
-    thursday = date - timedelta(days=days_since_thursday)
-    return thursday.isocalendar()[1], thursday.year
 
-def get_week_dates(week_number, year):
-    """Vraća početni i krajnji datum za datu bioskopsku nedelju"""
-    first_day = datetime.strptime(f'{year}-W{week_number}-4', '%Y-W%W-%w')  # četvrtak
-    last_day = first_day + timedelta(days=6)  # sreda
-    return first_day.date(), last_day.date()
 
 @main.route('/box_office', methods=['GET'])
+# @cache.cached(timeout=300)  # Privremeno isključujemo keširanje
 def box_office():
+    # Postavljanje log level-a na DEBUG za trenutni request
+    app.logger.setLevel(logging.DEBUG)
+    
     route_name = request.endpoint
+    app.logger.info("Pristup box_office ruti")
+    app.logger.info(f"URL argumenti: {request.args}")
     
     try:
-        # Dobijanje trenutne i izabrane nedelje
+        # Validacija parametara
+        app.logger.info("Dobavljanje trenutne bioskopske nedelje")
         current_week, current_year = get_cinema_week()
-        selected_week = request.args.get('week', type=int, default=current_week)
-        selected_year = request.args.get('year', type=int, default=current_year)
+        app.logger.info(f"Trenutna nedelja: {current_week}, godina: {current_year}")
+        
+        # Logovanje raw parametara
+        raw_week = request.args.get('week')
+        raw_year = request.args.get('year')
+        app.logger.debug(f"Raw parametri iz URL-a: week={raw_week}, year={raw_year}")
+        
+        selected_week = validate_week_param(request.args.get('week', type=int, default=current_week))
+        selected_year = validate_year_param(request.args.get('year', type=int, default=current_year))
+        app.logger.info(f"Izabrana nedelja: {selected_week}, godina: {selected_year}")
+        
+        # Provera da li postoje box office podaci za izabranu nedelju
+        app.logger.info("Provera postojanja box office podataka")
+        box_office_exists = BoxOfficeWeekly.query.filter_by(
+            year=selected_year, 
+            week=selected_week
+        ).first() is not None
+        app.logger.info(f"Box office podaci postoje: {box_office_exists}")
 
-        # Dobijanje datuma za trenutnu i prethodnu nedelju
-        week_start, week_end = get_week_dates(selected_week, selected_year)
-        prev_week_start = week_start - timedelta(days=7)
-        prev_week_end = week_end - timedelta(days=7)
+        # Ako ne postoje podaci, ažuriramo ih
+        if not box_office_exists:
+            app.logger.info("Nema podataka, pokretanje ažuriranja")
+            success = update_box_office_data(selected_week, selected_year)
+            app.logger.info(f"Rezultat ažuriranja: {success}")
+            if not success:
+                app.logger.warning(f'Nema podataka za nedelju {selected_week} u {selected_year}. godini')
+                flash(f'Nema podataka za nedelju {selected_week} u {selected_year}. godini', 'info')
+                return render_template('box_office.html',
+                                    route_name=route_name,
+                                    movies=[],
+                                    totals=get_empty_totals(),
+                                    years=range(2020, datetime.now().year + 1),
+                                    current_year=selected_year,
+                                    current_week=selected_week)
 
-        # Upit za trenutnu nedelju
-        current_week_data = db.session.query(
-            Projection.movie_id,
-            func.count(Projection.id).label('projection_count'),
-            func.sum(Projection.tickets_sold).label('weekly_admissions'),
-            func.sum(Projection.revenue).label('weekly_earnings'),
-            func.count(func.distinct(CinemaHall.cinema_properties_id)).label('cinema_count')
-        ).join(Movie).join(CinemaHall)\
-        .filter(Projection.date.between(week_start, week_end))\
-        .group_by(Projection.movie_id)\
-        .order_by(desc(func.sum(Projection.revenue)))\
-        .limit(20)\
-        .all()
-
-        if not current_week_data:
+        # Paginacija
+        page = request.args.get('page', 1, type=int)
+        per_page = request.args.get('per_page', 20, type=int)
+        app.logger.info(f"Paginacija: strana {page}, po strani {per_page}")
+        
+        # Dobavljanje box office podataka
+        app.logger.info("Dobavljanje box office podataka")
+        box_office_data = BoxOfficeWeekly.query.options(db.joinedload(BoxOfficeWeekly.movie)).filter_by(year=selected_year, week=selected_week)\
+            .order_by(BoxOfficeWeekly.position)\
+            .paginate(page=page, per_page=per_page, error_out=False)
+            
+        app.logger.info(f"Broj pronađenih zapisa: {len(box_office_data.items) if box_office_data.items else 0}")
+            
+        if not box_office_data.items:
+            app.logger.warning(f'Nema podataka za nedelju {selected_week} u {selected_year}. godini')
             flash(f'Nema podataka za nedelju {selected_week} u {selected_year}. godini', 'info')
             return render_template('box_office.html',
                                 route_name=route_name,
                                 movies=[],
-                                totals={
-                                    'weekly_bo': 0,
-                                    'weekly_sales': 0,
-                                    'previous_bo': 0,
-                                    'previous_sales': 0,
-                                    'total_bo': 0,
-                                    'total_sales': 0
-                                },
+                                totals=get_empty_totals(),
                                 years=range(2020, datetime.now().year + 1),
-                                current_year=current_year,
-                                current_week=current_week)
-
-        # Upit za prethodnu nedelju
-        prev_week_data = db.session.query(
-            Projection.movie_id,
-            func.sum(Projection.tickets_sold).label('prev_admissions'),
-            func.sum(Projection.revenue).label('prev_earnings')
-        ).filter(Projection.date.between(prev_week_start, prev_week_end))\
-        .group_by(Projection.movie_id)\
-        .all()
-
-        # Upit za ukupne podatke
-        total_data = db.session.query(
-            Projection.movie_id,
-            func.sum(Projection.tickets_sold).label('total_admissions'),
-            func.sum(Projection.revenue).label('total_earnings'),
-            func.count(func.distinct(
-                func.strftime('%Y-%W', Projection.date)
-            )).label('weeks_shown')
-        ).group_by(Projection.movie_id)\
-        .all()
-
-        # Kreiranje rečnika za brži pristup podacima
-        prev_week_dict = {d.movie_id: d for d in prev_week_data}
-        total_dict = {d.movie_id: d for d in total_data}
-
-        # Dobavljanje prethodnih pozicija
-        prev_positions = {}
-        if prev_week_data:
-            sorted_prev = sorted(prev_week_data, 
-                               key=lambda x: x.prev_earnings if x.prev_earnings is not None else 0, 
-                               reverse=True)
-            prev_positions = {d.movie_id: idx + 1 for idx, d in enumerate(sorted_prev)}
-
-        # Priprema podataka za prikaz
-        movies_data = []
-        for i, entry in enumerate(current_week_data, 1):
-            movie = Movie.query.get(entry.movie_id)
-            prev_data = prev_week_dict.get(entry.movie_id)
-            total_data = total_dict.get(entry.movie_id)
-
-            # Računanje procenta promene
-            prev_earnings = prev_data.prev_earnings if prev_data else 0
-            percent_change = None
-            if prev_earnings and prev_earnings > 0:
-                percent_change = ((entry.weekly_earnings - prev_earnings) / prev_earnings * 100)
-
-            # Određivanje promene pozicije
-            if not prev_data:
-                change = 'NEW'
-            else:
-                prev_pos = prev_positions.get(entry.movie_id, 0)
-                if prev_pos == i:
-                    change = 'SAME'
-                elif prev_pos > i:
-                    change = 'UP'
-                else:
-                    change = 'DOWN'
-
-            movies_data.append({
-                'position': i,
-                'movie': movie,
-                'change': change,
-                'weeks_shown': total_data.weeks_shown if total_data else 1,
-                'cinema_count': entry.cinema_count or 0,
-                'weekly_earnings': entry.weekly_earnings or 0,
-                'weekly_admissions': entry.weekly_admissions or 0,
-                'change_percentage': percent_change,
-                'previous_earnings': prev_earnings,
-                'previous_admissions': prev_data.prev_admissions if prev_data else 0,
-                'total_earnings': total_data.total_earnings if total_data else entry.weekly_earnings,
-                'total_admissions': total_data.total_admissions if total_data else entry.weekly_admissions
-            })
-
-        # Računanje ukupnih vrednosti
-        totals = {
-            'weekly_bo': sum(m['weekly_earnings'] for m in movies_data),
-            'weekly_sales': sum(m['weekly_admissions'] for m in movies_data),
-            'previous_bo': sum(m['previous_earnings'] for m in movies_data),
-            'previous_sales': sum(m['previous_admissions'] for m in movies_data),
-            'total_bo': sum(m['total_earnings'] for m in movies_data),
-            'total_sales': sum(m['total_admissions'] for m in movies_data)
-        }
-
-        years = range(2020, datetime.now().year + 1)
-
+                                current_year=selected_year,
+                                current_week=selected_week)
+        
+        # Formatiranje podataka za prikaz
+        app.logger.info("Formatiranje podataka za prikaz")
+        movies_data = format_box_office_data(box_office_data.items)
+        totals = calculate_totals(box_office_data.items)
+        app.logger.info(f"Formatirano {len(movies_data)} filmova")
+        app.logger.debug("Movies data:")
+        for movie in movies_data:
+            app.logger.debug(f"Movie: {movie}")
+        
         return render_template('box_office.html',
                             route_name=route_name,
                             movies=movies_data,
                             totals=totals,
-                            years=years,
-                            current_year=current_year,
-                            current_week=current_week)
-
-    except Exception as e:
-        flash(f'Došlo je do greške: {str(e)}', 'error')
-        return render_template('box_office.html',
-                            route_name=route_name,
-                            movies=[],
-                            totals={
-                                'weekly_bo': 0,
-                                'weekly_sales': 0,
-                                'previous_bo': 0,
-                                'previous_sales': 0,
-                                'total_bo': 0,
-                                'total_sales': 0
-                            },
+                            pagination=box_office_data,
                             years=range(2020, datetime.now().year + 1),
-                            current_year=current_year,
-                            current_week=current_week)
-
+                            current_year=selected_year,
+                            current_week=selected_week)
+                            
+    except ValueError as e:
+        app.logger.error(f"ValueError u box_office ruti: {str(e)}")
+        flash(str(e), 'error')
+        return redirect(url_for('main.box_office'))
+    except Exception as e:
+        app.logger.error(f"Neočekivana greška u box_office ruti: {str(e)}")
+        app.logger.exception(e)  # Ovo će ispisati kompletan stack trace
+        flash('Došlo je do greške prilikom učitavanja podataka', 'error')
+        return redirect(url_for('main.home'))
 
 @main.route('/contact', methods=['GET', 'POST'])
 def contact():

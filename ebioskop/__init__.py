@@ -7,6 +7,7 @@ from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, current_user
 from flask_mail import Mail
 from dotenv import load_dotenv
+from flask_caching import Cache
 
 # from ebioskop.models import User
 # from flask_migrate import Migrate
@@ -23,6 +24,8 @@ app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
 }
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['FLASK_APP'] = 'run.py'
+app.config['CACHE_TYPE'] = 'simple'
+app.config['CACHE_DEFAULT_TIMEOUT'] = 300
 
 db = SQLAlchemy(app)
 # migrate = Migrate(app, db, compare_type=True, render_as_batch=True) #da primeti izmene npr u dužini stringova
@@ -38,6 +41,7 @@ app.config['MAIL_USE_SSL'] = True
 app.config['MAIL_USERNAME'] = os.getenv('EMAIL_USER')
 app.config['MAIL_PASSWORD'] = os.getenv('EMAIL_PASS')
 mail = Mail(app)
+cache = Cache(app)
 
 
 

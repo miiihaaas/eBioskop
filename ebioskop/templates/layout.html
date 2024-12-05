@@ -142,9 +142,9 @@
                                 <a class="nav-link {{ 'active' if request.endpoint in ['projections.cinema_projections_list', 'projections.projections_list'] }}" href="{{ url_for('projections.cinema_projections_list' )}}">Projekcije</a>
                             </li>
                             {% endif %}
-                            <!-- <li class="nav-item">
-                                <a class="nav-link" href="{{ url_for('main.box_office') }}">Box office</a>
-                            </li> -->
+                            <li class="nav-item">
+                                <a class="nav-link {{ 'active' if request.endpoint == 'main.box_office' }}" href="{{ url_for('main.box_office') }}">Box Office</a>
+                            </li>
                             <li class="nav-item">
                                 <a class="nav-link {{ 'active' if request.endpoint == 'main.faq' }}" href="{{ url_for('main.faq') }}">FAQ</a>
                             </li>
@@ -152,7 +152,7 @@
                                 <a class="nav-link {{ 'active' if request.endpoint == 'main.contact' }}" href="{{ url_for('main.contact') }}">Kontakt</a>
                             </li>
                             {% endif %}
-                            
+                             
                         </ul>
                         
                         <ul class="navbar-na user-part">
@@ -180,11 +180,11 @@
             </nav>
         </header>
         <!-- Flash Messages -->
-        
+
 
         <!-- Main Content -->
         <div class="wrapper">
-            <main role="main" class="container">
+            <div class="container">
                 <div class="row">
                     
                     {% with messages = get_flashed_messages(with_categories=true) %}
@@ -202,6 +202,7 @@
                     
                     
                     
+                    
                     <div class="col-md-12">
                         {% if legend %}
                         <div class="page-header">
@@ -213,7 +214,7 @@
                         {% block content %}{% endblock %}
                     </div>
                 </div>
-            </main>
+            </div>
         </div>
 
         <!-- Scripts -->
