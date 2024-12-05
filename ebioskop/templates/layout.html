@@ -125,9 +125,9 @@
                                 <a class="nav-link {{ 'active' if request.endpoint == 'projections.projections_list' }}" href="{{ url_for('projections.projections_list' )}}">Projekcije</a>
                             </li>
                             {% else %}
-                            <li class="nav-item">
+                            <!-- <li class="nav-item">
                                 <a class="nav-link {{ 'active' if request.endpoint == 'main.home' }}" href="{{ url_for('main.home') }}">Početna</a>
-                            </li>
+                            </li> -->
                             <li class="nav-item">
                                 <a class="nav-link {{ 'active' if request.endpoint in ['cinemas.cinemas_list', 'cinemas.create_cinema', 'cinemas.edit_cinema', 'cinemas.create_cinema_properties', 'cinemas.edit_cinema_properties', 'cinemas.create_cinema_representative', 'cinemas.edit_cinema_representative', 'cinemas.create_cinema_hall', 'cinemas.edit_cinema_hall', 'users.register_cinema_manager', 'users.edit_cinema_manager' ]}}" href="{{ url_for('cinemas.cinemas_list') }}">Prikazivači</a>
                             </li>

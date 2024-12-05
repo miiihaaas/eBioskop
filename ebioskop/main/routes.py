@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta, date
-from flask import Blueprint
-from flask import render_template, redirect, url_for, flash, request
+from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import current_user
 from flask_mail import Message, Mail
 from sqlalchemy import desc, func
@@ -16,9 +15,10 @@ main = Blueprint('main', __name__)
 @main.route("/")
 @main.route("/home")
 def home():
+    if not current_user.is_authenticated:
+        return redirect(url_for('users.login'))
     route_name = request.endpoint
     return render_template('home.html', route_name=route_name)
-
 
 @main.route('/faq', methods=['GET', 'POST'])
 def faq():
