@@ -88,7 +88,7 @@ def generate_cinema_pdf(cinema):
             'PIB': cinema.pib,
             'Matični broj': cinema.mb,
             'Website': cinema.website,
-            'Član MKPS': cinema.is_member_mkps,
+            'Član MKS': cinema.is_member_mkps,
             'Član EC': cinema.is_member_ec
         }
         pdf.chapter_body(legal_data)

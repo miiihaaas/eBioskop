@@ -85,7 +85,7 @@
                                 <a class="nav-link {{ 'active' if request.endpoint in ['cinemas.cinemas_list', 'cinemas.create_cinema', 'cinemas.edit_cinema', 'cinemas.create_cinema_properties', 'cinemas.edit_cinema_properties', 'cinemas.create_cinema_representative', 'cinemas.edit_cinema_representative', 'cinemas.create_cinema_hall', 'cinemas.edit_cinema_hall', 'users.register_cinema_manager', 'users.edit_cinema_manager' ]}}" href="{{ url_for('cinemas.cinemas_list') }}">Prikazivači</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link {{ 'active' if request.endpoint in ['cinemas.mkps_members_list', 'cinemas.create_mkps_member', 'cinemas.edit_mkps_member'] }}" href="{{ url_for('cinemas.mkps_members_list') }}">MKPS članovi</a>
+                                <a class="nav-link {{ 'active' if request.endpoint in ['cinemas.mkps_members_list', 'cinemas.create_mkps_member', 'cinemas.edit_mkps_member'] }}" href="{{ url_for('cinemas.mkps_members_list') }}">pojedinačni članovi MKS</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link {{ 'active' if request.endpoint in ['users.privileged_users', 'users.edit_privileged_user', 'users.add_privileged_user'] }}" href="{{ url_for('users.privileged_users') }}">Korisnici sa proširenim pravima pristupa</a>

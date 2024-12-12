@@ -39,7 +39,7 @@ Portal je izrađen kao web aplikacija sa sledećim karakteristikama:
 #### Administrativni deo
 - Upravljanje distributerima
 - Upravljanje prikazivačima
-- Upravljanje članovima MKPS
+- Upravljanje članovima MKS
 - Lista filmova
 - Kalendar distribucije
 - Praćenje projekcija

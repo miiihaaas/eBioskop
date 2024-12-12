@@ -155,8 +155,8 @@ Imaju sledeće stranice:
 nalazi se tabela sa sledećim kolonama:
 - Naziv bioskopa
 - Mesto
-- Da li je član MKPS - DA ili NE
-- Da li je član EC - DA ili NE
+- Da li je član MKS - DA ili NE
+- Da li je član Europa Cinemas - DA ili NE
 - Sistem prodaje elektronskih karata - DA ili NE
 - Da li je bioskop digitalizovan - DA ili NE
 - Dugme za preuzimanje kompletne lične karte bioskopa. Lična karta predstavlja sve podatke koje je prikazivač uneo u sledećim sekcijama: Podaci o pravnom licu, Podaci o zastupnicima, Podaci o bioskopu, Podaci o salama i Kontakti u bioskopu. Nije potrebno da preuzimaju podatke o projekcijama. Lična karta bioskopa se preuzima u PDF formatu.
@@ -192,7 +192,7 @@ Administratori imaju dostupne sledeće sekcije:
 
 - DISTRIBUTERI
 - PRIKAZIVAČI
-- ČLANOVI MKPS
+- ČLANOVI MKS
 - LISTA FILMOVA
 - KALENDAR
 - PROJEKCIJE
@@ -203,16 +203,16 @@ Na strani distributera nalazi se lista unešenih distributera sa opcijom za doda
 #### PRIKAZIVAČI
 Na strani prikazivači nalazi se lista unešenih prikazivača sa opcijom za dodavanje novog prikazivača i editovanje postojećih prikazivača.
 
-#### ČLANOVI MKPS
+#### ČLANOVI MKS
 *Napomena: samo administrator može da ažurira*
 
-Na ovoj strani administrator može da doda fizička lica koji su članovi MKPS. Administrator unosi i edituje sledeće podatke:
+Na ovoj strani administrator može da doda fizička lica koji su članovi MKS. Administrator unosi i edituje sledeće podatke:
 
 - Ime i prezime
 - Adresa
 - Mesto
-- Prikazivač kod koga je zaposlen MKPS (izbor jednog od postojećih pravnih lica bioskopa)
-- Prikazivač kod koga je zaposlen NOT MKPS (ako nije MKPS: naziv pravnog lica bioskopa koji nije član MKPS)
+- Prikazivač kod koga je zaposlen MKS (izbor jednog od postojećih pravnih lica bioskopa)
+- Prikazivač kod koga je zaposlen NOT MKS (ako nije MKS: naziv pravnog lica bioskopa koji nije član MKS)
 - Radno mesto
 - Mejl (može se uneti do 2 mejla)
 - Telefon (može se uneti do 2 broja telefona)
@@ -258,8 +258,8 @@ Obavezna polja su označena sa *
 - MB*
 - Vebsajt
 - Linkovi društvenih mreža (YouTube, Facebook, Instagram, TikTok)
-- Da li je član MKPS?*
-- Da li je član EC?*
+- Da li je član MKS?*
+- Da li je član Europa Cinemas?*
 
 #### PODACI O ZASTUPNIKU
 *Napomena: samo administrator može da ažurira*
