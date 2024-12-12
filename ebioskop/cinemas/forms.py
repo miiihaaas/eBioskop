@@ -25,9 +25,9 @@ class RegisterCinemaForm(FlaskForm):
     # Polje za unos društvenih mreža
     social_links = TextAreaField('Linkovi društvenih mreža', validators=[Optional(), Length(max=500)])  # Unos u JSON formatu
     
-    # Da li je član MKPS i EC
-    is_member_mkps = BooleanField('Da li je član MKPS?', default=False)
-    is_member_ec = BooleanField('Da li je član EC?', default=False)
+    # Da li je član MKS i EC
+    is_member_mkps = BooleanField('Da li je član MKS?', default=False)
+    is_member_ec = BooleanField('Da li je član Europa Cinemas?', default=False)
     
     submit = SubmitField('Registruj bioskop')
 
@@ -51,9 +51,9 @@ class EditCinemaForm(FlaskForm):
     # Polje za unos društvenih mreža
     social_links = TextAreaField('Linkovi društvenih mreža', validators=[Optional(), Length(max=500)])  # Unos u JSON formatu
     
-    # Da li je član MKPS i EC
-    is_member_mkps = BooleanField('Da li je član MKPS?', default=False)
-    is_member_ec = BooleanField('Da li je član EC?', default=False)
+    # Da li je član MKS i EC
+    is_member_mkps = BooleanField('Da li je član MKS?', default=False)
+    is_member_ec = BooleanField('Da li je član Europa Cinemas?', default=False)
     
     submit = SubmitField('Izmeni bioskop')
 
@@ -204,29 +204,29 @@ class EditCinemaHallForm(RegisterCinemaHallForm):
     submit = SubmitField('Izmeni salu')
 
 
-class RegisterMemberMKPSForm(FlaskForm):
+class RegisterMemberMKSForm(FlaskForm):
     name = StringField('Ime', validators=[DataRequired(), Length(max=50)])
     surname = StringField('Prezime', validators=[DataRequired(), Length(max=50)])
     address = StringField('Adresa', validators=[Optional(), Length(max=200)])
     city = StringField('Mesto', validators=[Optional(), Length(max=100)])
-    cinema_id = SelectField('MKPS Cinema', coerce=int, validators=[Optional()])
-    cinema_not_mkps = StringField('Non-MKPS Cinema', validators=[Optional(), Length(max=100)])
+    cinema_id = SelectField('MKS Cinema', coerce=int, validators=[Optional()])
+    cinema_not_mkps = StringField('Non-MKS Cinema', validators=[Optional(), Length(max=100)])
     job_position = StringField('Radno mesto', validators=[Optional(), Length(max=100)])
     emails = TextAreaField('Imejl adresa', validators=[Optional()])
     phones = TextAreaField('Telefon', validators=[Optional()])
     status = SelectField('Status', choices=[('Aktivan', 'Aktivan'), ('Neaktivan', 'Neaktivan'), ('Počasni', 'Počasni')], validators=[DataRequired()])
-    submit = SubmitField('Kreiraj MKPS člana')
+    submit = SubmitField('Kreiraj MKS člana')
 
     # def validate(self):
-    #     if not super(RegisterMemberMKPSForm, self).validate():
+    #     if not super(RegisterMemberMKSForm, self).validate():
     #         return False
         
     #     if not self.cinema.data and not self.cinema_not_mkps.data:
-    #         self.cinema.errors.append('Either MKPS Cinema or Non-MKPS Cinema must be specified.')
+    #         self.cinema.errors.append('Either MKS Cinema or Non-MKS Cinema must be specified.')
     #         return False
         
     #     if self.cinema.data and self.cinema_not_mkps.data:
-    #         self.cinema.errors.append('You cannot specify both MKPS Cinema and Non-MKPS Cinema.')
+    #         self.cinema.errors.append('You cannot specify both MKS Cinema and Non-MKS Cinema.')
     #         return False
         
     #     # Validate emails
@@ -254,5 +254,5 @@ class RegisterMemberMKPSForm(FlaskForm):
     #     return True
 
 
-class EditMemberMKPSForm(RegisterMemberMKPSForm):
-    submit = SubmitField('Izmeni MKPSčlana')
+class EditMemberMKSForm(RegisterMemberMKSForm):
+    submit = SubmitField('Izmeni MKSčlana')

@@ -230,7 +230,6 @@ class CinemaProperties(db.Model):
 
     def __repr__(self):
         return f'<CinemaProperties {self.local_name}>'
-    
 
 
 class CinemaHall(db.Model):
@@ -310,6 +309,34 @@ class Projection(db.Model):
     def __repr__(self):
         return f'<Projection {self.movie.local_title} on {self.date} at {self.time}>'
 
+
+class BoxOfficeWeekly(db.Model):
+    __tablename__ = 'box_office_weekly'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    movie_id = db.Column(db.Integer, db.ForeignKey('movies.id'), nullable=False)
+    year = db.Column(db.Integer, nullable=False)
+    week = db.Column(db.Integer, nullable=False)
+    position = db.Column(db.Integer, nullable=False)
+    position_change = db.Column(db.String(4))  # NOVI, -, ↑, ↓
+    distributor = db.Column(db.String(100), nullable=False)
+    local_distributor = db.Column(db.String(100), nullable=False)
+    weeks_shown = db.Column(db.Integer, nullable=False)
+    cinema_count = db.Column(db.Integer, nullable=False)
+    weekly_earnings = db.Column(db.Float, nullable=False)
+    weekly_admissions = db.Column(db.Integer, nullable=False)
+    percent_change = db.Column(db.Float)
+    last_week_earnings = db.Column(db.Float)
+    last_week_admissions = db.Column(db.Integer)
+    total_earnings = db.Column(db.Float, nullable=False)
+    total_admissions = db.Column(db.Integer, nullable=False)
+    
+    movie = db.relationship("Movie", backref="box_office_data")
+    
+    __table_args__ = (
+        db.UniqueConstraint('movie_id', 'year', 'week', name='uq_movie_week'),
+        db.Index('idx_box_office_week', 'year', 'week')
+    )
 
 with app.app_context():
     db.create_all()

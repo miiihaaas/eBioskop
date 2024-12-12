@@ -7,11 +7,11 @@
             <!-- Page Header -->
             <div class="page-header mb-4">
                 {% if route_name == 'cinemas.create_mkps_member' %}
-                <h1 class="page-title">Registracija MKPS člana</h1>
-                <p class="text-muted mb-0">Unesite informacije o novom članu MKPS-a</p>
+                <h1 class="page-title">Registracija MKS člana</h1>
+                <p class="text-muted mb-0">Unesite informacije o novom članu MKS-a</p>
                 {% elif route_name == 'cinemas.edit_mkps_member' %}
-                <h1 class="page-title">Uredi MKPS člana</h1>
-                <p class="text-muted mb-0">Izmenite informacije o odabranom članu MKPS-a</p>
+                <h1 class="page-title">Uredi MKS člana</h1>
+                <p class="text-muted mb-0">Izmenite informacije o odabranom članu MKS-a</p>
                 {% endif %}
             </div>
 
@@ -105,7 +105,7 @@
                                     <span class="input-group-text bg-light border-0">
                                         <i class="fas fa-building text-muted"></i>
                                     </span>
-                                    {{ form.cinema_not_mkps(class="form-control", placeholder="Naziv bioskopa koji nije član MKPS") }}
+                                    {{ form.cinema_not_mkps(class="form-control", placeholder="Naziv bioskopa koji nije član MKS") }}
                                 </div>
                                 {% for error in form.cinema_not_mkps.errors %}
                                     <div class="text-danger"><small>{{ error }}</small></div>

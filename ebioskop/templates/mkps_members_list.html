@@ -5,8 +5,8 @@
     <!-- Page Header -->
     <div class="page-header d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h1 class="page-title">Lista članova MKPS</h1>
-            <p class="text-muted mb-0">Pregled i upravljanje članovima MKPS-a</p>
+            <h1 class="page-title">Lista članova MKS</h1>
+            <p class="text-muted mb-0">Pregled i upravljanje članovima MKS-a</p>
         </div>
         <div>
             <a href="{{ url_for('cinemas.create_mkps_member') }}" class="btn btn-add btn-primary">
@@ -59,14 +59,14 @@
                                 {% if member.cinema %}
                                     <div class="membership-info">
                                         <div class="membership-item">
-                                            <span class="membership-badge badge-success">MKPS</span>
+                                            <span class="membership-badge badge-success">MKS</span>
                                             <span>{{ member.cinema.name }}</span>
                                         </div>
                                     </div>
                                 {% elif member.cinema_not_mkps %}
                                     <div class="membership-info">
                                         <div class="membership-item">
-                                            <span class="membership-badge badge-secondary">NOT MKPS</span>
+                                            <span class="membership-badge badge-secondary">NOT MKS</span>
                                             <span>{{ member.cinema_not_mkps }}</span>
                                         </div>
                                     </div>
