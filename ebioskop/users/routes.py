@@ -89,7 +89,7 @@ def register_cinema_manager(cinema_properties_id):
     form = RegisterCinemaManagerForm()
 
     if form.validate_on_submit():
-        hashed_password = generate_password_hash("test")
+        hashed_password = bcrypt.generate_password_hash("test").decode('utf-8')
         
         new_user = User(
             user_name=form.user_name.data,
