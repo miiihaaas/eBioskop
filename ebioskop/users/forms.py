@@ -37,7 +37,9 @@ class RegisterCinemaManagerForm(FlaskForm):
     position = SelectField('Pozicija', choices=[
         ('', 'Izaberite poziciju'),
         ('kinooperater', 'Kinooperater'),
-        ('urednik filmskog programa', 'Urednik filmskog programa')
+        ('urednik filmskog programa', 'Urednik filmskog programa'),
+        ('direktor', 'Direktor'),
+        ('ostalo', 'Ostalo')
     ], validators=[DataRequired()])
     phone = StringField('Telefon', validators=[Optional(), Length(max=20)])
     photo = FileField('Fotografija', validators=[Optional(), FileAllowed(['jpg', 'png', 'jpeg'], 'Samo slike su dozvoljene!')])
