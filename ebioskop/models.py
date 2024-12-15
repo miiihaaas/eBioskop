@@ -278,7 +278,7 @@ class CinemaHall(db.Model):
     has_silver_screen = db.Column(db.Boolean)  # Da li poseduje silver screen (ako postoji 3D oprema)
     
     connected_devices = db.Column(JSON)  # Povezani uređaji (Blue-ray, DVD, računar)
-    installation_date = db.Column(db.Date)  # Datum instalacije
+    installation_date = db.Column(db.Date)  # Datum instalacije opreme
     acquisition_method = db.Column(JSON)  # Način nabavke opreme i procenat finansiranja
     
     # Ostala Polja - Video projektor sekcija

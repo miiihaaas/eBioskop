@@ -12,295 +12,331 @@
         </h1>
         <p class="text-muted mb-0">Upravljanje informacijama i karakteristikama bioskopa</p>
     </div>
-
-    {% if route_name == 'cinemas.edit_cinema_properties' %}
-    <!-- Bioskopske sale -->
-    <div class="cinema-card mb-4">
-        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center p-3">
-            <h3 class="m-0 h5"><i class="fas fa-film me-2"></i>Podaci o bioskopskim salama i opremi</h3>
-            <a href="{{ url_for('cinemas.create_cinema_hall', cinema_properties_id=cinema_properties.id) }}" 
-               class="btn btn-add btn-light">
-                <i class="fas fa-plus me-2"></i>Dodaj novu salu
-            </a>
-        </div>
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="cinema-table table table-hover mb-0">
-                    <thead>
-                        <tr>
-                            <th class="ps-4">Naziv sale</th>
-                            <th>Kapacitet</th>
-                            <th>Godina izgradnje</th>
-                            <th>Dimenzije</th>
-                            <th>Zvučni sistem</th>
-                            <th class="text-end pe-4">Akcije</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for hall in halls %}
-                        <tr class="cinema-row">
-                            <td class="ps-4">{{ hall.hall_name }}</td>
-                            <td><span class="badge bg-info">{{ hall.hall_capacity }} mesta</span></td>
-                            <td>{{ hall.year_built }}</td>
-                            <td>{{ hall.dimensions }}</td>
-                            <td>{{ hall.sound_system }}</td>
-                            <td class="text-end pe-4">
-                                <a href="{{ url_for('cinemas.edit_cinema_hall', hall_id=hall.id) }}" 
-                                   class="btn action-btn btn-outline-primary btn-sm">
-                                    <i class="fas fa-edit me-1"></i>Izmeni
-                                </a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+    <!-- Podaci o pravnom licu -->
+    <div class="accordion cinema-card" id="legal-entity-details">
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingOne">
+                <button class="accordion-button collapsed  bg-primary text-white p-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                    <i class="fas fa-building me-2"></i>Detaljniji podaci o pravnom licu
+                </button>
+            </h2>
+            <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#legal-entity-details">
+                <div class="accordion-body">
+                    <label class="label" for="">Work in progress</label> 
+                    <p>- može da edituje samo zastupnika</p>
+                    <p>- može da generiše pdf sa svim podacima o svom bioskopu</p>
+                    <p>- ostala polja nisu editabilna</p>
+                </div>
             </div>
         </div>
     </div>
-
-    <!-- Kontakti u bioskopu -->
-    <div class="cinema-card mb-4">
-        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center p-3">
-            <h3 class="m-0 h5"><i class="fas fa-users me-2"></i>Kontakti u bioskopu</h3>
-            <a href="{{ url_for('users.register_cinema_manager', cinema_properties_id=cinema_properties.id) }}" 
-               class="btn btn-add btn-light">
-                <i class="fas fa-user-plus me-2"></i>Dodaj novi kontakt
-            </a>
-        </div>
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="cinema-table table table-hover mb-0">
-                    <thead>
-                        <tr>
-                            <th class="ps-4">Slika</th>
-                            <th>Ime i Prezime</th>
-                            <th>Email</th>
-                            <th>Pozicija</th>
-                            <th>Telefon</th>
-                            <th class="text-end pe-4">Akcije</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for contact in users %}
-                        <tr class="cinema-row">
-                            <td class="ps-4">
-                                <div class="cinema-logo">
-                                    {% if contact.photo %}
-                                        <img src="{{ url_for('static', filename='img/users/' + contact.photo) }}" 
-                                             alt="{{ contact.user_name }} {{ contact.user_surname }}"
-                                             class="cinema-logo-img">
-                                    {% else %}
-                                        <img src="{{ url_for('static', filename='img/default_user.png') }}" 
-                                             alt="Default User"
-                                             class="cinema-logo-img">
-                                    {% endif %}
-                                </div>
-                            </td>
-                            <td>
-                                <div class="cinema-name">{{ contact.user_name }} {{ contact.user_surname }}</div>
-                            </td>
-                            <td>{{ contact.user_mail }}</td>
-                            <td><span class="legal-form-badge">{{ contact.position }}</span></td>
-                            <td>{{ contact.phone }}</td>
-                            <td class="text-end pe-4">
-                                <a href="{{ url_for('users.edit_cinema_manager', user_id=contact.id) }}" 
-                                   class="btn action-btn btn-outline-primary btn-sm">
-                                    <i class="fas fa-edit me-1"></i>Izmeni
-                                </a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-    {% endif %}
 
     <!-- Podaci o bioskopu -->
-    <div class="cinema-card">
-        <div class="card-header bg-primary text-white p-3">
-            <h3 class="m-0 h5"><i class="fas fa-building me-2"></i>Detaljniji podaci o bioskopu</h3>
-        </div>
-        <div class="card-body">
-            <form method="POST" enctype="multipart/form-data">
-                {{ form.hidden_tag() }}
-                
-                <!-- Osnovne informacije -->
-                <div class="cinema-details-card mb-4">
-                    <h5 class="text-primary mb-3">
-                        <i class="fas fa-info-circle me-2"></i>Osnovne informacije
-                    </h5>
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                {{ form.local_name.label(class="form-label") }}
-                                <div class="input-group">
-                                    <span class="input-group-text bg-light border-0">
-                                        <i class="fas fa-signature text-muted"></i>
-                                    </span>
-                                    {{ form.local_name(class="form-control", placeholder="Unesite lokalni naziv bioskopa") }}
-                                </div>
-                                {% for error in form.local_name.errors %}
-                                    <div class="text-danger"><small>{{ error }}</small></div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                {{ form.location.label(class="form-label") }}
-                                <div class="input-group">
-                                    <span class="input-group-text bg-light border-0">
-                                        <i class="fas fa-map-marker-alt text-muted"></i>
-                                    </span>
-                                    {{ form.location(class="form-select") }}
-                                </div>
-                                {% for error in form.location.errors %}
-                                    <div class="text-danger"><small>{{ error }}</small></div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Demografski podaci -->
-                <div class="cinema-details-card mb-4">
-                    <h5 class="text-primary mb-3">
-                        <i class="fas fa-users me-2"></i>Demografski podaci
-                    </h5>
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                {{ form.city_population.label(class="form-label") }}
-                                <div class="input-group">
-                                    <span class="input-group-text bg-light border-0">
-                                        <i class="fas fa-city text-muted"></i>
-                                    </span>
-                                    {{ form.city_population(class="form-control", placeholder="Broj stanovnika u gradu") }}
-                                </div>
-                                {% for error in form.city_population.errors %}
-                                    <div class="text-danger"><small>{{ error }}</small></div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                {{ form.surrounding_population.label(class="form-label") }}
-                                <div class="input-group">
-                                    <span class="input-group-text bg-light border-0">
-                                        <i class="fas fa-map text-muted"></i>
-                                    </span>
-                                    {{ form.surrounding_population(class="form-control", placeholder="Broj stanovnika u okolini") }}
-                                </div>
-                                {% for error in form.surrounding_population.errors %}
-                                    <div class="text-danger"><small>{{ error }}</small></div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Sistem karata i distribucija -->
-                <div class="cinema-details-card mb-4">
-                    <h5 class="text-primary mb-3">
-                        <i class="fas fa-ticket-alt me-2"></i>Sistem karata i distribucija
-                    </h5>
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <div class="form-check mb-2">
-                                    {{ form.has_e_ticket_system(class="form-check-input") }}
-                                    {{ form.has_e_ticket_system.label(class="form-check-label") }}
-                                </div>
-                                <div class="e-ticket-system-group">
-                                    {{ form.e_ticket_system.label(class="form-label") }}
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-light border-0">
-                                            <i class="fas fa-qrcode text-muted"></i>
-                                        </span>
-                                        {{ form.e_ticket_system(class="form-control", placeholder="Naziv e-ticket sistema") }}
+    <div class="accordion cinema-card" id="cinemaDetailsAccordion">
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="cinemaDetailsHeader">
+                <button class="accordion-button bg-primary text-white p-3 collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#cinemaDetailsCollapse" aria-expanded="true" aria-controls="cinemaDetailsCollapse">
+                    <i class="fas fa-building me-2"></i>Detaljniji podaci o bioskopu
+                </button>
+            </h2>
+            <div id="cinemaDetailsCollapse" class="accordion-collapse collapse" aria-labelledby="cinemaDetailsHeader">
+                <div class="accordion-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        {{ form.hidden_tag() }}
+                        
+                        <!-- Osnovne informacije -->
+                        <div class="cinema-details-card mb-4">
+                            <h5 class="text-primary mb-3">
+                                <i class="fas fa-info-circle me-2"></i>Osnovne informacije
+                            </h5>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        {{ form.local_name.label(class="form-label") }}
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light border-0">
+                                                <i class="fas fa-signature text-muted"></i>
+                                            </span>
+                                            {{ form.local_name(class="form-control", placeholder="Unesite lokalni naziv bioskopa") }}
+                                        </div>
+                                        {% for error in form.local_name.errors %}
+                                            <div class="text-danger"><small>{{ error }}</small></div>
+                                        {% endfor %}
                                     </div>
-                                    {% for error in form.e_ticket_system.errors %}
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        {{ form.location.label(class="form-label") }}
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light border-0">
+                                                <i class="fas fa-map-marker-alt text-muted"></i>
+                                            </span>
+                                            {{ form.location(class="form-select") }}
+                                        </div>
+                                        {% for error in form.location.errors %}
+                                            <div class="text-danger"><small>{{ error }}</small></div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Demografski podaci -->
+                        <div class="cinema-details-card mb-4">
+                            <h5 class="text-primary mb-3">
+                                <i class="fas fa-users me-2"></i>Demografski podaci
+                            </h5>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        {{ form.city_population.label(class="form-label") }}
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light border-0">
+                                                <i class="fas fa-city text-muted"></i>
+                                            </span>
+                                            {{ form.city_population(class="form-control", placeholder="Broj stanovnika u gradu") }}
+                                        </div>
+                                        {% for error in form.city_population.errors %}
+                                            <div class="text-danger"><small>{{ error }}</small></div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        {{ form.surrounding_population.label(class="form-label") }}
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light border-0">
+                                                <i class="fas fa-map text-muted"></i>
+                                            </span>
+                                            {{ form.surrounding_population(class="form-control", placeholder="Broj stanovnika u okolini") }}
+                                        </div>
+                                        {% for error in form.surrounding_population.errors %}
+                                            <div class="text-danger"><small>{{ error }}</small></div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sistem karata i distribucija -->
+                        <div class="cinema-details-card mb-4">
+                            <h5 class="text-primary mb-3">
+                                <i class="fas fa-ticket-alt me-2"></i>Sistem karata i distribucija
+                            </h5>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <div class="form-check mb-2">
+                                            {{ form.has_e_ticket_system(class="form-check-input") }}
+                                            {{ form.has_e_ticket_system.label(class="form-check-label") }}
+                                        </div>
+                                        <div class="e-ticket-system-group">
+                                            {{ form.e_ticket_system.label(class="form-label") }}
+                                            <div class="input-group">
+                                                <span class="input-group-text bg-light border-0">
+                                                    <i class="fas fa-qrcode text-muted"></i>
+                                                </span>
+                                                {{ form.e_ticket_system(class="form-control", placeholder="Naziv e-ticket sistema") }}
+                                            </div>
+                                            {% for error in form.e_ticket_system.errors %}
+                                                <div class="text-danger"><small>{{ error }}</small></div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check mb-3">
+                                        {{ form.is_distributor(class="form-check-input") }}
+                                        {{ form.is_distributor.label(class="form-check-label") }}
+                                    </div>
+                                    {% for error in form.is_distributor.errors %}
                                         <div class="text-danger"><small>{{ error }}</small></div>
                                     {% endfor %}
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="form-check mb-3">
-                                {{ form.is_distributor(class="form-check-input") }}
-                                {{ form.is_distributor.label(class="form-check-label") }}
-                            </div>
-                            {% for error in form.is_distributor.errors %}
-                                <div class="text-danger"><small>{{ error }}</small></div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
 
-                <!-- Marketing i programiranje -->
-                <div class="cinema-details-card mb-4">
-                    <h5 class="text-primary mb-3">
-                        <i class="fas fa-bullhorn me-2"></i>Marketing i programiranje
-                    </h5>
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                {{ form.promotion_methods.label(class="form-label") }}
-                                {{ form.promotion_methods(class="form-control", rows="3", 
-                                    placeholder="Opišite metode promocije") }}
-                                {% for error in form.promotion_methods.errors %}
-                                    <div class="text-danger"><small>{{ error }}</small></div>
-                                {% endfor %}
+                        <!-- Marketing i programiranje -->
+                        <div class="cinema-details-card mb-4">
+                            <h5 class="text-primary mb-3">
+                                <i class="fas fa-bullhorn me-2"></i>Marketing i programiranje
+                            </h5>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        {{ form.promotion_methods.label(class="form-label") }}
+                                        {{ form.promotion_methods(class="form-control", rows="3", 
+                                            placeholder="Opišite metode promocije") }}
+                                        {% for error in form.promotion_methods.errors %}
+                                            <div class="text-danger"><small>{{ error }}</small></div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        {{ form.programming_methods.label(class="form-label") }}
+                                        {{ form.programming_methods(class="form-control", rows="3", 
+                                            placeholder="Opišite metode programiranja") }}
+                                        {% for error in form.programming_methods.errors %}
+                                            <div class="text-danger"><small>{{ error }}</small></div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                {{ form.programming_methods.label(class="form-label") }}
-                                {{ form.programming_methods(class="form-control", rows="3", 
-                                    placeholder="Opišite metode programiranja") }}
-                                {% for error in form.programming_methods.errors %}
-                                    <div class="text-danger"><small>{{ error }}</small></div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- Fotografije -->
-                <div class="cinema-details-card mb-4">
-                    <h5 class="text-primary mb-3">
-                        <i class="fas fa-camera me-2"></i>Fotografije
-                    </h5>
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                {{ form.photo_1.label(class="form-label") }}
-                                {{ form.photo_1(class="form-control", accept="image/*") }}
-                                {% for error in form.photo_1.errors %}
-                                    <div class="text-danger"><small>{{ error }}</small></div>
-                                {% endfor %}
+                        <!-- Fotografije -->
+                        <div class="cinema-details-card mb-4">
+                            <h5 class="text-primary mb-3">
+                                <i class="fas fa-camera me-2"></i>Fotografije
+                            </h5>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        {{ form.photo_1.label(class="form-label") }}
+                                        {{ form.photo_1(class="form-control", accept="image/*") }}
+                                        {% for error in form.photo_1.errors %}
+                                            <div class="text-danger"><small>{{ error }}</small></div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        {{ form.photo_2.label(class="form-label") }}
+                                        {{ form.photo_2(class="form-control", accept="image/*") }}
+                                        {% for error in form.photo_2.errors %}
+                                            <div class="text-danger"><small>{{ error }}</small></div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                {{ form.photo_2.label(class="form-label") }}
-                                {{ form.photo_2(class="form-control", accept="image/*") }}
-                                {% for error in form.photo_2.errors %}
-                                    <div class="text-danger"><small>{{ error }}</small></div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- Submit Button -->
-                <div class="d-grid gap-2">
-                    {{ form.submit(class="btn btn-primary btn-lg action-btn") }}
+                        <!-- Submit Button -->
+                        <div class="d-grid gap-2">
+                            {{ form.submit(class="btn btn-primary btn-lg action-btn") }}
+                        </div>
+                    </form>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
+    </div>
+    
+    {% if route_name == 'cinemas.edit_cinema_properties' %}
+    <!-- Kontakti u bioskopu -->
+    <div class="accordion-item">
+        <h2 class="accordion-header" id="contactsHeader">
+            <button class="accordion-button bg-primary text-white p-3 collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#contactsCollapse" aria-expanded="true" aria-controls="contactsCollapse">
+                <i class="fas fa-users me-2"></i>Kontakti u bioskopu
+            </button>
+        </h2>
+        <div id="contactsCollapse" class="accordion-collapse collapse" aria-labelledby="contactsHeader">
+            <div class="accordion-body p-0">
+                <div class="d-flex justify-content-end p-3">
+                    <a href="{{ url_for('users.register_cinema_manager', cinema_properties_id=cinema_properties.id) }}" 
+                    class="btn btn-primary btn-sm">
+                        <i class="fas fa-user-plus me-2"></i>Dodaj novi kontakt
+                    </a>
+                </div>
+                <div class="table-responsive">
+                    <table class="cinema-table table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th class="ps-4">Slika</th>
+                                <th>Ime i Prezime</th>
+                                <th>Email</th>
+                                <th>Pozicija</th>
+                                <th>Telefon</th>
+                                <th class="text-end pe-4">Akcije</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for contact in users %}
+                            <tr class="cinema-row">
+                                <td class="ps-4">
+                                    <div class="cinema-logo">
+                                        {% if contact.photo %}
+                                            <img src="{{ url_for('static', filename='img/users/' + contact.photo) }}" 
+                                                alt="{{ contact.user_name }} {{ contact.user_surname }}"
+                                                class="cinema-logo-img">
+                                        {% else %}
+                                            <img src="{{ url_for('static', filename='img/default_user.png') }}" 
+                                                alt="Default User"
+                                                class="cinema-logo-img">
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="cinema-name">{{ contact.user_name }} {{ contact.user_surname }}</div>
+                                </td>
+                                <td>{{ contact.user_mail }}</td>
+                                <td><span class="legal-form-badge">{{ contact.position }}</span></td>
+                                <td>{{ contact.phone }}</td>
+                                <td class="text-end pe-4">
+                                    <a href="{{ url_for('users.edit_cinema_manager', user_id=contact.id) }}" 
+                                    class="btn action-btn btn-outline-primary btn-sm">
+                                        <i class="fas fa-edit me-1"></i>Izmeni
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Bioskopske sale -->
+    <div class="accordion-item">
+        <h2 class="accordion-header" id="hallsHeader">
+            <button class="accordion-button bg-primary text-white p-3 collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#hallsCollapse" aria-expanded="true" aria-controls="hallsCollapse">
+                <i class="fas fa-film me-2"></i>Podaci o bioskopskim salama i opremi
+            </button>
+        </h2>
+        <div id="hallsCollapse" class="accordion-collapse collapse" aria-labelledby="hallsHeader">
+            <div class="accordion-body p-0">
+                <div class="d-flex justify-content-end p-3">
+                    <a href="{{ url_for('cinemas.create_cinema_hall', cinema_properties_id=cinema_properties.id) }}" 
+                    class="btn btn-primary btn-sm">
+                        <i class="fas fa-plus me-2"></i>Dodaj novu salu
+                    </a>
+                </div>
+                <div class="table-responsive">
+                    <table class="cinema-table table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th class="ps-4">Naziv sale</th>
+                                <th>Kapacitet</th>
+                                <th>Godina izgradnje</th>
+                                <th>Dimenzije</th>
+                                <th>Zvučni sistem</th>
+                                <th class="text-end pe-4">Akcije</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for hall in halls %}
+                            <tr class="cinema-row">
+                                <td class="ps-4">{{ hall.hall_name }}</td>
+                                <td><span class="badge bg-info">{{ hall.hall_capacity }} mesta</span></td>
+                                <td>{{ hall.year_built }}</td>
+                                <td>{{ hall.dimensions }}</td>
+                                <td>{{ hall.sound_system }}</td>
+                                <td class="text-end pe-4">
+                                    <a href="{{ url_for('cinemas.edit_cinema_hall', hall_id=hall.id) }}" 
+                                    class="btn action-btn btn-outline-primary btn-sm">
+                                        <i class="fas fa-edit me-1"></i>Izmeni
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 </div>
 {% endblock %}
 {% block scripts %}
