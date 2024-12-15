@@ -13,7 +13,8 @@ class AddProjectionForm(FlaskForm):
     ], validators=[DataRequired()])
     format = SelectField('Format', choices=[
         ('2D', '2D'),
-        ('3D', '3D')
+        ('3D', '3D'),
+        ('IMAX', 'IMAX')
     ], validators=[DataRequired()])
     tickets_sold = IntegerField('Broj prodatih ulaznica', validators=[DataRequired(), NumberRange(min=0)])
     revenue = FloatField('Zarada', validators=[DataRequired(), NumberRange(min=0)])

@@ -10,7 +10,7 @@ class RegisterMovieForm(FlaskForm):
     director = StringField('Režiser', validators=[DataRequired(), Length(max=100)])
     actors = TextAreaField('Glumci', validators=[DataRequired()])
     production_country = SelectField('Zemlja produkcije filma', validators=[DataRequired()])
-    company = StringField('Kompanija', validators=[DataRequired(), Length(max=100)])
+    company = StringField('Naziv produkcije (kompanije)', validators=[DataRequired(), Length(max=100)])
     production_year = IntegerField('Godina produkcije', validators=[DataRequired()])
     duration = IntegerField('Trajanje (u minutima)', validators=[DataRequired()])
     
@@ -22,9 +22,11 @@ class RegisterMovieForm(FlaskForm):
     
     projection_formats = SelectMultipleField('Projekcioni format', choices=[
         ('2D', '2D'),
-        ('3D', '3D')
+        ('3D', '3D'),
+        ('IMAX', 'IMAX')
     ], validators=[DataRequired()])
     age_rating = SelectField('Starosna preporuka', choices=[
+        ('nije definisano', 'Nije definisano'),
         ('bez ogranicenja', 'Bez ograničenja'),
         ('5+', '5+'),
         ('6+', '6+'),
@@ -90,5 +92,5 @@ class RegisterMovieForm(FlaskForm):
 
 
 class EditMovieForm(RegisterMovieForm):
-    is_showing_finished = BooleanField('Označiti ako je završeno prikazivanje filma')
+    is_showing_finished = BooleanField('Označiti ako je završena distribucija filma')
     submit = SubmitField('Sačuvaj izmene')

@@ -142,7 +142,7 @@
                     <div class="row g-4">
                         <div class="col-md-4">
                             <div class="distributor-logo-wrapper">
-                                <img src="{{ url_for('static', filename='img/distributor/' + distributor.id|string + '.png') if distributor.has_logo else url_for('static', filename='img/distributor/default_logo.jpg') }}" 
+                                <img src="{{ url_for('static', filename='img/distributor/' + distributor.logo) if distributor.logo else url_for('static', filename='img/distributor/default_logo.jpg') }}" 
                                      alt="Logo distributera" 
                                      class="img-fluid rounded shadow-sm">
                             </div>

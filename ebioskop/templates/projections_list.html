@@ -82,6 +82,7 @@
                         <option value="">Svi formati</option>
                         <option value="2D" {% if request.args.get('filter_format') == '2D' %}selected{% endif %}>2D</option>
                         <option value="3D" {% if request.args.get('filter_format') == '3D' %}selected{% endif %}>3D</option>
+                        <option value="IMAX" {% if request.args.get('filter_format') == 'IMAX' %}selected{% endif %}>IMAX</option>
                     </select>
                 </div>
                 <div class="col-md-2">
@@ -144,8 +145,10 @@
                             <td>
                                 {% if projection.format == '2D' %}
                                 <span class="badge bg-primary-subtle text-primary rounded-pill px-3 py-2">2D</span>
-                                {% else %}
+                                {% elif projection.format == '3D' %}
                                 <span class="badge bg-secondary-subtle text-secondary rounded-pill px-3 py-2">3D</span>
+                                {% elif projection.format == 'IMAX' %}
+                                <span class="badge bg-danger-subtle text-danger rounded-pill px-3 py-2">IMAX</span>
                                 {% endif %}
                             </td>
                             <td>

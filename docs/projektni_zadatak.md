@@ -331,12 +331,12 @@ Lista filmova predstavlja tabelu sa informacijama o filmovima koje su svi distri
 - Datum starta filma
 - Žanr
 - Starosna preporuka
-- Status (u prikazivanju, završeno prikazivanje, planirano prikazivanje)
+- Status (u distribuciji, završeno prikazivanje, planirano prikazivanje)
 - Opširnije (Prikazivači bi trebalo da imaju opciju da kliknu na dugme opširnije i da dobiju kompletne informacije koje je distributer uneo.)
 
 Iznad tabele nalaze se filteri:
 - Distributer
-- Status filma (u prikazivanju, završeno prikazivanje, planirano prikazivanje)
+- Status filma (u distribuciji, završeno prikazivanje, planirano prikazivanje)
 
 #### PROJEKCIJE
 Na strani projekcije nalazi se tabela odigranih filmova koje je prikazivač prikazao u svom bioskopu. Tabela inicijalno prikazuje podatke za tekući kalendarski mesec. U tabeli se nalaze sledeće kolone:
@@ -414,7 +414,7 @@ Lista filmova predstavlja tabelu sa informacijama o filmovima koje je distribute
 - Dan, mesec i godina starta filma
 - Žanr
 - Starosna preporuka
-- Status (u prikazivanju, završeno prikazivanje, planirano prikazivanje)
+- Status (u distribuciji, završeno prikazivanje, planirano prikazivanje)
 - Uredi
 
 Iznad tabele se nalazi dugme za dodavanje novog filma.
