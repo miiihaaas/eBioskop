@@ -1,9 +1,12 @@
 import re
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
-from wtforms import DateField, FileField, FloatField, IntegerField, SelectMultipleField, StringField, BooleanField, SelectField, TextAreaField, URLField, SubmitField, ValidationError
-from wtforms.validators import DataRequired, Length, Email, Optional, URL, Regexp, NumberRange
-from wtforms.widgets import ListWidget, CheckboxInput
+from wtforms import DateField, FileField, FloatField, IntegerField, SelectMultipleField, StringField, BooleanField, SelectField, TextAreaField, SubmitField, ValidationError
+from wtforms.validators import DataRequired, Length, Email, Optional, Regexp, NumberRange
+from wtforms.widgets import ListWidget, CheckboxInput, TextInput
+from wtforms import Field
+from ebioskop.distributors.forms import CustomURLField
+
 
 # Forma za registraciju bioskopa
 class RegisterCinemaForm(FlaskForm):
@@ -19,7 +22,7 @@ class RegisterCinemaForm(FlaskForm):
     legal_form = SelectField('Oblik pravnog lica', choices=[('javna ustanova', 'Javna ustanova'), ('kompanija', 'Kompanija')], validators=[DataRequired()])
     pib = StringField('PIB', validators=[DataRequired(), Length(max=20)])
     mb = StringField('MB', validators=[DataRequired(), Length(max=20)])
-    website = URLField('Vebsajt', validators=[Optional(), URL(), Length(max=200)])
+    website = CustomURLField('Vebsajt', validators=[Optional(), Length(max=200)])
     logo = FileField('Logotip', validators=[Optional(), FileAllowed(['jpg', 'png', 'jpeg'])])
     
     # Polje za unos društvenih mreža
@@ -45,7 +48,7 @@ class EditCinemaForm(FlaskForm):
     legal_form = SelectField('Oblik pravnog lica', choices=[('javna ustanova', 'Javna ustanova'), ('kompanija', 'Kompanija')], validators=[DataRequired()])
     pib = StringField('PIB', validators=[DataRequired(), Length(max=20)])
     mb = StringField('MB', validators=[DataRequired(), Length(max=20)])
-    website = URLField('Vebsajt', validators    =[Optional(), URL(), Length(max=200)])
+    website = CustomURLField('Vebsajt', validators=[Optional(), Length(max=200)])
     logo = FileField('Logotip', validators=[Optional(), FileAllowed(['jpg', 'png', 'jpeg'])])
     
     # Polje za unos društvenih mreža

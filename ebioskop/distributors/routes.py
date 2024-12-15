@@ -62,7 +62,7 @@ def create_distributor():
             distributor.logo = logo_filename
         
         # Povezivanje sa izabranim zastupnicima
-        for rep_name in form.representatives.data:
+        for rep_name in form.representatives.data or []:
             representative = Representative.query.filter_by(name=rep_name).first()
             if representative:
                 distributor_representative = DistributorRepresentative(

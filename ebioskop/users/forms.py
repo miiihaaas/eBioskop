@@ -43,22 +43,22 @@ class RegisterCinemaManagerForm(FlaskForm):
     ], validators=[DataRequired()])
     phone = StringField('Telefon', validators=[Optional(), Length(max=20)])
     photo = FileField('Fotografija', validators=[Optional(), FileAllowed(['jpg', 'png', 'jpeg'], 'Samo slike su dozvoljene!')])
-    submit = SubmitField('Kreiraj korisnika')
+    submit = SubmitField('Kreiraj profil korisnika')
 
 
 class EditCinemaManagerForm(RegisterCinemaManagerForm):
-    submit = SubmitField('Ažuriraj podatke korisnika')
+    submit = SubmitField('Ažuriraj podatke profila korisnika')
 
 
 class RegisterDistributorManagerForm(FlaskForm):
     user_name = StringField('Ime', validators=[DataRequired(), Length(max=255)])
     user_surname = StringField('Prezime', validators=[DataRequired(), Length(max=255)])
     user_mail = StringField('Email', validators=[DataRequired(), Email(), Length(max=255)])
-    submit = SubmitField('Kreiraj korisnika')
+    submit = SubmitField('Kreiraj profil korisnika')
 
 
 class EditDistributorManagerForm(RegisterDistributorManagerForm):
-    submit = SubmitField('Ažuriraj podatke korisnika')
+    submit = SubmitField('Ažuriraj podatke profila korisnika')
 
 
 class PrivilegedUserForm(FlaskForm):
