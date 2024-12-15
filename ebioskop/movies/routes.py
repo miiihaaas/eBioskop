@@ -6,7 +6,7 @@ from werkzeug.utils import secure_filename
 from ebioskop import app, db
 from ebioskop.models import Distributor, Movie
 from ebioskop.movies.forms import EditMovieForm, RegisterMovieForm
-from ebioskop.movies.functions import save_image, send_email_about_new_movie
+from ebioskop.movies.functions import save_image, send_email_about_movie
 
 
 movies = Blueprint('movies', __name__)
@@ -107,7 +107,7 @@ def add_movie():
             flash(f'Film "{new_movie.original_title}" je uspešno kreiran.', 'success')
             #! implementirati funkcionalnost slanaj mejla svim distributerima i svim prikazivačima (tema podatak o datumu starta fima)
             #! implementirati funkcionalnost slanaj mejla svim distributerima i svim prikazivačima (tema podatak o datumu starta fima)
-            send_email_about_new_movie(new_movie)
+            send_email_about_movie(movie=new_movie, new_movie=True)
             #! implementirati funkcionalnost slanaj mejla svim distributerima i svim prikazivačima (tema podatak o datumu starta fima)
             #! implementirati funkcionalnost slanaj mejla svim distributerima i svim prikazivačima (tema podatak o datumu starta fima)
             return jsonify({"success": True, "message": "Film je uspešno dodat."})
@@ -193,6 +193,11 @@ def edit_movie(movie_id):
 
             db.session.commit()
             flash(f'Film "{movie.original_title}" je uspešno izmenjen.', 'success')
+            #! implementirati funkcionalnost slanaj mejla svim distributerima i svim prikazivačima (tema podatak o datumu starta fima)
+            #! implementirati funkcionalnost slanaj mejla svim distributerima i svim prikazivačima (tema podatak o datumu starta fima)
+            send_email_about_movie(movie)
+            #! implementirati funkcionalnost slanaj mejla svim distributerima i svim prikazivačima (tema podatak o datumu starta fima)
+            #! implementirati funkcionalnost slanaj mejla svim distributerima i svim prikazivačima (tema podatak o datumu starta fima)
             return jsonify({"success": True, "message": "Film je uspešno izmenjen."})
         else:
             return jsonify({"success": False, "errors": form.errors}), 400

@@ -657,7 +657,7 @@ def create_mkps_member():
     form.cinema_id.choices = [(0, 'Select MKS Cinema')] + [(c.id, c.name) for c in Cinema.query.filter_by(is_member_mkps=True).all()]
     
     if form.validate_on_submit():
-        new_member = MemberMKS(
+        new_member = MemberMKPS(
             name=form.name.data,
             surname=form.surname.data,
             address=form.address.data,

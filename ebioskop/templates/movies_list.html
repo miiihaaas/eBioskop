@@ -25,7 +25,7 @@
                 <div>
                     <select class="form-select" id="status-select">
                         <option value="">Svi statusi</option>
-                        <option value="in_showing">U prikazivanju</option>
+                        <option value="in_showing">u distribuciji</option>
                         <option value="finished_showing">Završeno prikazivanje</option>
                         <option value="scheduled_showing">Planirano prikazivanje</option>
                     </select>
@@ -127,7 +127,7 @@
                                     {% if movie.release_date >= today %}
                                         <span class="membership-badge badge-info status-badge" data-status="scheduled_showing">Planirano</span>
                                     {% else %}
-                                        <span class="membership-badge badge-success status-badge" data-status="in_showing">U prikazivanju</span>
+                                        <span class="membership-badge badge-success status-badge" data-status="in_showing">u distribuciji</span>
                                     {% endif %}
                                 {% endif %}
                             </td>
@@ -464,7 +464,7 @@
                             {{ edit_form.production_country(class="form-select", id="edit_production_country") }}
                         </div>
                         <div class="col-md-6">
-                            <label for="edit_company" class="form-label">Kompanija</label>
+                            <label for="edit_company" class="form-label">Naziv produkcije (kompanije)</label>
                             {{ edit_form.company(class="form-control", id="edit_company") }}
                         </div>
                         <div class="col-md-6">
@@ -523,7 +523,7 @@
                             <div class="form-check">
                                 {{ edit_form.is_showing_finished(class="form-check-input", id="edit_is_showing_finished") }}
                                 <label class="form-check-label" for="edit_is_showing_finished">
-                                    Označiti ako je završeno prikazivanje filma
+                                    Označiti ako je završena distribucija filma
                                 </label>
                             </div>
                         </div>
@@ -597,7 +597,7 @@
                         <p id="details_production_country"></p>
                     </div>
                     <div class="col-md-6">
-                        <h6>Kompanija</h6>
+                        <h6>Naziv produkcije (kompanije)</h6>
                         <p id="details_company"></p>
                     </div>
                     <div class="col-md-6">

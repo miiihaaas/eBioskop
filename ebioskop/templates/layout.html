@@ -54,6 +54,15 @@
                             <li class="nav-item">
                                 <a class="nav-link {{ 'active' if request.endpoint == 'distributor.exhibitors' }}" href="{{ url_for('distributor.exhibitors') }}">Projekcije</a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link {{ 'active' if request.endpoint == 'distributor.distributors_list' }}" href="{{ url_for('distributor.distributors_list') }}">Distributeri</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {{ 'active' if request.endpoint == 'cinemas.cinemas_list' }}" href="{{ url_for('cinemas.cinemas_list') }}">Prikazivači</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {{ 'active' if request.endpoint == 'main.box_office' }}" href="{{ url_for('main.box_office') }}">Box Office</a>
+                            </li>
                             {% elif current_user.user_type == 'cinema_ceo' %}
                             <li class="nav-item">
                                 <a class="nav-link {{ 'active' if request.endpoint == 'cinemas.edit_cinema_representative' }}" href="{{ url_for('cinemas.edit_cinema', cinema_id=current_user.cinema_id) }}">Podaci o pravnom licu</a>
@@ -118,11 +127,21 @@
                             <li class="nav-item">
                                 <a class="nav-link" href="">Kontakti u bioskopu</a>
                             </li> -->
+                            
                             <li class="nav-item">
                                 <a class="nav-link {{ 'active' if request.endpoint == 'calendars.distribution_calendar' }}" href="{{ url_for('calendars.distribution_calendar') }}">Kalendar distribucije</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link {{ 'active' if request.endpoint == 'projections.projections_list' }}" href="{{ url_for('projections.projections_list' )}}">Projekcije</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {{ 'active' if request.endpoint == 'distributor.distributors_list' }}" href="{{ url_for('distributor.distributors_list') }}">Distributeri</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {{ 'active' if request.endpoint == 'cinemas.cinemas_list' }}" href="{{ url_for('cinemas.cinemas_list') }}">Prikazivači</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {{ 'active' if request.endpoint == 'main.box_office' }}" href="{{ url_for('main.box_office') }}">Box Office</a>
                             </li>
                             {% else %}
                             <!-- <li class="nav-item">

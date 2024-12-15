@@ -1,3 +1,4 @@
+from hmac import new
 import os
 # from sqlalchemy import in_, or_
 from flask import current_app, render_template
@@ -36,7 +37,7 @@ def send_email(subject, recipients, html_body):
     msg.html = html_body
     Thread(target=send_async_email, args=(app, msg)).start()
 
-def send_email_about_new_movie(new_movie):
+def send_email_about_movie(movie, new_movie=None):
     # Pronađi sve korisnike koji su admini, distributeri ili bioskopi
     recipients = User.query.filter(User.user_type.in_(['admin', 'distributor', 'cinema'])).all() #! nešto mi je sumnjiv ovaj in_???
     print(f'debug: {recipients=}')
@@ -44,13 +45,17 @@ def send_email_about_new_movie(new_movie):
     email_list = [user.user_mail for user in recipients]
     print(f'debug: {email_list=}')
     # Pripremi sadržaj emaila
-    subject = f"Novi film: {new_movie.local_title}"
-    poster = new_movie.poster
-    html_body = render_template('message_html_send_email_about_new_movie.html', 
-                                movie_name=new_movie.local_title,
-                                director=new_movie.director,
-                                distributor=new_movie.distributor.company_name,
-                                release_date=new_movie.release_date.strftime('%d.%m.%Y'), 
+    if new_movie:
+        subject = f"Novi film: {movie.local_title}"
+    else:
+        subject = f"Promjena podataka o filmu: {movie.local_title}"
+    poster = movie.poster
+    html_body = render_template('message_html_send_email_about_movie.html', 
+                                new_movie=new_movie,
+                                movie_name=movie.local_title,
+                                director=movie.director,
+                                distributor=movie.distributor.company_name,
+                                release_date=movie.release_date.strftime('%d.%m.%Y'), 
                                 poster=poster)
     
     # Pošalji email

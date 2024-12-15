@@ -81,9 +81,15 @@
 </head>
 <body>
     <div class="container">
+        {% if new_movie %}
         <h1>Novi film u sistemu eBioskop</h1>
         <p>Poštovani,</p>
-        <p>Obaveštavamo vas da je u sistem unet novi film sa sledećim detaljima:</p>
+        <p>Obaveštavamo Vas da je u sistem unet novi film sa sledećim detaljima:</p>
+        {% else %}
+        <h1>Podaci o filmu u sistemu eBioskop</h1>
+        <p>Poštovani,</p>
+        <p>Obaveštavamo Vas da su u sistemu promenjeni podaci o filmu sa sledećim detaljima:</p>
+        {% endif %}
         {% if poster %}
         <div class="movie-info">
             <div class="poster-container">
