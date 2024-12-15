@@ -217,8 +217,8 @@ def exhibitors():
     # Formatiranje start_date u string
     start_date_str = start_date.strftime('%Y-%m-%d')
 
-    # Postavljanje end_date na 7 dana nakon start_date
-    end_date = start_date + timedelta(days=7)
+    # Postavljanje end_date na 6 dana nakon start_date
+    end_date = start_date + timedelta(days=6)
     end_date_str = end_date.strftime('%Y-%m-%d')
 
     # Dobijanje parametara za filtere

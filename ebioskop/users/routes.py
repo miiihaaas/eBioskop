@@ -1,5 +1,7 @@
 import os
 import secrets
+
+from sqlalchemy.util import b
 from ebioskop import bcrypt
 from flask import Blueprint, app, current_app, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required, login_user, logout_user
@@ -176,7 +178,7 @@ def register_distributor_manager(distributor_id):
     form = RegisterDistributorManagerForm()
 
     if form.validate_on_submit():
-        hashed_password = generate_password_hash("test")
+        hashed_password = bcrypt.generate_password_hash("test").decode('utf-8')
         
         new_user = User(
             user_name=form.user_name.data,

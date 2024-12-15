@@ -695,7 +695,7 @@ def create_mkps_member():
 @cinemas.route('/edit_mkps_member/<int:member_id>', methods=['GET', 'POST'])
 def edit_mkps_member(member_id):
     route_name = request.endpoint
-    member = MemberMKS.query.get(member_id)
+    member = MemberMKPS.query.get(member_id)
     # Kreirajte formu bez objekta
     form = EditMemberMKSForm()
     

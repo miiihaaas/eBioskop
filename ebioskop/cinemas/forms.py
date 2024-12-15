@@ -168,7 +168,7 @@ class RegisterCinemaHallForm(FlaskForm):
                                             option_widget=CheckboxInput(), widget=ListWidget(prefix_label=False),
                                             validators=[Optional()])
     
-    installation_date = DateField('Datum instalacije', format='%Y-%m-%d', validators=[Optional()])
+    installation_date = DateField('Datum instalacije opreme', format='%Y-%m-%d', validators=[Optional()])
     
     acquisition_method = SelectMultipleField('Način nabavke opreme', choices=[('sopstvena_sredstva', 'Sopstvena sredstva'),
                                                                                 ('investicija_lokalne_samouprave', 'Investicija lokalne samouprave'),
