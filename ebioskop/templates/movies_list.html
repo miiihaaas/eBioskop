@@ -716,11 +716,44 @@ $(document).ready(function() {
 
 });
 
-
-
-
-
 $(document).ready(function() {
+    // DataTables inicijalizacija
+    $('.cinema-table').DataTable({
+        order: [[6, 'desc']], // Sortiranje po Start koloni (index 6) od najvećeg ka najmanjem
+        columnDefs: [
+            { 
+                targets: [0, 3, 4, 5, 6, 8, 9, 10], // Kolone koje ne želimo da budu pretražive
+                searchable: false 
+            },
+            {
+                targets: 6, // Start kolona
+                type: 'date',
+                render: function(data, type, row) {
+                    // Za sortiranje vraćamo datum u ISO formatu
+                    if (type === 'sort') {
+                        return data === 'Nije postavljeno' ? '' : moment(data, 'DD.MM.YYYY').format('YYYY-MM-DD');
+                    }
+                    // Za prikaz vraćamo originalni format
+                    return data;
+                }
+            }
+        ],
+        language: {
+            search: "Pretraga:",
+            lengthMenu: "Prikaži _MENU_ zapisa po strani",
+            zeroRecords: "Nisu pronađeni odgovarajući zapisi",
+            info: "Prikaz _START_ do _END_ od ukupno _TOTAL_ zapisa",
+            infoEmpty: "Prikaz 0 do 0 od ukupno 0 zapisa",
+            infoFiltered: "(filtrirano od ukupno _MAX_ zapisa)",
+            paginate: {
+                first: "Prva",
+                last: "Poslednja",
+                next: "Sledeća",
+                previous: "Prethodna"
+            }
+        }
+    });
+
     // Dodavanje novog filma
     $("#registerMovieForm").submit(function(e) {
         e.preventDefault();
@@ -745,7 +778,6 @@ $(document).ready(function() {
             }
         });
     });
-
 
     // Popunjavanje forme za uređivanje
     $(".edit-movie-btn").click(function() {
