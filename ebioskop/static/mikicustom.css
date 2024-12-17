@@ -485,3 +485,29 @@ header nav .container-fluid { flex-direction: column; align-self: flex-start; pa
         width: 100%;
     }
 }
+
+.select2-container--bootstrap-5 .select2-selection {
+    min-height: 38px;
+}
+
+.select2-container--bootstrap-5 .select2-results__option {
+    padding: 8px 12px;
+}
+
+.select2-container--bootstrap-5 .select2-results__option--highlighted[aria-selected] {
+    background-color: #0d6efd;
+}
+
+.select2-container--bootstrap-5 .select2-search--dropdown .select2-search__field {
+    border-radius: 4px;
+    padding: 6px 12px;
+}
+
+.select2-container--bootstrap-5 .select2-selection--single {
+    border: 1px solid #dee2e6;
+}
+
+.select2-container--bootstrap-5 .select2-dropdown {
+    border-color: #dee2e6;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}

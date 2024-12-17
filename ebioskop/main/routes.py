@@ -117,7 +117,9 @@ def box_office():
                             pagination=box_office_data,
                             years=range(2020, datetime.now().year + 1),
                             current_year=selected_year,
-                            current_week=selected_week)
+                            current_week=selected_week,
+                            datetime=datetime,
+                            timedelta=timedelta)
                             
     except ValueError as e:
         app.logger.error(f"ValueError u box_office ruti: {str(e)}")

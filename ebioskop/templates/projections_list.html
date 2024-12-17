@@ -37,7 +37,7 @@
             <h5 class="page-title">Lista projekcija</h5>
             <p>Pregled i upravljanje svih projekcija</p>
         </div>
-        <button type="button" class="btn btn-add" data-bs-toggle="modal" data-bs-target="#registerProjectionModal">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#registerProjectionModal">
             <i class="fas fa-plus me-2"></i>Dodaj novu projekciju
         </button>
     </div>
@@ -208,7 +208,7 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     {{ add_form.date.label(class="form-label fw-bold") }}
-                                    {{ add_form.date(class="form-control", placeholder="Izaberite datum") }}
+                                    {{ add_form.date(class="form-control", placeholder="Izaberite datum", id="projectionDate") }}
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -223,7 +223,7 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     {{ add_form.movie_id.label(class="form-label fw-bold") }}
-                                    {{ add_form.movie_id(class="form-select") }}
+                                    {{ add_form.movie_id(class="form-select select2-movies") }}
                                 </div>
                             </div>
                         </div>
@@ -483,6 +483,81 @@
             // Postavljamo URL na dugme za potvrdu brisanja
             document.getElementById('confirmDeleteButton').href = deleteUrl;
         });
+    });
+    // Funkcija za pronalaženje prethodnog četvrtka
+    function getPreviousThursday(date) {
+        const d = new Date(date);
+        while (d.getDay() !== 4) { // 4 = četvrtak
+            d.setDate(d.getDate() - 1);
+        }
+        return d;
+    }
+
+    // Funkcija za formatiranje datuma u YYYY-MM-DD format
+    function formatDate(date) {
+        return date.toISOString().split('T')[0];
+    }
+
+    // Postavljanje min i max vrednosti za input polje datuma
+    document.addEventListener('DOMContentLoaded', function() {
+        const dateInput = document.getElementById('projectionDate');
+        if (dateInput) {
+            const today = new Date();
+            const prevThursday = getPreviousThursday(today);
+            
+            // Ako je danas četvrtak, maksimalni datum je danas
+            // Ako nije četvrtak, maksimalni datum je današnji datum
+            const maxDate = today;
+            
+            dateInput.min = formatDate(prevThursday);
+            dateInput.max = formatDate(maxDate);
+
+            // Postavi današnji datum kao podrazumevanu vrednost ako nije već postavljena
+            if (!dateInput.value) {
+                dateInput.value = formatDate(today);
+            }
+        }
+    });
+    $(document).ready(function() {
+        $('.select2-movies').select2({
+            theme: 'bootstrap-5',
+            width: '100%',
+            placeholder: 'Izaberite film...',
+            allowClear: true,
+            dropdownParent: $('#registerProjectionModal'),
+            language: {
+                noResults: function() {
+                    return "Nema rezultata";
+                },
+                searching: function() {
+                    return "Pretraga...";
+                }
+            },
+            templateResult: formatMovieOption,
+            templateSelection: formatMovieSelection
+        });
+
+        // Resetovanje select2 kada se modal otvori
+        $('#registerProjectionModal').on('show.bs.modal', function() {
+            $('.select2-movies').val(null).trigger('change');
+        });
+        function formatMovieOption(movie) {
+            if (!movie.id) return movie.text;
+            return $(`
+                <div class="d-flex align-items-center py-1">
+                    <div class="flex-grow-1">
+                        <div class="fw-bold">${movie.text}</div>
+                        ${movie.element.dataset.originalTitle ? 
+                            `<div class="text-muted small">${movie.element.dataset.originalTitle}</div>` : ''}
+                    </div>
+                </div>
+            `);
+        }
+
+        function formatMovieSelection(movie) {
+            if (!movie.id) return movie.text;
+            return movie.text;
+        }
     });
     </script>
 {% endblock %}
