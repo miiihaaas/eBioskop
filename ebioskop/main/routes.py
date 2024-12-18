@@ -75,7 +75,9 @@ def box_office():
                                     totals=get_empty_totals(),
                                     years=range(2020, datetime.now().year + 1),
                                     current_year=selected_year,
-                                    current_week=selected_week)
+                                    current_week=selected_week,
+                                    datetime=datetime,
+                                    timedelta=timedelta)
 
         # Paginacija
         page = request.args.get('page', 1, type=int)
@@ -99,7 +101,9 @@ def box_office():
                                 totals=get_empty_totals(),
                                 years=range(2020, datetime.now().year + 1),
                                 current_year=selected_year,
-                                current_week=selected_week)
+                                current_week=selected_week,
+                                datetime=datetime,
+                                timedelta=timedelta)
         
         # Formatiranje podataka za prikaz
         app.logger.info("Formatiranje podataka za prikaz")

@@ -330,3 +330,19 @@ def update_box_office_data(week, year):
         app.logger.error(traceback.format_exc())
         db.session.rollback()
         return False
+
+
+def update_box_office_for_projection(projection):
+    """Ažurira box office podatke za nedelju u kojoj je projekcija"""
+    try:
+        # Određujemo bioskopsku nedelju za datum projekcije
+        week, year = get_cinema_week(projection.date)
+        
+        # Ažuriramo box office podatke za tu nedelju
+        app.logger.info(f"Ažuriranje box office podataka za projekciju {projection.id} (nedelja {week}, godina {year})")
+        update_box_office_data(week, year)
+        
+        return True
+    except Exception as e:
+        app.logger.error(f"Greška pri ažuriranju box office podataka za projekciju {projection.id}: {str(e)}")
+        return False

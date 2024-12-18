@@ -251,6 +251,10 @@ def add_projection():
             )
             db.session.add(new_projection)
             db.session.commit()
+            
+            from ebioskop.main.functions import update_box_office_for_projection
+            update_box_office_for_projection(new_projection)
+            
             # Dohvatamo potrebne podatke za email
             movie = Movie.query.get(add_form.movie_id.data)
             cinema_hall = CinemaHall.query.get(add_form.cinema_hall_id.data)
