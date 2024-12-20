@@ -136,6 +136,7 @@
                         <th data-toggle="tooltip" title="Broj nedelja prikazivanja">We No.</th>
                         <th data-toggle="tooltip" title="Broj bioskopa koji prikazuju film">NO.</th>
                         <th data-toggle="tooltip" title="Nedeljni Box Office (zarada)">WE B.O.</th>
+                        <th data-toggle="tooltip" title="Promena zarade u odnosu na prethodnu nedelju">% INC/DEC</th>
                         <th data-toggle="tooltip" title="Nedeljna prodaja ulaznica">WE ADMISS.</th>
                         <th data-toggle="tooltip" title="Box Office za prethodnu nedelju">LAST WE B.O.</th>
                         <th data-toggle="tooltip" title="Prodaja ulaznica za prethodnu nedelju">LAST WE ADMISS.</th>
@@ -164,6 +165,19 @@
                         <td>{{ movie.weeks_shown }}</td>
                         <td>{{ movie.cinema_count }}</td>
                         <td>{{ "{:.2f}".format(movie.weekly_earnings)|replace('.', ',') }}</td>
+                        <td>
+                            {% if movie.earnings_change is not none %}
+                                {% if movie.earnings_change > 0 %}
+                                    <span class="text-success">+{{ "%.2f"|format(movie.earnings_change) }}%</span>
+                                {% elif movie.earnings_change < 0 %}
+                                    <span class="text-danger">{{ "%.2f"|format(movie.earnings_change) }}%</span>
+                                {% else %}
+                                    <span class="text-secondary">0.00%</span>
+                                {% endif %}
+                            {% else %}
+                                <span class="text-secondary">-</span>
+                            {% endif %}
+                        </td>
                         <td>{{ movie.weekly_admissions }}</td>
                         <td>{{ "{:.2f}".format(movie.last_week_earnings)|replace('.', ',') }}</td>
                         <td>{{ movie.last_week_admissions }}</td>
@@ -176,6 +190,7 @@
                     <tr class="table-info">
                         <td colspan="7" class="text-end"><strong>Ukupno:</strong></td>
                         <td><strong>{{ "{:.2f}".format(totals.get('weekly_earnings', 0))|replace('.', ',') }}</strong></td>
+                        <td><strong>-</strong></td>
                         <td><strong>{{ totals.get('weekly_admissions', 0) }}</strong></td>
                         <td><strong>{{ "{:.2f}".format(totals.get('last_week_earnings', 0))|replace('.', ',') }}</strong></td>
                         <td><strong>{{ totals.get('last_week_admissions', 0) }}</strong></td>

@@ -152,6 +152,9 @@ def format_box_office_data(box_office_items):
         # Dobavljamo promenu pozicije
         position_change = get_position_change(movie.position, movie.movie_id, previous_week, previous_year)
 
+        # Računamo procentualnu promenu zarade
+        earnings_change = calculate_percentage_change(movie.weekly_earnings or 0, movie.last_week_earnings or 0)
+
         # Formatiramo podatke za prikaz
         formatted_data.append({
             'position': movie.position,
@@ -166,7 +169,8 @@ def format_box_office_data(box_office_items):
             'weeks_shown': weeks_shown,
             'total_earnings': total_earnings,
             'total_admissions': total_admissions,
-            'position_change': position_change
+            'position_change': position_change,
+            'earnings_change': earnings_change
         })
         app.logger.debug(f"Formatirani podaci za film {movie.movie.local_title}: {formatted_data[-1]}")
     

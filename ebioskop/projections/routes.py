@@ -186,6 +186,15 @@ def projections_list():
     # Dohvatamo projekcije
     projections_list = query.options(joinedload(Projection.movie)).all()
     
+    # Dobavljamo informaciju o tekućoj bioskopskoj nedelji
+    from ebioskop.main.functions import get_cinema_week
+    current_week, current_year = get_cinema_week()
+    
+    # Dodajemo informaciju o bioskopskoj nedelji za svaku projekciju
+    for projection in projections_list:
+        projection_week, projection_year = get_cinema_week(projection.date)
+        projection.is_current_week = (projection_week == current_week and projection_year == current_year)
+    
     # Dohvatamo sve filmove za filter
     movies = Movie.query.filter(Movie.release_date <= date.today()).all()
     movies_data = [{
@@ -202,6 +211,8 @@ def projections_list():
                             movies=movies,
                             cinema_properties_id=cinema_properties_id,
                             cinema_info=cinema_info,
+                            current_week=current_week,
+                            current_year=current_year,
                             filters={
                                 'movie_id': movie_id,
                                 'date_from': date_from,
@@ -284,10 +295,38 @@ def add_projection():
 @projections.route('/projections/delete_projection/<int:projection_id>', methods=['GET', 'POST'])
 @login_required
 def delete_projection(projection_id):
+    if current_user.user_type != 'cinema':
+        flash('Nemate pravo da obrišete projekciju.', 'danger')
+        return redirect(url_for('projections.projections_list'))
+        
     projection = Projection.query.get_or_404(projection_id)
-    db.session.delete(projection)
-    db.session.commit()
-    flash('Projekcija je uspešno obrisana!', 'success')
+    
+    # Provera da li je projekcija u tekućoj nedelji
+    from ebioskop.main.functions import get_cinema_week, update_box_office_data
+    current_week, current_year = get_cinema_week()
+    projection_week, projection_year = get_cinema_week(projection.date)
+    
+    if projection_week != current_week or projection_year != current_year:
+        flash('Možete brisati samo projekcije iz tekuće nedelje.', 'danger')
+        return redirect(url_for('projections.projections_list'))
+    
+    try:
+        # Čuvamo informacije o nedelji pre brisanja
+        week_to_update = projection_week
+        year_to_update = projection_year
+        
+        db.session.delete(projection)
+        db.session.commit()
+        
+        # Ažuriramo box office podatke za tu nedelju
+        update_box_office_data(week_to_update, year_to_update)
+        
+        flash('Projekcija je uspešno obrisana!', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash('Došlo je do greške prilikom brisanja projekcije.', 'danger')
+        app.logger.error(f'Greška prilikom brisanja projekcije: {str(e)}')
+    
     return redirect(url_for('projections.projections_list'))
 
 
