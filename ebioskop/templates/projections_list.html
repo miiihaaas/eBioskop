@@ -111,6 +111,7 @@
                             <th class="px-4" style="width: 120px;">Datum</th>
                             <th style="width: 100px;">Vreme</th>
                             <th style="min-width: 250px;">Naziv filma</th>
+                            <th style="width: 100px;">Kreativni tim</th>
                             <th style="width: 130px;">Verzija</th>
                             <th style="width: 100px;">Format</th>
                             <th style="width: 150px;">Prodato ulaznica</th>
@@ -133,6 +134,7 @@
                                     <span class="text-muted small">{{ projection.movie.original_title }}</span>
                                 </div>
                             </td>
+                            <td>{{ projection.movie.company }}</td>
                             <td>
                                 {% if projection.version == 'original' %}
                                 <span class="badge bg-success-subtle text-success rounded-pill px-3 py-2">Originalno</span>
@@ -168,15 +170,17 @@
                                         <i class="fas fa-info-circle"></i>
                                     </button>
                                     {% if current_user.user_type == 'cinema' %}
-                                    <button type="button" 
-                                            class="btn btn-danger btn-sm delete-projection" 
-                                            data-bs-toggle="modal" 
-                                            data-bs-target="#deleteProjectionModal"
-                                            data-projection-id="{{ projection.id }}"
-                                            data-projection-title="{{ projection.movie.local_title }} ({{ projection.date.strftime('%d.%m.%Y') }} {{ projection.time.strftime('%H:%M') }})"
-                                            title="Obriši projekciju">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
+                                        {% if projection.is_current_week %}
+                                        <button type="button" 
+                                                class="btn btn-danger btn-sm delete-projection" 
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#deleteProjectionModal"
+                                                data-projection-id="{{ projection.id }}"
+                                                data-projection-title="{{ projection.movie.local_title }} ({{ projection.date.strftime('%d.%m.%Y') }} {{ projection.time.strftime('%H:%M') }})"
+                                                title="Obriši projekciju">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                        {% endif %}
                                     {% endif %}
                                 </div>
                             </td>
