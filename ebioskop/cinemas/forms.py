@@ -1,7 +1,7 @@
 import re
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
-from wtforms import DateField, FileField, FloatField, IntegerField, SelectMultipleField, StringField, BooleanField, SelectField, TextAreaField, SubmitField, ValidationError
+from wtforms import DateField, FileField, FloatField, HiddenField, IntegerField, SelectMultipleField, StringField, BooleanField, SelectField, TextAreaField, SubmitField, ValidationError
 from wtforms.validators import DataRequired, Length, Email, Optional, Regexp, NumberRange
 from wtforms.widgets import ListWidget, CheckboxInput, TextInput
 from wtforms import Field
@@ -17,7 +17,7 @@ class RegisterCinemaForm(FlaskForm):
     postal_code = StringField('Poštanski broj', validators=[DataRequired(), Length(max=20)])
     city = StringField('Mesto', validators=[DataRequired(), Length(max=100)])
     municipality = SelectField('Opština', validators=[DataRequired(), Length(max=100)])
-    email = StringField('Imejl', validators=[DataRequired(), Length(max=500), Regexp(r'^(\S+@\S+\.\S+)(,\s*\S+@\S+\.\S+)*$', message="Unesite validne email adrese odvojene zarezom")])  # Provera unosa više mejlova odvojenih zarezom
+    email = StringField('Imejl', validators=[DataRequired(), Length(max=500), Regexp(r'^(\S+@\S+\.\S+)(,\s*\S+@\S+\.\S+)*$', message="Unesite validne email adrese odvojene zarezom")])
     phone = StringField('Telefon', validators=[DataRequired(), Length(max=20)])
     legal_form = SelectField('Oblik pravnog lica', choices=[('javna ustanova', 'Javna ustanova'), ('kompanija', 'Kompanija')], validators=[DataRequired()])
     pib = StringField('PIB', validators=[DataRequired(), Length(max=20)])
@@ -33,6 +33,41 @@ class RegisterCinemaForm(FlaskForm):
     is_member_ec = BooleanField('Da li je član Europa Cinemas?', default=False)
     
     submit = SubmitField('Registruj bioskop')
+    
+    def __init__(self, *args, is_admin=False, **kwargs):
+        super(RegisterCinemaForm, self).__init__(*args, **kwargs)
+        self.is_admin = is_admin
+    
+    def validate(self, extra_validators=None):
+        # Ako je admin, privremeno postavi opcione validatore
+        if self.is_admin:
+            # Sačuvaj originalne validatore
+            original_validators = {}
+            fields_to_make_optional = ['country', 'address', 'postal_code', 'city', 'municipality',
+                                        'email', 'phone', 'legal_form', 'pib', 'mb']
+            
+            for field_name in fields_to_make_optional:
+                field = getattr(self, field_name)
+                original_validators[field_name] = field.validators
+                # Zameni DataRequired sa Optional
+                new_validators = []
+                for validator in field.validators:
+                    if isinstance(validator, DataRequired):
+                        new_validators.append(Optional())
+                    else:
+                        new_validators.append(validator)
+                field.validators = new_validators
+        
+        # Pozovi originalnu validaciju
+        result = super(RegisterCinemaForm, self).validate(extra_validators)
+        
+        # Vrati originalne validatore ako je admin
+        if self.is_admin and original_validators:
+            for field_name, validators in original_validators.items():
+                field = getattr(self, field_name)
+                field.validators = validators
+        
+        return result
 
 # Forma za izmenu bioskopa
 class EditCinemaForm(FlaskForm):
@@ -43,7 +78,7 @@ class EditCinemaForm(FlaskForm):
     postal_code = StringField('Poštanski broj', validators=[DataRequired(), Length(max=20)])
     city = StringField('Mesto', validators=[DataRequired(), Length(max=100)])
     municipality = SelectField('Opština', validators=[DataRequired(), Length(max=100)])
-    email = StringField('Imejl', validators=[DataRequired(), Length(max=500), Regexp(r'^(\S+@\S+\.\S+)(,\s*\S+@\S+\.\S+)*$', message="Unesite validne email adrese odvojene zarezom")])  # Provera unosa više mejlova odvojenih zarezom
+    email = StringField('Imejl', validators=[DataRequired(), Length(max=500), Regexp(r'^(\S+@\S+\.\S+)(,\s*\S+@\S+\.\S+)*$', message="Unesite validne email adrese odvojene zarezom")])
     phone = StringField('Telefon', validators=[DataRequired(), Length(max=20)])
     legal_form = SelectField('Oblik pravnog lica', choices=[('javna ustanova', 'Javna ustanova'), ('kompanija', 'Kompanija')], validators=[DataRequired()])
     pib = StringField('PIB', validators=[DataRequired(), Length(max=20)])
@@ -59,6 +94,36 @@ class EditCinemaForm(FlaskForm):
     is_member_ec = BooleanField('Da li je član Europa Cinemas?', default=False)
     
     submit = SubmitField('Izmeni bioskop')
+    
+    def __init__(self, *args, is_admin=False, **kwargs):
+        super(EditCinemaForm, self).__init__(*args, **kwargs)
+        self.is_admin = is_admin
+    
+    def validate(self, extra_validators=None):
+        if self.is_admin:
+            original_validators = {}
+            fields_to_make_optional = ['country', 'address', 'postal_code', 'city', 'municipality',
+                                        'email', 'phone', 'legal_form', 'pib', 'mb']
+            
+            for field_name in fields_to_make_optional:
+                field = getattr(self, field_name)
+                original_validators[field_name] = field.validators
+                new_validators = []
+                for validator in field.validators:
+                    if isinstance(validator, DataRequired):
+                        new_validators.append(Optional())
+                    else:
+                        new_validators.append(validator)
+                field.validators = new_validators
+        
+        result = super(EditCinemaForm, self).validate(extra_validators)
+        
+        if self.is_admin and original_validators:
+            for field_name, validators in original_validators.items():
+                field = getattr(self, field_name)
+                field.validators = validators
+        
+        return result
 
 
 class RegisterCinemaRepresentativeForm(FlaskForm):
@@ -114,7 +179,9 @@ class EditCinemaPropertiesForm(FlaskForm):
     is_distributor = BooleanField('Označiti ako je prikazivač istovremeno i distributer')
     photo_1 = FileField('Fotografija 1', validators=[Optional(), FileAllowed(['jpg', 'png'], 'Samo slike!')])
     photo_2 = FileField('Fotografija 2', validators=[Optional(), FileAllowed(['jpg', 'png'], 'Samo slike!')])
-    submit = SubmitField('Izmeni Svojstva Bioskopa')
+    delete_photo_1 = HiddenField('Obriši fotografiju 1')
+    delete_photo_2 = HiddenField('Obriši fotografiju 2')
+    submit = SubmitField('Izmeni svojstva bioskopa')
 
 
 class FinancingSourceForm(FlaskForm):

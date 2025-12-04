@@ -191,19 +191,54 @@
                                 <i class="fas fa-camera me-2"></i>Fotografije
                             </h5>
                             <div class="row g-3">
+                                <!-- Fotografija 1 -->
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         {{ form.photo_1.label(class="form-label") }}
+                                        
+                                        {% if cinema_properties and cinema_properties.photo_1 %}
+                                            <div class="mb-3">
+                                                <img src="{{ url_for('static', filename='img/cinema_properties/' + cinema_properties.photo_1) }}" 
+                                                     alt="Fotografija 1" 
+                                                     class="img-thumbnail" 
+                                                     style="max-width: 100%; max-height: 300px; object-fit: cover;">
+                                                <div class="mt-2">
+                                                    <button type="button" class="btn btn-danger btn-sm" onclick="deletePhoto(1)">
+                                                        <i class="fas fa-trash me-1"></i>Obriši fotografiju
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                        
                                         {{ form.photo_1(class="form-control", accept="image/*") }}
+                                        {{ form.delete_photo_1(id="delete_photo_1") }}
                                         {% for error in form.photo_1.errors %}
                                             <div class="text-danger"><small>{{ error }}</small></div>
                                         {% endfor %}
                                     </div>
                                 </div>
+                                
+                                <!-- Fotografija 2 -->
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         {{ form.photo_2.label(class="form-label") }}
+                                        
+                                        {% if cinema_properties and cinema_properties.photo_2 %}
+                                            <div class="mb-3">
+                                                <img src="{{ url_for('static', filename='img/cinema_properties/' + cinema_properties.photo_2) }}" 
+                                                     alt="Fotografija 2" 
+                                                     class="img-thumbnail" 
+                                                     style="max-width: 100%; max-height: 300px; object-fit: cover;">
+                                                <div class="mt-2">
+                                                    <button type="button" class="btn btn-danger btn-sm" onclick="deletePhoto(2)">
+                                                        <i class="fas fa-trash me-1"></i>Obriši fotografiju
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                        
                                         {{ form.photo_2(class="form-control", accept="image/*") }}
+                                        {{ form.delete_photo_2(id="delete_photo_2") }}
                                         {% for error in form.photo_2.errors %}
                                             <div class="text-danger"><small>{{ error }}</small></div>
                                         {% endfor %}
@@ -363,5 +398,13 @@
         // Dodaj event listener za promene
         eTicketCheckbox.addEventListener('change', updateVisibility);
     });
+    
+    function deletePhoto(photoNumber) {
+        if (confirm('Da li ste sigurni da želite da obrišete ovu fotografiju? Akcija brisanja će biti primenjena nakon što kliknete na dugme "Izmeni svojstva bioskopa"')) {
+            document.getElementById('delete_photo_' + photoNumber).value = 'true';
+            // Submituj formu
+            document.querySelector('form').submit();
+        }
+    }
 </script>
 {% endblock %}

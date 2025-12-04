@@ -18,21 +18,22 @@ def create_distributor():
         return redirect(url_for('main.home'))
     
     route_name = request.endpoint
-    form = RegisterDistributorForm()
+    form = RegisterDistributorForm(is_admin=True)
     
     if form.validate_on_submit():
         # Kreiranje novog distributera na osnovu podataka iz forme
+        # Za admin korisnike, postavljamo default vrednosti za opciona polja
         distributor = Distributor(
             company_name=form.company_name.data,
-            country=form.country.data,
-            address=form.address.data,
-            postal_code=form.postal_code.data,
-            city=form.city.data,
-            email=form.email.data,
-            phone=form.phone.data,
-            pib=form.pib.data,
-            mb=form.mb.data,
-            authorized_person=form.authorized_person.data,
+            country=form.country.data or '',
+            address=form.address.data or '',
+            postal_code=form.postal_code.data or '',
+            city=form.city.data or '',
+            email=form.email.data or '',
+            phone=form.phone.data or '',
+            pib=form.pib.data or '',
+            mb=form.mb.data or '',
+            authorized_person=form.authorized_person.data or '',
             website=form.website.data,
             youtube=form.youtube.data,
             facebook=form.facebook.data,
@@ -95,7 +96,8 @@ def edit_distributor(distributor_id):
         
     route_name = request.endpoint
     distributor = Distributor.query.get_or_404(distributor_id)
-    form = EditDistributorForm()
+    # Admin ima opciona polja, ostali korisnici imaju obavezna polja
+    form = EditDistributorForm(is_admin=(current_user.user_type == 'admin'))
 
     if form.validate_on_submit():
         distributor.company_name = form.company_name.data

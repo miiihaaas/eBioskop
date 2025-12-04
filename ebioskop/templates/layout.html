@@ -226,10 +226,19 @@
                     
                     
                     <div class="col-md-12 topbar">
-                        <div class="container-fluid">
+                        <div class="container-fluid d-flex justify-content-between">
                             <ul>
                                 <li><a href="{{ url_for('main.home') }}">Korisnička zona</a></li>
                                 <li><a href="{{ url_for('main.home') }}">Box office</a></li>
+                            </ul>
+                            <ul>
+                                {% if current_user.user_type == 'cinema' %}
+                                <li>{{ current_user.cinema.name }}</li>
+                                {% elif current_user.user_type == 'distributor' %}
+                                <li>{{ current_user.distributor.company_name }}</li>
+                                {% elif current_user.user_type == 'admin' %}
+                                <li>{{ current_user.user_name }}</li>
+                                {% endif %}
                             </ul>
                         </div>
                     </div>

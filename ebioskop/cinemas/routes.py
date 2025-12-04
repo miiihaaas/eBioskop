@@ -75,26 +75,27 @@ def create_cinema():
         return redirect(url_for('main.home'))
     route_name = request.endpoint
 
-    form = RegisterCinemaForm()
+    form = RegisterCinemaForm(is_admin=True)
     municipality_list = Municipality.query.all()
     form.municipality.choices = [(municipality.id, municipality.municipality_name) for municipality in municipality_list]
 
     if form.validate_on_submit():
         # Kreiranje objekta Cinema sa podacima iz forme
+        # Za admin korisnike, postavljamo default vrednosti za opciona polja
         new_cinema = Cinema(
             name=form.name.data,
-            country=form.country.data,
-            address=form.address.data,
-            postal_code=form.postal_code.data,
-            city=form.city.data,
-            municipality=form.municipality.data,
-            email=form.email.data,  # Emaili se unose kao string, ali možemo ih splitovati po zarezima ako je potrebno
-            phone=form.phone.data,
-            legal_form=form.legal_form.data,
-            pib=form.pib.data,
-            mb=form.mb.data,
+            country=form.country.data or '',
+            address=form.address.data or '',
+            postal_code=form.postal_code.data or '',
+            city=form.city.data or '',
+            municipality=form.municipality.data or '',
+            email=form.email.data or '',
+            phone=form.phone.data or '',
+            legal_form=form.legal_form.data or '',
+            pib=form.pib.data or '',
+            mb=form.mb.data or '',
             website=form.website.data,
-            social_links=form.social_links.data,  # Može biti JSON formatiran string
+            social_links=form.social_links.data,
             is_member_mkps=form.is_member_mkps.data,
             is_member_ec=form.is_member_ec.data
         )
@@ -155,11 +156,13 @@ def edit_cinema(cinema_id):
     representatives = CinemaRepresentative.query.filter_by(cinema_id=cinema_id).all()
     cinema_properties = CinemaProperties.query.filter_by(cinema_id=cinema_id).all()
     
-    form = EditCinemaForm()
+    # Admin ima opciona polja, ostali korisnici imaju obavezna polja
+    form = EditCinemaForm(is_admin=(current_user.user_type == 'admin'))
     municipality_list = Municipality.query.all()
     form.municipality.choices = [(municipality.id, municipality.municipality_name) for municipality in municipality_list]
 
     edited_cinema = Cinema.query.get_or_404(cinema_id)
+    
     if form.validate_on_submit():
         try:
             # Ažuriranje osnovnih podataka
@@ -446,15 +449,42 @@ def edit_cinema_properties(cinema_properties_id):
         cinema_properties.programming_methods = form.programming_methods.data
         cinema_properties.is_distributor = form.is_distributor.data
         
+        # Provera za brisanje fotografija
+        if form.delete_photo_1.data == 'true' and cinema_properties.photo_1:
+            # Obrišemo fajl sa file sistema
+            old_photo_path = os.path.join(current_app.root_path, 'static', 'img', 'cinema_properties', cinema_properties.photo_1)
+            if os.path.exists(old_photo_path):
+                os.remove(old_photo_path)
+            cinema_properties.photo_1 = None
+            flash('Fotografija 1 je uspešno obrisana.', 'success')
+        
+        if form.delete_photo_2.data == 'true' and cinema_properties.photo_2:
+            # Obrišemo fajl sa file sistema
+            old_photo_path = os.path.join(current_app.root_path, 'static', 'img', 'cinema_properties', cinema_properties.photo_2)
+            if os.path.exists(old_photo_path):
+                os.remove(old_photo_path)
+            cinema_properties.photo_2 = None
+            flash('Fotografija 2 je uspešno obrisana.', 'success')
+        
         # Obrada slika
         if form.photo_1.data:
             new_photo_1 = save_file(form.photo_1.data, 1)
             if new_photo_1:
+                # Ako postoji stara fotografija, obrišemo je
+                if cinema_properties.photo_1:
+                    old_photo_path = os.path.join(current_app.root_path, 'static', 'img', 'cinema_properties', cinema_properties.photo_1)
+                    if os.path.exists(old_photo_path):
+                        os.remove(old_photo_path)
                 cinema_properties.photo_1 = new_photo_1
         
         if form.photo_2.data:
             new_photo_2 = save_file(form.photo_2.data, 2)
             if new_photo_2:
+                # Ako postoji stara fotografija, obrišemo je
+                if cinema_properties.photo_2:
+                    old_photo_path = os.path.join(current_app.root_path, 'static', 'img', 'cinema_properties', cinema_properties.photo_2)
+                    if os.path.exists(old_photo_path):
+                        os.remove(old_photo_path)
                 cinema_properties.photo_2 = new_photo_2
 
         db.session.commit()

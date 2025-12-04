@@ -79,24 +79,47 @@ class RegisterDistributorForm(FlaskForm):
     # Representative Distributors (multiple selection)
     representatives = SelectMultipleField(
         'Zastupnici distributera', 
-        # choices=[
-        #     ('Paramount', 'Paramount'),
-        #     ('Universal', 'Universal'),
-        #     ('Warner Bros', 'Warner Bros'),
-        #     ('Columbia/Sony', 'Columbia/Sony'),
-        #     ('Disney', 'Disney'),
-        #     ('20th Century Studios', '20th Century Studios'),
-        #     ('Drugi', 'Drugi'),
-        #     ('Lokalna produkcija', 'Lokalna produkcija')
-        # ],
         validators=[DataRequired()]
     )
 
     submit = SubmitField('Registruj distributera')
-    def __init__(self, *args, **kwargs):
+    
+    def __init__(self, *args, is_admin=False, **kwargs):
         super(RegisterDistributorForm, self).__init__(*args, **kwargs)
+        self.is_admin = is_admin
         # Dinamički učitavanje predstavnika iz baze
         self.representatives.choices = [(rep.name, rep.name) for rep in Representative.query.all()]
+    
+    def validate(self, extra_validators=None):
+        # Ako je admin, privremeno postavi opcione validatore
+        if self.is_admin:
+            # Sačuvaj originalne validatore
+            original_validators = {}
+            fields_to_make_optional = ['country', 'address', 'postal_code', 'city', 'email', 
+                                        'phone', 'pib', 'mb', 'authorized_person', 'representatives']
+            
+            for field_name in fields_to_make_optional:
+                field = getattr(self, field_name)
+                original_validators[field_name] = field.validators
+                # Zameni DataRequired sa Optional
+                new_validators = []
+                for validator in field.validators:
+                    if isinstance(validator, DataRequired):
+                        new_validators.append(Optional())
+                    else:
+                        new_validators.append(validator)
+                field.validators = new_validators
+        
+        # Pozovi originalnu validaciju
+        result = super(RegisterDistributorForm, self).validate(extra_validators)
+        
+        # Vrati originalne validatore ako je admin
+        if self.is_admin and original_validators:
+            for field_name, validators in original_validators.items():
+                field = getattr(self, field_name)
+                field.validators = validators
+        
+        return result
 
 
 class EditDistributorForm(FlaskForm):
@@ -127,21 +150,44 @@ class EditDistributorForm(FlaskForm):
     # Representative Distributors (multiple selection)
     representatives = SelectMultipleField(
         'Zastupnici distributera', 
-        # choices=[
-        #     ('Paramount', 'Paramount'),
-        #     ('Universal', 'Universal'),
-        #     ('Warner Bros', 'Warner Bros'),
-        #     ('Columbia/Sony', 'Columbia/Sony'),
-        #     ('Disney', 'Disney'),
-        #     ('20th Century Studios', '20th Century Studios'),
-        #     ('Drugi', 'Drugi'),
-        #     ('Lokalna produkcija', 'Lokalna produkcija')
-        # ],
         validators=[DataRequired()]
     )
 
     submit = SubmitField('Ažuriraj podatke distributera')
-    def __init__(self, *args, **kwargs):
+    
+    def __init__(self, *args, is_admin=False, **kwargs):
         super(EditDistributorForm, self).__init__(*args, **kwargs)
+        self.is_admin = is_admin
         # Dinamički učitavanje predstavnika iz baze
         self.representatives.choices = [(rep.name, rep.name) for rep in Representative.query.all()]
+    
+    def validate(self, extra_validators=None):
+        # Ako je admin, privremeno postavi opcione validatore
+        if self.is_admin:
+            # Sačuvaj originalne validatore
+            original_validators = {}
+            fields_to_make_optional = ['country', 'address', 'postal_code', 'city', 'email', 
+                                        'phone', 'pib', 'mb', 'authorized_person', 'representatives']
+            
+            for field_name in fields_to_make_optional:
+                field = getattr(self, field_name)
+                original_validators[field_name] = field.validators
+                # Zameni DataRequired sa Optional
+                new_validators = []
+                for validator in field.validators:
+                    if isinstance(validator, DataRequired):
+                        new_validators.append(Optional())
+                    else:
+                        new_validators.append(validator)
+                field.validators = new_validators
+        
+        # Pozovi originalnu validaciju
+        result = super(EditDistributorForm, self).validate(extra_validators)
+        
+        # Vrati originalne validatore ako je admin
+        if self.is_admin and original_validators:
+            for field_name, validators in original_validators.items():
+                field = getattr(self, field_name)
+                field.validators = validators
+        
+        return result

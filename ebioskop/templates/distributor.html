@@ -27,8 +27,15 @@
                 {% endif %}
             {% endwith %}
 
-            <form method="POST" action="" enctype="multipart/form-data">
+            <form method="POST" action="" enctype="multipart/form-data" {% if current_user.user_type == 'admin' %}novalidate{% endif %}>
                 {{ form.hidden_tag() }}
+
+                {% if current_user.user_type == 'admin' and route_name == 'distributor.create_distributor' %}
+                <div class="alert alert-info mb-4" role="alert">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Napomena:</strong> Za kreiranje novog distributera dovoljno je da unesete samo <strong>Naziv kompanije</strong>. Ostala polja su opciona i možete ih popuniti kasnije.
+                </div>
+                {% endif %}
 
                 <!-- Logo i osnovne informacije -->
                 <div class="cinema-details-card mb-4">
