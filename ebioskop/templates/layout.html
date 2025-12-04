@@ -30,6 +30,7 @@
         <header class="site-header">
             <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky">
                 <div class="container-fluid">
+                    <img src="{{ url_for('static', filename='img/e-bioskop-logo.png') }}" alt="eBioskop" class="d-inline-block align-top logo-img">
                     <a class="navbar-brand" href="{{ url_for('main.home') }}">
                         <img src="{{ url_for('static', filename='img/logo-beo.png') }}" alt="eBioskop" class="d-inline-block align-top logo-img">
                         <!--eBioskop-->
@@ -195,6 +196,10 @@
                             {% endif %}
                         </ul>
                     </div>
+                    <hr>
+                    <img src="{{ url_for('static', filename='img/min-kulture-logo.png') }}" alt="eBioskop" class="d-inline-block align-top logo-img">
+                    <hr>
+                    <img src="{{ url_for('static', filename='img/fcs-logo.png') }}" alt="eBioskop" class="d-inline-block align-top logo-img">
                 </div>
             </nav>
         </header>
@@ -220,7 +225,14 @@
                     {% endwith %}
                     
                     
-                    
+                    <div class="col-md-12 topbar">
+                        <div class="container-fluid">
+                            <ul>
+                                <li><a href="{{ url_for('main.home') }}">Korisnička zona</a></li>
+                                <li><a href="{{ url_for('main.home') }}">Box office</a></li>
+                            </ul>
+                        </div>
+                    </div>
                     
                     <div class="col-md-12">
                         {% if legend %}
