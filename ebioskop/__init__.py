@@ -68,11 +68,19 @@ login_manager.login_message_category = 'info'
 login_manager.login_message = 'Molimo Vas da se prijavite.'
 app.config['JSON_AS_ASCII'] = False #! da ne bude ascii već utf8
 app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER') # dodati u .env: 'mail.uplatnice.online'
-app.config['MAIL_PORT'] = os.getenv('MAIL_PORT') # dodati u .env: 465
+app.config['MAIL_PORT'] = int(os.getenv('MAIL_PORT', 465)) # dodati u .env: 465
 app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USE_SSL'] = True
-app.config['MAIL_USERNAME'] = os.getenv('EMAIL_USER')
-app.config['MAIL_PASSWORD'] = os.getenv('EMAIL_PASS')
+app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
+
+# Debug logovanje mail konfiguracije
+print(f"MAIL_SERVER: {app.config['MAIL_SERVER']}")
+print(f"MAIL_PORT: {app.config['MAIL_PORT']} (tip: {type(app.config['MAIL_PORT'])})")
+print(f"MAIL_USERNAME: {app.config['MAIL_USERNAME']}")
+print(f"MAIL_PASSWORD postavljen: {bool(app.config['MAIL_PASSWORD'])}")
+print(f"MAIL_PASSWORD: {app.config['MAIL_PASSWORD']}")
+
 mail = Mail(app)
 cache = Cache(app)
 
