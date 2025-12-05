@@ -67,15 +67,7 @@ main.container { padding-top: 2rem; padding-bottom: 2rem; }
 .form-select { border: none; border-radius: 0; padding: 10px 12px; background-color: #f8f9fa; transition: all .3s ease; }
 .form-select:focus { outline: 2px solid #007bff; outline-offset: -2px; box-shadow: none; background-color: #fff; }
 .form-select:hover { background-color: #e9ecef; }
-.sticky { 
-    position: sticky; 
-    top: 0; 
-    background: linear-gradient(90deg, #0d4077 0%, #1a4e85 40%, #1a4e85 60%, #0d4077 100%); 
-    padding: 10px 0; 
-    z-index: 100;
-    margin-bottom: -5000px;
-    padding-bottom: 5000px;
-}
+.sticky {  position: sticky;  top: 0;  background: linear-gradient(90deg, #0d4077 0%, #1a4e85 40%, #1a4e85 60%, #0d4077 100%);  padding: 10px 0;  z-index: 100; margin-bottom: -5000px; padding-bottom: 5000px; }
 
 .sticky h1, .sticky form label { color: #ffff; }
 .past-date { opacity: .5; }
@@ -346,3 +338,4 @@ header nav .container-fluid { flex-direction: column; align-self: flex-start; pa
 .select2-container--bootstrap-5 .select2-search--dropdown .select2-search__field { border-radius: 4px; padding: 6px 12px; }
 .select2-container--bootstrap-5 .select2-selection--single { border: 1px solid #dee2e6; }
 .select2-container--bootstrap-5 .select2-dropdown { border-color: #dee2e6; box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15); }
+span.select2 span.selection span.select2-selection.select2-selection--single.select2-selection--clearable { display: flex; align-items: center; background-color: #f8f9fa; border-radius: 6px; padding: 10px; min-height: 46px; }
